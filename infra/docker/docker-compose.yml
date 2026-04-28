@@ -1,0 +1,84 @@
+name: nrtf
+
+services:
+  # PostgreSQL with TimescaleDB extension (time-series)
+  postgres:
+    image: timescale/timescaledb:latest-pg16
+    container_name: nrtf-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: nrtf
+      POSTGRES_PASSWORD: nrtf
+      POSTGRES_DB: nrtf
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./postgres/init:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U nrtf"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # Redis for cache + BullMQ
+  redis:
+    image: redis:7-alpine
+    container_name: nrtf-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  # Eclipse Mosquitto MQTT broker for IoT devices
+  mosquitto:
+    image: eclipse-mosquitto:2
+    container_name: nrtf-mosquitto
+    restart: unless-stopped
+    ports:
+      - "1883:1883"     # MQTT
+      - "9001:9001"     # MQTT over WebSocket (browser clients)
+    volumes:
+      - ./mosquitto/mosquitto.conf:/mosquitto/config/mosquitto.conf
+      - mosquitto_data:/mosquitto/data
+      - mosquitto_log:/mosquitto/log
+
+  # MLflow tracking server (optional for hackathon, useful for serious training)
+  mlflow:
+    image: ghcr.io/mlflow/mlflow:latest
+    container_name: nrtf-mlflow
+    restart: unless-stopped
+    ports:
+      - "5000:5000"
+    command: >
+      mlflow server
+      --backend-store-uri sqlite:////mlflow/mlruns.db
+      --default-artifact-root /mlflow/artifacts
+      --host 0.0.0.0
+    volumes:
+      - mlflow_data:/mlflow
+
+  # Local Ollama (for sovereign AI angle, e.g., STEG Whisperer)
+  # Comment out if you don't have GPU/RAM headroom
+  ollama:
+    image: ollama/ollama:latest
+    container_name: nrtf-ollama
+    restart: unless-stopped
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+
+volumes:
+  postgres_data:
+  redis_data:
+  mosquitto_data:
+  mosquitto_log:
+  mlflow_data:
+  ollama_data:

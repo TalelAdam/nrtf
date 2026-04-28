@@ -1,0 +1,16 @@
+{
+  "name": "@nrtf/api-client",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Auto-generated OpenAPI client for the backend (run `pnpm generate` to refresh)",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "scripts": {
+    "generate": "openapi-typescript http://localhost:3000/docs-json -o src/schema.ts",
+    "lint": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "openapi-typescript": "^7.4.1",
+    "typescript": "^5.5.4"
+  }
+}

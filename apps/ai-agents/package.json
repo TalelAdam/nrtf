@@ -1,0 +1,12 @@
+{
+  "name": "@nrtf/ai-agents",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Python LangGraph multi-agent + MCP servers (managed via pnpm workspaces for unified dev scripts)",
+  "scripts": {
+    "dev": "uvicorn src.api.server:app --host 0.0.0.0 --port 8001 --reload",
+    "test": "pytest",
+    "lint": "ruff check src tests",
+    "format": "ruff format src tests"
+  }
+}

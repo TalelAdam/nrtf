@@ -1,0 +1,127 @@
+# dependencies
+node_modules/
+.pnp
+.pnp.js
+.yarn/install-state.gz
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+env/
+.env-py/
+*.egg-info/
+*.egg
+
+# build outputs
+dist/
+build/
+.next/
+out/
+.turbo/
+.parcel-cache/
+.eslintcache
+*.tsbuildinfo
+
+# python build
+*.so
+.Python
+develop-eggs/
+downloads/
+eggs/
+.eggs/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+
+# testing
+coverage/
+.coverage
+.coverage.*
+htmlcov/
+.tox/
+.nox/
+.pytest_cache/
+.hypothesis/
+
+# env files
+.env
+.env.local
+.env.*.local
+!.env.example
+
+# editors
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# data (raw + processed datasets are heavy; track via DVC or download scripts)
+apps/ml-pipeline/src/data/raw/*
+!apps/ml-pipeline/src/data/raw/.gitkeep
+apps/ml-pipeline/src/data/processed/*
+!apps/ml-pipeline/src/data/processed/.gitkeep
+apps/ml-pipeline/src/data/external/*
+!apps/ml-pipeline/src/data/external/.gitkeep
+apps/ml-pipeline/checkpoints/*
+!apps/ml-pipeline/checkpoints/.gitkeep
+apps/ml-pipeline/experiments/*
+!apps/ml-pipeline/experiments/.gitkeep
+mlruns/
+
+# notebooks (uncomment if you don't want to commit them)
+# *.ipynb
+.ipynb_checkpoints/
+
+# firmware build
+apps/firmware/esp32/.pio/
+apps/firmware/esp32/.vscode/
+*.elf
+*.bin
+*.hex
+
+# blockchain
+artifacts/
+cache/
+typechain/
+typechain-types/
+
+# database
+*.db
+*.sqlite
+*.sqlite3
+prisma/migrations/dev.db*
+
+# OS
+.AppleDouble
+.LSOverride
+Icon
+._*
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+
+# misc
+*.pem
+.cache/
+.docusaurus/
+.serverless/
+.vuepress/dist
+.fusebox/
+.dynamodb/
+*.tgz
+.npm

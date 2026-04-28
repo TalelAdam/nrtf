@@ -1,0 +1,12 @@
+{
+  "name": "@nrtf/ml-pipeline",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Python ML training + inference (managed via pnpm workspaces for unified dev scripts)",
+  "scripts": {
+    "dev": "uvicorn src.inference.server:app --host 0.0.0.0 --port 8002 --reload",
+    "test": "pytest",
+    "lint": "ruff check src tests",
+    "format": "ruff format src tests"
+  }
+}
