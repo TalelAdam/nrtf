@@ -69,6 +69,18 @@ yarn-error.log*
 pnpm-debug.log*
 
 # data (raw + processed datasets are heavy; track via DVC or download scripts)
+data/raw/**
+data/processed/**
+data/external/**
+data/calib/**
+data/splits/**
+data/eval/**
+data/video/**
+!data/**/README.md
+!data/**/_manifest.json
+!data/**/.gitkeep
+
+# legacy ml-pipeline data dirs (kept for transition)
 apps/ml-pipeline/src/data/raw/*
 !apps/ml-pipeline/src/data/raw/.gitkeep
 apps/ml-pipeline/src/data/processed/*
@@ -81,16 +93,70 @@ apps/ml-pipeline/experiments/*
 !apps/ml-pipeline/experiments/.gitkeep
 mlruns/
 
+# models / checkpoints / edge artifacts (post-leak)
+models/checkpoints/**
+models/exports/**
+!models/**/README.md
+!models/**/.gitkeep
+apps/edge-runtime/artifacts/**
+!apps/edge-runtime/artifacts/**/README.md
+!apps/edge-runtime/artifacts/**/.gitkeep
+
+# binary model formats
+*.pt
+*.pth
+*.onnx
+*.tflite
+*.gguf
+*.bin.gguf
+*.engine
+*.trt
+*.plan
+*.pb
+*.h5
+*.safetensors
+# DON'T ignore generated C-array headers — they're tracked because firmware needs them
+!**/include/model/*.h
+
+# DVC
+.dvc/cache
+.dvc/tmp
+.dvc/plots
+
+# video / images at scale
+*.mp4
+*.mov
+*.mkv
+*.avi
+*.webm
+data/**/*.jpg
+data/**/*.jpeg
+data/**/*.png
+# allow small reference images in docs/
+!docs/**/*.png
+!docs/**/*.jpg
+
 # notebooks (uncomment if you don't want to commit them)
 # *.ipynb
 .ipynb_checkpoints/
+notebooks/.ipynb_checkpoints/
 
 # firmware build
 apps/firmware/esp32/.pio/
 apps/firmware/esp32/.vscode/
+apps/firmware/esp32-cam/.pio/
+apps/firmware/esp32-cam/.vscode/
 *.elf
 *.bin
 *.hex
+sdkconfig
+sdkconfig.old
+
+# llama.cpp build (if cloned into repo)
+llama.cpp/
+
+# edge-runtime intermediates
+apps/edge-runtime/reports/*.tmp.md
 
 # blockchain
 artifacts/

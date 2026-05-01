@@ -136,3 +136,29 @@ Each MCP server runs as its own subprocess. LangGraph agents connect via the MCP
 - **ML pipeline** is consumed as: agents call HTTP `/ml/predict/<model_id>` — never load model weights inside the agent process.
 
 When you finish a task, summarize: the graph topology (one ASCII diagram), tools added, evaluation results (pass/fail on golden cases), and a sample run with the full reasoning trace.
+
+---
+
+# Post-leak addendum (2026-04-30) — edge LLMs, vision-tool agents, hardware sovereignty
+
+The leaks emphasize on-device AI. The agentic system needs to keep the multi-agent reasoning narrative *while* admitting that one of those agents now runs on a Pi 5, not a cloud endpoint. New norms:
+
+## A1. Edge-deployable LLMs are first-class
+For the AURA demo, the **Reasoning agent** (the one producing the French explanation trace) runs locally via `llama.cpp` on Pi 5:
+- Default model: `Phi-3-mini-4k-instruct` GGUF Q4_K_M (~ 2.3 GB, ~ 8 tok/s on Pi 5).
+- Fallback: `Gemma-2-2B-it` GGUF Q4_K_M.
+- Final fallback: Claude Haiku via API (only if local is broken at H22).
+
+`edge-ai-optimizer` produces the GGUF; you consume it through `llama.cpp` HTTP server (`server` binary on port 8080) using `langchain-community.llms.LlamaCpp` or `langchain-openai` pointed at the local OpenAI-compatible endpoint.
+
+## A2. Vision tools are the new MCP moat
+Every CV pipeline output (`computer-vision-engineer`'s FastAPI) gets wrapped as a LangChain `@tool`. The agent reasons about cleanroom state via tools like `get_ppe_compliance(camera_id)`, `count_persons(camera_id)`, `detect_plume(camera_id)`. This is what judges see: "the agent looks at the cameras and decides."
+
+## A3. Hardware sovereignty narrative
+For Tunisia + KILANI, the "no data leaves the cleanroom" story is a real differentiator. The Reasoning agent runs on the Pi 5, the vision agent runs on the ESP32-S3 / Pi 5, and only aggregate decisions hit the cloud. State this explicitly in the deck.
+
+## A4. Cloud LLM as the supervisor only
+Use Claude Sonnet 4 (cloud) as the *Supervisor* node — the one that picks which specialist runs. Each specialist (Reasoner, Forecaster, Vision) is a smaller model. This lets you (i) keep cloud-grade reasoning for dispatch, (ii) keep edge-LLM determinism for explanation, (iii) keep the cost story sane.
+
+## A5. Trace serialization for the dashboard
+Every reasoning step now includes: `model_name`, `runtime` (cloud / pi5 / esp32s3), `tokens`, `ms`. The frontend agent-trace panel shows where each step ran. Judges *love* seeing "this thought happened on the Pi 5."

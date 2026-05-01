@@ -134,3 +134,32 @@ Where `q_gen = I² * R_int(SoC)` from electrochemistry. The chem/bio teammates d
 - **Frontend** does not call ML directly; goes through backend.
 
 When you finish a task, summarize: experiment ID, dataset used, validation strategy, key metric (with units), MLflow run URL, and the inference endpoint shape if served.
+
+---
+
+# Post-leak addendum (2026-04-30) — large data, foundation-FT, video, edge handoff
+
+The leaked spec emphasizes (a) AI on edge, (b) computer vision on real video, (c) large real datasets. Three new operating norms apply:
+
+## L1. Foundation-fine-tune-then-distill is the default
+Don't train from scratch on the leaked data. The pattern is:
+1. Pick a foundation model (Chronos-Bolt for time-series, YOLOv8/RT-DETR for detection, Phi-3-mini for reasoning, SAM-2 for segmentation).
+2. Fine-tune on the full leaked dataset on rented GPU (Lambda / Vast.ai / RunPod) — track in MLflow.
+3. Hand the fine-tuned teacher to `edge-ai-optimizer` with 500 calibration samples; receive a quantized student.
+4. The demo runs the student. The deck shows a 4-bar accuracy chart: zero-shot → fine-tuned teacher → distilled student → INT8 on-device.
+
+## L2. Large-data pipeline through `data-engineer`
+You do not load Parquet directly. `data-engineer` provides Polars / DuckDB queries + frozen split manifests. Consume those. If a query feels slow, file a request — don't write a faster pandas loop.
+
+## L3. Video is now in scope
+Vision tasks (PPE, occupancy, plume) are jointly owned with `computer-vision-engineer`. You handle: training loops, loss design, KD recipes, MLflow tracking. CV-eng handles: data prep, augmentation, tracking, inference serving. Coordinate on the model checkpoint contract — same file format, same eval script.
+
+## L4. Every checkpoint is born edge-ready
+On every save, also export ONNX (FP32). `edge-ai-optimizer` will do INT8 from there. This avoids a "we trained but can't export" surprise at H10.
+
+## L5. Two metrics, always
+Every model card now lists both:
+- The accuracy metric (MAE / mAP / F1, with units).
+- The on-device latency target the `edge-ai-optimizer` needs to hit (e.g. "Pi 5 ≤ 80 ms P95").
+
+If the latency target isn't filled in, the work isn't done.

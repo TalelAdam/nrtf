@@ -1,0 +1,23 @@
+target_id: esp32-s3
+hardware:
+  cpu: Xtensa LX7 dual-core @ 240 MHz (vector ext via ESP-NN)
+  flash_mb: 16
+  sram_kb: 512
+  psram_mb: 8
+  accelerators: [esp-nn]
+constraints:
+  flash_mb_max: 12          # leave room for partition table + OTA + wifi/bt blob
+  tensor_arena_kb_max: 240  # in SRAM; PSRAM allowed for activations only
+  latency_p95_ms: 250
+  fps_min: 4
+  power_w_max: 0.6
+runtimes_supported:
+  - tflite-micro
+  - esp-dl
+quant_schemes_supported:
+  - int8-full-integer       # ONLY scheme that runs efficiently
+notes: |
+  Use ESP-NN SIMD kernels (`-DCONFIG_NN_OPTIMIZED=1`).
+  Camera framebuffer in PSRAM; tensor arena in SRAM.
+  WiFi + camera + inference concurrent: leave ≥ 50 KB SRAM headroom or OOM.
+  Owner: IIA teammate (firmware) + edge-ai-optimizer (model).
