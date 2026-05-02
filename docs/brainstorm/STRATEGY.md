@@ -1,452 +1,487 @@
-# NRTF 3.0 — Project Strategy (KILANI-Aligned)
+# Re·Tech Fusion — Master Strategy
 
-> **Hackathon:** NRTF 3.0 (Hack-E), May 1–3, 2026, Hotel Rivera, Sousse
-> **Main sponsor & spec-book author:** **Groupe KILANI** (Tunisian conglomerate — pharma, agri-food, dermocosmetics, distribution, public works)
-> **Theme:** Energy optimization
-> **Team:** 5 — Talel + roommate (software/AI), 1 IIA (industrial automation/embedded), 2 chemical/biological engineering students
-> **Goal:** First place. Story-driven pitch + live electronics demo + tangible ROI for KILANI.
-
----
-
-## 1. The pivot
-
-After our team meeting, the strategy collapses from "general energy optimization" to **"solve a real KILANI problem so well that the spec-book authors recognize themselves in the pitch."** This narrows the design space and dramatically increases our win probability — the judging panel includes the people who wrote the brief.
-
-The prior brainstorms (cross-disciplinary idea bank, AI-trend map, fintech crossovers) have been retired. This document is the single source of truth.
-
----
-
-## 2. KILANI Group — what they do, where they hurt
-
-### Industrial portfolio
-
-| Subsidiary | Sector | Sites | Energy profile |
-|---|---|---|---|
-| **TERIAK** | Pharmaceutical (tablets, capsules, syrups, sterile forms) | **Jebel Ouest** + **El Fejja** (Tunisia), Cinpharm (Cameroon) | Massive HVAC for cleanrooms — 60-66% of facility energy; steam boilers for sterilization; chillers; compressed air |
-| **ADWYA** | Pharmaceutical (8% Tunisian market share) | Route de la Marsa Km 14 | Same cleanroom + HVAC profile as TERIAK |
-| **PROTIS** | Dermocosmetics (natural-ingredient products) | Tunisia | Mixers, emulsifiers, cold-storage, packaging lines |
-| **IKEL** (acquired Grain d'Or from Nestlé in 2022) | Agri-food / breakfast cereals | **Ain Zaghouan, Tunis** (in production since 1989) | Drying ovens, extruders, packaging lines, cold-chain logistics — drying alone = 30-40% of plant energy |
-| **Kilani Public Works** | Construction (hydro-agricultural, civil, petroleum) | Southern Tunisia | Diesel gensets at remote sites; perfect for solar PV monitoring |
-| **Distribution** | L'Oréal, LVMH, Pampers, Roche, Medtronic, etc. | Warehouses across TN | Cold storage for pharma + cosmetics |
-
-### Why this is gold for our pitch
-
-**KILANI is already publicly committed to energy modernization.** In 2022, EBRD + Attijari Bank financed a **TND 5 million** loan to TERIAK that funded:
-- A renovated wastewater treatment unit
-- A new steam boiler
-- An **automated energy management system at Jebel Ouest**
-
-That last item is critical: KILANI has *already installed* an energy-management system. Our pitch isn't "you should care about energy" — it's "**you've already invested 5 million dinars; here's the AI layer that makes it 30% more profitable.**"
-
-### Where the energy is bleeding (verified industry benchmarks)
-
-Pharma cleanrooms consume **10-100× more energy per m² than offices**, and **25× more than commercial buildings**, driven by air-change rates of 20-60 ACH (vs. 0.5-2 in offices). HVAC alone = **two-thirds of facility energy**. Documented gains from AI-driven cleanroom HVAC:
-
-- **15-40% total HVAC savings** by demand-driven air-change rates
-- **Up to 70% fan-power reduction** via real-time particle-count-based recirculation control
-- All while remaining **ISO 14644-1 compliant** (ISO Class 5/7/8 for tablet/syrup/capsule areas)
-
-This is not theory. TSI, Etalytics, and Siemens all have case studies in pharma. We're applying a proven pattern to a specific Tunisian customer who is publicly receptive.
-
----
-
-## 3. The Project: **AURA**
-
-> **AURA — Adaptive HVAC Optimization for KILANI Cleanrooms**
-> *Pronounced "OHR-AH"; works in French and Arabic; evokes "air."*
-
-A retrofitted AI control layer that sits on top of KILANI's existing TERIAK/ADWYA HVAC + energy management system. It uses real-time particle counts, occupancy detection, production schedules, and Tunisian time-of-use tariffs to dynamically modulate air-change rates and chiller setpoints — while guaranteeing ISO 14644 compliance via a hard-clamped safety layer.
-
-### What AURA does, in one paragraph
-
-> AURA reads particle counts, T/RH, and pressure-cascade sensors from a cleanroom; predicts the next 60 minutes of contamination risk using a small physics-informed model; and dispatches HVAC setpoints (fan speed, supply temperature, dampers) through a multi-agent controller. Every decision is auditable in plain French, every override is logged, and the system *learns* the unique signature of each TERIAK/ADWYA suite over time. The result: 25-35% less HVAC energy per cleanroom, fully GMP-compliant, with zero retrofit to the existing automation system — AURA speaks Modbus to whatever PLC is already there.
-
-### Platform vision (last slide of the pitch)
-
-AURA is the first module of **KILANI EnerOS** — an energy operating system designed to be rolled out across the group:
-
-- **Phase 1 (NRTF prototype):** AURA on TERIAK Jebel Ouest cleanrooms
-- **Phase 2:** IKEL Grain d'Or drying ovens (extrusion thermal optimization)
-- **Phase 3:** PROTIS mixer/emulsifier scheduling against TND tariff brackets
-- **Phase 4:** Solar PV + battery sizing for southern-Tunisia public works sites
-- **Phase 5:** Cross-site energy intelligence dashboard for the Kilani family executive team
-
-This shows judges we understand KILANI as a *system*, not a single plant.
-
----
-
-## 4. Why our team is the only team that can build this
-
-| Teammate | Role on AURA | Why uniquely qualified |
-|---|---|---|
-| **Chem/Bio #1** | GMP / cleanroom chemistry lead | Owns the ISO 14644 explanation; defends air-change-rate math; knows pharma manufacturing constraints (sterile vs non-sterile zones, pressure cascades) |
-| **Chem/Bio #2** | Pitch + KILANI domain owner | Weaves the TERIAK/ADWYA/IKEL story; speaks to Mr. Kilani in his own language; quantifies TND savings using real ANME tariffs |
-| **IIA teammate** | Hardware + control loop | Builds the tabletop mini-cleanroom rig; wires PMS5003 + DHT22 + fan PWM to ESP32; writes the Modbus glue |
-| **Talel (SW/AI)** | AI agent + dashboard | LangGraph multi-agent controller; Recharts dashboard with live particle/energy/compliance traces; pitch deck |
-| **Roommate (SW/AI)** | Backend + ML | NestJS data pipeline (MQTT → TimescaleDB); Chronos-Bolt forecasting model; MCP server wrapping the cleanroom |
-
-**Most teams in the room will be CS-only and pitch a "smart energy app."** Our defensibility: a working physical demo of a regulated industrial environment, controlled by AI, explained by people who actually understand pharmaceutical chemistry.
-
----
-
-## 5. The WOW pitch — story arc + live demo
-
-### The 5-minute story
-
-**[0:00–0:30] — The hook**
-
-> *(Talel or Chem/Bio #2, in French)*
-> "Bonsoir. Cette semaine, dans l'usine TERIAK à Jebel Ouest, environ **1.4 millions de dinars** sont en train d'être brûlés — non pas en feu, mais en climatisation des salles blanches. C'est 66% de la facture électrique de l'usine. En 2022, le groupe KILANI a investi 5 millions de dinars, financés par la BERD, pour moderniser ce système. Aujourd'hui, on vous présente la couche d'intelligence qui rend cet investissement **30% plus rentable**. On l'appelle **AURA**."
-
-**[0:30–1:00] — The problem, technically**
-
-> *(Chem/Bio #1, switch to English)*
-> Pharmaceutical cleanrooms classified ISO 14644-1 Class 7 require 20-60 air changes per hour, regardless of whether the room is occupied. Most installations run at maximum airflow 24/7 — defensible from a GMP standpoint, but financially absurd. The opportunity: modulate airflow based on real-time particle counts and occupancy, while maintaining a *guaranteed* compliance envelope.
-
-**[1:00–2:30] — Live demo**
-
-> *(IIA + Talel jointly run the tabletop rig)*
+> **The single source of truth.** When in doubt, this file wins. When the spec says one thing and we said another in chat, this file gets updated *first*, then code follows.
 >
-> 1. Camera projects the dashboard. Live: particle count, fan power, ISO compliance status, AI agent reasoning trace.
-> 2. **"Baseline mode"** — fan at 100%, dashboard shows compliance ✅ and 14W draw.
-> 3. **"AURA mode"** — agent takes over. Particle count is low → fan drops to 35%, draw drops to 4W. Compliance still ✅.
-> 4. **Inject contamination** (puff of incense smoke into the box). Particle count spikes red on the dashboard. Within 8 seconds, AURA ramps the fan, shows on screen: *"Spike detected, ramping to 95% to meet ISO Class 7 envelope, ETA recovery 22s."* Counts drop. Fan steps back down.
-> 5. **Side panel: cumulative kWh saved** ticks up live. After 90 seconds: "27% energy saved vs baseline, zero compliance violations."
-
-**[2:30–3:30] — Why this matters for KILANI**
-
-> *(Chem/Bio #2)*
-> Extrapolated to TERIAK Jebel Ouest's actual cleanroom footprint (~2,400 m²) and STEG industrial peak tariffs:
->
-> | Metric | Baseline | With AURA |
-> |---|---|---|
-> | Annual HVAC energy | 4.8 GWh | 3.4 GWh |
-> | Annual cost (TND) | 1,920 k | 1,360 k |
-> | **Savings** | — | **560 k TND/yr** |
-> | Payback (incl. retrofit) | — | < 14 months |
-> | CO₂ avoided | — | 720 tons/yr |
->
-> Roll AURA across TERIAK El Fejja + ADWYA + the new acquisitions = **2.1 M TND/yr** group-wide.
-
-**[3:30–4:30] — Architecture & defensibility**
-
-> *(Talel)*
-> AURA is built on a NestJS + LangGraph + ESP32 stack. The AI controller is a multi-agent system: a **Forecaster** (Chronos-Bolt foundation model on particle history), a **Compliance Guardian** (rule-based hard clamp on ISO 14644 limits — never overridable by the LLM), and a **Dispatcher** (issues setpoints via Modbus). All three reason in plain French; every decision is logged for the GMP audit trail. We use the Model Context Protocol so the same agents work on any HVAC PLC — Siemens, Schneider, Honeywell.
-
-**[4:30–5:00] — The vision close**
-
-> *(Chem/Bio #2)*
-> AURA is the first module of **KILANI EnerOS** — a unified energy intelligence platform for the group. After cleanrooms, we go after IKEL drying ovens, PROTIS mixers, and the southern-Tunisia public works sites. Our prototype today is one mini-cleanroom on a table. Phase 5 is dashboards on Mr. Kilani's desk showing live energy across every plant.
->
-> Merci. Vos questions?
-
-### Why this pitch wins
-
-1. **Names the sponsor in the first sentence** — judges from KILANI lean forward.
-2. **Cites their own EBRD investment** — proves we did our homework.
-3. **Quantifies the ask in TND** — ANME-style framing.
-4. **Live hardware demo with a contamination trigger** — visceral, unforgettable.
-5. **GMP / ISO compliance respected** — shows we know the regulatory stakes.
-6. **Platform vision in the last slide** — opens the door to a follow-up conversation.
+> **Hackathon:** Re·Tech Fusion (RETF) — Industrial AI & IoT — INSAT, University of Carthage
+> **Dates:** May 1–3, 2026 (we are inside Day 1 right now)
+> **Theme:** End-to-end industrial energy intelligence — from raw IoT sensors to predictive modeling, anomaly detection, document extraction, CO₂ estimation, and waste-heat recovery.
+> **Team:** 5 — Talel + roommate (software/AI), 1 IIA student (industrial automation / embedded), 2 chemical/biological engineering students.
+> **Goal:** First place. The pitch session weights coherence and depth. Numbers, real demo, French/English/Tunisian Arabic delivery.
 
 ---
 
-## 6. Architecture (high-level)
+## 0. The challenge in one paragraph
+
+Industrial sites manage multiple plants, acquired subsidiaries, and heterogeneous energy data. Today, consolidating that data for CO₂ calculations is slow, manual, and error-prone. Re·Tech Fusion asks teams to build an **end-to-end intelligent system**: raw IoT sensor data → unified data pipeline → document extraction → unit normalization → CO₂ estimation → anomaly detection → dashboard → edge resilience → waste-heat recovery prioritization. Three parts, scored independently; top teams pitch on Day 3 morning.
+
+We have an unusual asset: a real **energy audit of a Tunisian pharmaceutical factory** (15-page French PDF), 33 photos of bills + 5 large scanned-PDF batches, and 22 monthly tri-generation Excel reports — all uploaded by Talel before the official test set drops. **We use this as practice data.** Anyone who shows up at H+0 of Part 2 with a working pipeline against this data is two hours ahead of every team starting from zero.
+
+---
+
+## 1. Spec recap (canonical timeline + scoring)
+
+### Timeline
+
+| When | What |
+|---|---|
+| Day 1 — 14:00 | Opening Ceremony |
+| Day 1 — 23:00 | **Part 1 announced** |
+| Day 2 — 14:00 | Part 1 submission deadline |
+| Day 2 — 00:00 | **Part 2 + Part 3 announced** (Part 2 deadline same time = Day 3 00:00) |
+| Day 3 — 05:00 | Part 3 submission deadline + 1-hour grace period starts |
+| Day 3 — 07:00 | Presentation submission deadline |
+| Day 3 — 09:00 | Pitching session begins (top teams only, 8 min + 7 min Q&A) |
+
+### Scoring (what we're optimizing)
+
+| Part | Points | Bonus | Owner inside the team |
+|---|---:|---:|---|
+| **Part 1 — IoT Device & Protocol** | 95 | +15 | IIA + roommate (server) |
+| **Part 2 — Pipeline, Unification, Modeling** | 120 | +40 | Talel + roommate + chem/bio (units / CO₂) |
+| **Part 3A — Edge Inference & On-Device Anomaly** | 75 | +15 | IIA + Talel (model port) |
+| **Part 3B — Waste Heat Recovery Design** | 75 | +15 | Chem/bio #1 + chem/bio #2 |
+| **Pitch** | 60 | — | Whole team; Talel + chem/bio #2 lead |
+
+We commit to **Track B as primary** (chem/bio leverage + audit data already in hand) and attempt **Track A as stretch** on Day 3 morning if we have model + ESP32 capacity. Doing both is +75 pts; Track A alone has hard hardware-port risk we can mitigate by leaning on Track B.
+
+---
+
+## 2. Architecture (one-screen view)
 
 ```
-┌──────────────────────────────────────────────────────────────┐
-│  TABLETOP MINI-CLEANROOM (live demo on stage)                │
-│  ┌────────────────────────────────────────────────────────┐  │
-│  │  Acrylic box, ESP32 + sensors + 12V fan + smoke source │  │
-│  └────────────────────────────────────────────────────────┘  │
-└───────────────────────────────┬──────────────────────────────┘
-                                │ MQTT (Mosquitto)
-                                ▼
-┌──────────────────────────────────────────────────────────────┐
-│  apps/backend  (NestJS + Fastify)                            │
-│   ├── modules/devices  — registry, API keys                  │
-│   ├── modules/readings — TimescaleDB hypertable              │
-│   ├── modules/compliance — ISO 14644 envelope tracker        │
-│   ├── integrations/mqtt — broker subscriber                  │
-│   └── integrations/ai-bridge — calls AI service              │
-└───────────────┬──────────────────────────────┬───────────────┘
-                │ WebSocket                    │ HTTP
-                ▼                              ▼
-┌──────────────────────────┐    ┌─────────────────────────────┐
-│  apps/frontend (Next.js) │    │  apps/ai-agents (LangGraph) │
-│   AURA Dashboard:        │    │   ┌─ Forecaster (Chronos)   │
-│   - particle live chart  │    │   ├─ Compliance Guardian    │
-│   - fan power gauge      │    │   ├─ Dispatcher             │
-│   - compliance LED       │    │   └─ MCP server: cleanroom  │
-│   - agent trace panel    │    │                             │
-│   - cumulative kWh saved │    │  apps/ml-pipeline (FastAPI) │
-│   - "what would Mr.      │    │   ├─ Chronos-Bolt forecast  │
-│     Kilani see" mode     │    │   └─ Anomaly classifier     │
-└──────────────────────────┘    └─────────────────────────────┘
+┌──────────────────────────────────────────────────────────────────────────────┐
+│  PART 1 — Sensor stand                                                       │
+│  ESP32 → 3+ sensors → MQTT (or HTTP POST) → Mosquitto → backend ingest       │
+└──────────────────────────────┬───────────────────────────────────────────────┘
+                               │ MQTT 1883 / WebSockets 9001
+                               ▼
+┌──────────────────────────────────────────────────────────────────────────────┐
+│  apps/backend (NestJS + Fastify + Prisma + TimescaleDB + Mosquitto client)   │
+│   ├─ devices module           (registry, API keys)                           │
+│   ├─ readings module           (TimescaleDB hypertable, 1-min rollups)       │
+│   ├─ events module             (anomaly events from on-device + server)     │
+│   ├─ extracted-records module  (one row per extracted bill / Excel row)     │
+│   └─ ai-bridge module          (calls AI orchestrator)                       │
+└──────┬─────────────────┬──────────────────┬──────────────────┬───────────────┘
+       │ HTTP            │ WebSocket        │ HTTP             │ HTTP
+       ▼                 ▼                  ▼                  ▼
+┌──────────────┐  ┌──────────────────┐  ┌──────────────────┐  ┌─────────────────────┐
+│ apps/        │  │ apps/frontend    │  │ apps/ai-agents   │  │ apps/doc-extraction │
+│ ml-pipeline  │  │ (Next.js +       │  │ (LangGraph: ext, │  │ (FastAPI:           │
+│ (FastAPI:    │  │  Recharts):      │  │  norm, CO₂,      │  │  bills / excel /    │
+│  forecast,   │  │  KPIs, sankey,   │  │  forecast,       │  │  audit / submit)    │
+│  anomaly)    │  │  trends, alerts) │  │  anomaly,        │  │                     │
+│              │  │                  │  │  Track-B advisor)│  │                     │
+└──────┬───────┘  └──────────────────┘  └────────┬─────────┘  └─────────┬───────────┘
+       │                                         │                       │
+       ▼                                         ▼                       ▼
+┌──────────────────────────────────────────────────────────────────────────────┐
+│ apps/edge-runtime    — quantize forecast model → TFLite-Micro for ESP32      │
+│ apps/heat-recovery   — Track B: identify, characterize, score, ROI top-3     │
+└──────────────────────────────────────────────────────────────────────────────┘
 ```
 
-The four `.claude/agents/` (frontend-designer, backend-engineer, ai-engineer, ml-engineer) and seven `.claude/skills/` are pre-built to scaffold every layer of this stack.
+All Python services run with `uvicorn` on different ports; backend orchestrates; frontend is the demo surface. Docker compose brings the whole thing up.
 
 ---
 
-## 7. 24-hour playbook
+## 3. Part 1 — IoT Device & Protocol (95 + 15 pts)
 
-The plan starts when the spec book opens at H0 on May 2 (or whenever the official "go" happens). Times are budgets, not deadlines.
+### Goal
+
+A working ESP32 device that reads ≥ 3 distinct sensor types and pushes them reliably (MQTT preferred, HTTP fallback) to a server on a teammate's PC. Reconnection without data loss is a "+15 advantage" per the spec.
+
+### Sensor stand (committed)
+
+We have on hand: a **flow sensor**, a **heat (temperature) sensor**, a **microwave/radiowave sensor**, plus simple supporting parts. Final triplet:
+
+| # | Sensor | Wiring | What it measures | Why it earns points |
+|---|---|---|---|---|
+| 1 | **Flow sensor** (e.g. YF-S201 hall-effect, or gas flow) | digital pulse (interrupt pin) | water/gas flow rate (L/min) → energy proxy | Distinct sensor type; matches "power consumption" / process throughput |
+| 2 | **Heat / temperature sensor** (DS18B20 OneWire, or K-thermocouple via MAX6675/MAX31855) | OneWire / SPI | pipe / exhaust / fluid temperature (°C) | Distinct; energy-relevant for heat recovery |
+| 3 | **Microwave / radiowave sensor** (RCWL-0516 doppler, or RCWL-9620 / similar) | digital out (presence) or analog (level / distance) | presence / motion / level | Distinct sensor type; gives us a non-thermal modality |
+| Stretch | **BME280** (T / RH / P) over I²C, or current clamp (SCT-013-030 + INA219) over I²C | extra modality for the bonus | | |
+
+Ranges + default `valid_range` (for the Part 1 §"Data quality" 10 pts):
+
+```
+flow_lpm:    0.1 .. 50.0
+temp_c:     -10.0 .. 200.0
+microwave:   {0, 1}   (presence) or 0.0 .. 5.0 m (level)
+humidity:    0.0 .. 100.0
+pressure:    900.0 .. 1100.0  (hPa)
+```
+
+### Protocol
+
+**MQTT primary** (Mosquitto on a teammate's PC), **HTTP POST fallback** (FastAPI side-car if MQTT fails). Topic taxonomy already in `iot-mqtt-pipeline` skill:
+
+```
+retf/<deviceId>/telemetry/<metric>     # uplink readings
+retf/<deviceId>/event/<type>           # uplink events (anomaly, fault)
+retf/<deviceId>/cmd/<action>           # downlink commands
+retf/<deviceId>/status                 # online/offline retained heartbeat
+```
+
+Payload: `{"v": float, "ts": iso8601, "seq": int, "unit": "lpm"|"degC"|...}`. QoS 1 telemetry, QoS 2 commands. LWT = `"offline"` on `status`.
+
+### Reliability features (the +15 bonus)
+
+- **Reconnection w/o data loss** — local SPIFFS / NVS ring buffer of unsent readings; replay on reconnect with same `seq`. Backend dedupes on `(device_id, metric, seq)`.
+- **TLS / HTTPS** — optional; only if we have time at H+10 of Part 1.
+- **OTA update** — Arduino-OTA library; takes ~30 min if we want it.
+- **Device-side buffering** — already covered by the ring buffer above.
+- **Custom sensor** — the microwave/radar sensor is unusual enough to count.
+
+### Server
+
+NestJS already scaffolded. Mosquitto in `infra/docker/`. We add:
+- `subscribe('retf/+/telemetry/+')` → parse → Pandera-validate → `INSERT readings`.
+- `subscribe('retf/+/event/+')` → `INSERT events`.
+- WebSocket bridge → frontend live chart.
+- Continuous aggregates 1-min / 1-hour for the dashboard.
+
+### What gets us the easy 70 pts (must-haves)
+- 30 pts — server receives valid data ✓
+- 25 pts — 3 distinct sensor types, all active simultaneously ✓
+- 15 pts — reconnection handling ✓
+- 15 pts — uptime ≥ 95% over 5-min windows ✓
+- 10 pts — data quality (no `null`, no `-999`, all in range) ✓
+
+### Bonus 15 pts target
+- Custom microwave sensor + OTA + device-side buffering → easy +15.
+
+---
+
+## 4. Part 2 — Pipeline, Unification & Modeling (120 + 40 pts)
+
+This is the **core of the challenge** — almost half the total points. Don't shortchange it.
+
+### What the test set will look like (we already have a representative practice set)
+
+- **Heterogeneous documents:** PDF invoices, scanned bills (JPEG), multi-sheet Excel files. Mixed units (kWh, MWh, Gcal, BTU, toe, GJ).
+- **Ground-truth annotation** for prediction-model validation.
+- **IoT readings** from Part 1 (we may need to record our own ground-truth).
+- **Hidden anomalies** in the values dataset (optional bonus).
+
+We have practice data already staged at:
+- `data/raw/audit/rapport_audit.pdf` — 15-page French audit of a pharma factory (tri-gen + STEG + gas + 3 zones).
+- `data/raw/factures/` — 33 JPEGs + 5 PDFs of real bills.
+- `data/raw/tri-gen/` — 22 Excel monthly reports July 2025 → April 2026.
+
+### Part 2 sub-deliverables (with our owners)
+
+**§2.1 Extraction & unification (40 pts)** — `document-intelligence-engineer` lead.
+- File typing (native PDF / scanned image / Excel) → branch.
+- Native PDF: pdfplumber + Camelot for tables.
+- Scanned: preprocess (deskew / denoise / threshold) → PaddleOCR `lang=fr` → LLM-assisted field extraction with Pydantic schema.
+- Excel: openpyxl + Polars + LLM-assisted header detection.
+- Two-pass: extract → validate (cross-field math: `total_ht + tva ≈ total_ttc`, period ordering).
+- Cache by SHA. Failures to a parquet bucket.
+
+**§2.1 Unit normalization (25 pts)** — `energy-domain-engineer` lead.
+- One canonical unit: **kWh**.
+- `to_kwh(value, unit)` constants module with provenance.
+- Refuses unknown units (don't guess).
+
+**§2.1 Merging with IoT (jointly counted in §2.1)** — `data-engineer`.
+- Single Polars DataFrame keyed on `(site_id, ts, carrier, source_doc_id, sensor_id)`.
+- Partitioned Parquet by `(supplier, year_month)` and `(device_id, date)`.
+
+**§2.2 CO₂ estimation (15 pts)** — `energy-domain-engineer`.
+- Per-row: carrier → emission factor (ADEME / STEG / IEA) → `co2_kg`, `scope`.
+- Aggregate: tCO₂/yr, per-carrier sankey, per-month time series.
+- Reconcile against energy balance ± 5%.
+
+**§2.2 Forecasting (counts in CO₂ block)** — `ml-engineer`.
+- Foundation-first: try Chronos-Bolt-tiny zero-shot on the IoT + monthly Excel series.
+- If Chronos underperforms: LightGBM with cycle features (hour, dow, month-of-year).
+- Multi-horizon: 24h ahead + 7d ahead.
+
+**§2.2 Anomaly detection (+15 bonus)** — `ml-engineer` + `data-engineer`.
+- Server-side: rolling-MAD z-score, STL + IsolationForest on residuals, dropout/stuck/spike detectors.
+- Each event: `{type, ts, sensor/site, confidence}`.
+
+**§2.3 Dashboard (20 pts) + Docker (20 pts) + bonus innovation (+25)** — `frontend-designer` + `roommate`.
+- Next.js + shadcn/ui + Recharts (Plotly for sankey).
+- KPIs: total kWh, tCO₂, anomalies/day, top-1 anomaly description, energy-balance closure %.
+- Live IoT chart (WebSocket).
+- Sankey of energy flows (gas → tri-gen / boilers → outputs / losses).
+- Anomaly feed.
+- Track B scenarios table (preview).
+- `docker compose up` cold-starts the whole thing.
+
+### Submission flow
+
+The spec says: "POST your extraction results as JSON — platform returns F1 scores instantly. Same with anomaly / CO₂ estimate." We have a `submission-platform-client` skill ready; configure URL + token at H+0 of Part 2.
+
+---
+
+## 5. Part 3 — Edge Intelligence OR Heat Recovery (75 + 15 pts each)
+
+### Track B (PRIMARY) — Waste-heat recovery design
+
+**Why this is our floor:** chem/bio teammates lead, audit data already in hand, low hardware risk, math + writing dominant.
+
+**Deliverable:**
+1. Heat-source inventory (≥ 8 sources from the audit).
+2. Characterization: `Q_recoverable [kW]`, T-level, hours/yr, location.
+3. MCDA score (energy 30 / CO₂ 25 / complexity 20 / capex 15 / payback 10).
+4. **Top-3 scenarios** with bracketed ROI (best / base / conservative).
+5. Bonus: interactive notebook + scored xlsx + sankey before/after.
+
+**Ready-now sources from `rapport_audit.pdf`** (Section I-3 + I-4 already name them):
+- Boiler chimney flue gas (5–10 % of gas not recovered) — high priority
+- Steam condensate not returned to feedwater — easy win
+- Compressed-air heat-of-compression (~ 80 °C) — ECS pre-heat
+- Hot-surface losses (uninsulated valves, boiler bodies) — insulation upgrade
+- Tri-gen exhaust beyond current jacket recovery — extension scenario
+- Refrigeration condenser heat (winter only) — low-grade
+- Absorption-chiller jacket water (already tied) — possible extension
+- Munters dehumidifier exhaust — sometimes overlooked
+
+**Owner:** `energy-domain-engineer` agent (logic), chem/bio teammates (numbers + narrative).
+
+### Track A (STRETCH) — On-device anomaly + prediction
+
+**Why stretch:** ESP32-only port of the Part 2 forecaster. Risk: model size + latency. Reward: +75 pts.
+
+**Plan:**
+1. Train the simplest possible multivariate predictor in Part 2 (LightGBM or a tiny MLP, 8-32 inputs, 1-step ahead).
+2. Convert to TFLite INT8 via `ai_edge_torch`.
+3. Run residual-z-score anomaly on-device: `|y - y_hat| / σ > 3`.
+4. Constraint check: model ≤ 200 KB, latency ≤ 200 ms on ESP32 @ 240 MHz, RAM ≤ 60 KB tensor arena.
+5. Demonstration: cut the WiFi mid-demo; the device keeps detecting anomalies and buffers them; restore WiFi; backend catches up the buffer.
+
+**Owner:** IIA teammate + `edge-ai-optimizer` agent.
+
+**Bonus +15 — multi-sensor model:** one model predicts flow + temp from history. Common-trunk MLP; ~ 50 KB after INT8.
+
+---
+
+## 6. Pitch (60 pts) — Day 3 09:00, top teams only
+
+### 8-minute story arc
+
+1. **(FR, 30 s)** Le contexte : les usines tunisiennes consolident leurs données énergétiques à la main. Pour TERIAK / KILANI, c'est 5 millions de dinars d'investissement BERD en attente d'une couche d'intelligence.
+2. **(EN, 60 s)** End-to-end demo: an ESP32 reads flow / heat / radio → server → live dashboard.
+3. **(EN, 90 s)** Document extraction: drag a STEG bill onto the dashboard → 4 seconds → 12 fields, normalized to kWh, CO₂ computed, factor cited.
+4. **(EN, 60 s)** Forecasting + anomaly: live IoT spike → detected, classified, alerted. Cut the WiFi → device keeps detecting (Track A demo).
+5. **(EN, 90 s)** **Track B**: top-3 heat recovery scenarios on the audited site — quantified. "Economiser on Chaudière 1 → 600 MWh/yr → 120 t CO₂/yr → 9-month payback."
+6. **(FR, 30 s)** Vision: this is the data spine of an industrial-energy operating system. Phase 2 = multi-site rollout. Phase 3 = exec dashboard for the group.
+
+### What the jury rewards (35 + 25 pts)
+
+- **Technical depth** (35 pts) — own algorithm choices + trade-offs + failure modes.
+- **Scalability + industrial relevance** (25 pts) — does this work at real scale? Does it solve the sponsor's actual pain?
+
+### Numbers to memorize for the deck
+
+- Uptime % over Part 1 5-min windows.
+- F1 of extraction on practice + test set.
+- CO₂ baseline tCO₂/yr.
+- Track B top scenario: kWh/yr saved + tCO₂/yr + DT savings + payback months.
+- Model size (KB) + latency (ms) on ESP32.
+
+### What makes our pitch different
+
+1. We start with the audit and end with a sankey of saved energy. Most teams will start with code and end with a chart.
+2. We name STEG, ADEME, IPCC, IEA factors with versions — auditable.
+3. We show a real industrial document (one of Talel's uploaded bills) extracting in 4 seconds on stage.
+4. The disconnect-the-WiFi moment is visceral if Track A works.
+
+---
+
+## 7. Repository layout (post-spec-alignment)
+
+```
+.
+├── .claude/                # 8 agents, 17 skills, 11 slash commands
+│   ├── agents/             # frontend-designer, backend-engineer, ai-engineer, ml-engineer,
+│   │                       # data-engineer, edge-ai-optimizer,
+│   │                       # document-intelligence-engineer, energy-domain-engineer
+│   ├── skills/             # nestjs-module, nextjs-component, langgraph-workflow,
+│   │                       # ml-pipeline, mcp-server, iot-mqtt-pipeline, energy-dashboard,
+│   │                       # edge-quantization, tflite-micro-esp32, yolo-deployment,
+│   │                       # large-data-pipeline, model-distillation,
+│   │                       # document-extraction, energy-units-co2,
+│   │                       # anomaly-detection-timeseries, heat-recovery-prioritization,
+│   │                       # submission-platform-client
+│   ├── commands/           # install-all, new-feature, lock-project, quantize-model,
+│   │                       # profile-edge, post-leak-pivot,
+│   │                       # extract-bills, normalize-units, co2-baseline, heat-recovery-scan
+│   └── settings.json
+├── apps/
+│   ├── backend/            # NestJS — Part 1 server + Part 2 unified data layer
+│   ├── frontend/           # Next.js — Part 2 dashboard
+│   ├── ai-agents/          # LangGraph orchestrator (extract → norm → CO₂ → forecast → anomaly)
+│   ├── ml-pipeline/        # Forecaster + anomaly + Part 3A predictor
+│   ├── doc-extraction/     # Part 2 §2.1 — OCR + LLM extraction + submission
+│   ├── heat-recovery/      # Part 3 Track B — inventory + MCDA + ROI
+│   ├── edge-runtime/       # Part 3 Track A — TFLite-Micro export + ESP32 benchmarks
+│   └── firmware/
+│       └── esp32/          # PlatformIO sketch for the sensor stand
+├── packages/               # shared TS types + utils + api-client
+├── data/                   # GITIGNORED. raw/audit, raw/factures, raw/tri-gen, processed, calib, splits
+├── models/                 # GITIGNORED. checkpoints + pre-quant exports
+├── notebooks/              # exploration only
+├── infra/
+│   ├── docker/             # Mosquitto + Postgres+TimescaleDB + Redis + MLflow
+│   └── edge-targets/       # esp32-s3.yaml (only target now)
+├── docs/
+│   ├── brainstorm/         # this file
+│   ├── architecture/       # ADR-002 (post-leak), ADR-003 (spec-alignment)
+│   ├── pitch/              # deck + rehearsal notes + handout
+│   └── research/           # IPCC / ADEME / IEA / audit references
+└── scripts/
+```
+
+---
+
+## 8. Hardware bill of materials (current)
+
+| Item | Qty | Status |
+|---|---:|---|
+| ESP32 DevKit (any: original / S3 / WROOM-32) | 1–2 | **on hand** |
+| Flow sensor (water or gas, hall-effect / pulse) | 1 | **on hand** |
+| Heat / temperature sensor (DS18B20 or thermocouple + MAX6675) | 1 | **on hand** |
+| Microwave / radiowave sensor (RCWL-0516 or similar) | 1 | **on hand** |
+| Breadboard + jumpers + 5 V supply | 1 | **on hand** |
+| Laptop running Mosquitto + Postgres + the dashboard | 1 | Talel / roommate |
+| (Optional) BME280 (T/RH/P over I²C) | 1 | Stretch |
+| (Optional) SCT-013-030 current clamp + INA219 | 1 | Stretch |
+
+**No Pi, no ESP32-CAM** (per the user's confirmation). All edge inference is ESP32-only.
+
+---
+
+## 9. 24-hour playbook (May 2 14:00 → May 3 14:00 — overlap with parts)
 
 | Hours | Track | Owner | Deliverable |
-|---|---|---|---|
-| **H0 → H1** | Lock + scope | All | Confirm AURA fits the official spec; assign roles per this doc |
-| **H1 → H4** | Hardware bring-up | IIA + Chem/Bio #1 | Box assembled, sensors wired, MQTT publishing |
-| **H1 → H4** | Backend skeleton | Roommate | NestJS up, MQTT ingest writing to TimescaleDB |
-| **H1 → H4** | AI skeleton | Talel | LangGraph state graph + 3 nodes (forecaster, guardian, dispatcher) running on stub data |
-| **H1 → H4** | Pitch outline | Chem/Bio #2 | 10-slide deck shell, French/English split decided |
-| **H4 → H8** | First end-to-end | Roommate + Talel | ESP32 → backend → AI agent → fan PWM round-trip working |
-| **H4 → H8** | Compliance Guardian | Chem/Bio #1 + Talel | ISO 14644 limits hardcoded as rules; agent cannot violate |
-| **H8 → H12** | Forecaster training | Talel | Chronos-Bolt zero-shot on 1h of synthetic particle data |
-| **H8 → H12** | Dashboard v1 | Talel + frontend-designer subagent | Hero KPI strip + particle chart + fan gauge + compliance LED |
-| **H8 → H12** | Real ISO numbers | Chem/Bio #2 | TERIAK cleanroom area + STEG tariffs + savings table verified |
-| **H12 → H16** | Demo rehearsal #1 | All | Full run-through; record video as backup |
-| **H12 → H16** | Polish dashboard | Talel | French labels, dark mode, "demo mode" URL flag |
-| **H16 → H20** | Pitch rehearsal #1 | All | Full pitch with timer; refine hooks |
-| **H16 → H20** | Hardware redundancy | IIA | Pre-record a perfect demo run on phone in case live fails |
-| **H20 → H22** | Final polish | All | One-page handout, GitHub README, Q&A prep |
-| **H22 → H24** | Sleep / breakfast | All | Yes really. Pitch fresh > pitch with 5 more features |
-
-**Hard rule:** at H22 we stop adding features. Anything not working at H20 is cut. Pitch quality always beats feature count.
+|---:|---|---|---|
+| Day 1 14:00 → 23:00 | **Pre-hack** (right now) | All | Repo aligned with spec ✓; data staged ✓; sensors validated; team brief done. Chem/bio reads audit; Talel writes extraction baseline against `data/raw/factures/`. |
+| Day 1 23:00 → Day 2 14:00 | **Part 1** (15 h) | IIA + roommate | ESP32 reading 3 sensors, MQTT to Mosquitto, server logs valid data, reconnection works, dashboard shows live chart. |
+| Day 2 00:00 → Day 2 06:00 | **Part 2 + Part 3 announce, sleep shifts** | Talel + chem/bio | Test set downloaded; pipeline pointed at it; first F1 from platform. Chem/bio start Track B inventory. |
+| Day 2 06:00 → Day 2 14:00 | Part 2 extraction tuning | Talel + roommate | Schema-pass rate ≥ 90%, F1 ≥ 0.8 on extraction. |
+| Day 2 14:00 → Day 2 20:00 | Part 2 CO₂ + forecast + anomaly | Talel + ml | All three flows producing numbers; dashboard wired. |
+| Day 2 20:00 → Day 3 00:00 | Part 2 polish + Track B writing | Roommate + chem/bio | Dashboard shippable; Track B top-3 scenarios drafted. |
+| Day 3 00:00 → Day 3 04:00 | Track A port (stretch) | IIA + Talel | Forecaster → TFLite INT8 → ESP32; latency check. |
+| Day 3 04:00 → Day 3 05:00 | All submissions | All | Push GitHub; submit Part 3 deliverables. |
+| Day 3 05:00 → Day 3 07:00 | Pitch deck + record perfect-run video | Talel + chem/bio #2 | 8-min deck rehearsed twice; video saved. |
+| Day 3 07:00 → Day 3 09:00 | Sleep / breakfast / final rehearsal | All | Pitch fresh > pitch with 5 more features. |
+| Day 3 09:00 | **Pitch** | Whole team | First place. |
 
 ---
 
-## 8. Hardware BoM + procurement (urgent)
+## 10. Pre-hackathon homework (right now, before Part 1 announces at Day 1 23:00)
 
-### Tabletop mini-cleanroom
+### Talel
+- [ ] Run a paddleocr + Claude Sonnet baseline on three randomly chosen JPEGs from `data/raw/factures/`. Note: schema, common fields, bill structure, OCR quality on this data.
+- [ ] Read a STEG bill end-to-end manually; note any gotchas (peak/off-peak slots, redevance de puissance, kVARh penalty).
+- [ ] Verify LangGraph + Anthropic API key works.
+- [ ] Memorize the FR/EN pitch arc.
 
-| Item | Qty | Source | Price (TND) | Status |
-|---|---|---|---|---|
-| Clear acrylic box ~30×30×30 cm | 1 | Lab borrow / Aliexpress / hobby store | 30-80 | **Borrow from chem/bio lab if possible** |
-| ESP32 NodeMCU | 2 | tunisianet / 2btrading | 35-45 ea | Likely on hand |
-| **PMS5003 / PMS7003 particle sensor** | 1 | AliExpress (10-15 d) or 2btrading | 60-90 | **Order today if not local — critical path** |
-| DHT22 T/RH | 1 | local | 18-25 | Likely on hand |
-| BMP280 ×2 (pressure cascade) | 2 | local | 12-18 ea | Easy |
-| 12V PC fan (40-80 mm) | 2 | mytek / tunisianet | 8-15 ea | Easy |
-| MOSFET breakout (IRF520) | 1 | local | 8-12 | Easy |
-| INA219 (fan power measurement) | 1 | local | 12-18 | Easy |
-| 12V power supply | 1 | local | 25-40 | Easy |
-| Smoke/incense source | — | shop / pharmacy | 5 | Trivial |
-| OLED 0.96" SSD1306 (status display) | 1 | local | 12-18 | Easy |
-| LED strip (clean/alert visual) | 1 | local | 15-25 | Easy |
+### Roommate
+- [ ] Bring up `docker compose -f infra/docker/docker-compose.yml up -d`. Confirm Mosquitto + Postgres + TimescaleDB are reachable.
+- [ ] NestJS skeleton: one `/health` endpoint working; one MQTT subscriber printing topic+payload.
+- [ ] Next.js skeleton: one page with a stub Recharts line chart.
 
-**Critical path: the particle sensor.** Without it, the demo is gutted. Order this WEEK on AliExpress Premium if not in local stock; back-up plan is a phone-camera-based haze detection (less accurate but visually demoable).
+### IIA teammate
+- [ ] ESP32 + flow + heat + microwave sensors on a breadboard. Each reading printed to serial at 1 Hz.
+- [ ] Mosquitto reachable from the ESP32 over the laptop's WiFi hotspot.
+- [ ] Test reconnection: kill MQTT, ESP32 buffers, restore, replay.
 
-### Optional add-ons
+### Chem/Bio #1 (cleanroom science → energy science)
+- [ ] Read `data/raw/audit/rapport_audit.pdf` cover to cover (it's in French — your domain). Highlight every "Énergies Perdues" / "non récupérées" mention in I-3 and I-4.
+- [ ] Build a first-pass inventory: 8-12 candidate heat sources, with rough T-level + flow estimates.
 
-- USB IR camera (~$60 AliExpress) — bonus thermography overlay; nice-to-have, not critical.
-- Servo-driven damper mock — adds visual appeal but extra wiring complexity.
-
-### Cost summary
-
-Total prototype cost: **250–500 TND** depending on what we borrow. Split across the team = under 100 TND each.
-
----
-
-## 9. Pitch deck outline (10 slides max)
-
-| # | Slide | Owner | Key content |
-|---|---|---|---|
-| 1 | Cover | — | "AURA — l'IA qui rend l'investissement énergétique de KILANI 30% plus rentable" |
-| 2 | The problem (Tunisian) | Chem/Bio #2 | 1.4 M TND/yr burned in TERIAK cleanroom HVAC; KILANI's 5M EBRD investment context |
-| 3 | The technical reality | Chem/Bio #1 | Cleanrooms = 25× office energy; air-change rates explained; ISO 14644 |
-| 4 | Solution: AURA | Talel | One-paragraph + the architecture diagram |
-| 5 | LIVE DEMO | IIA + Talel | The tabletop run (slot for 2.5 minutes — no slides during this) |
-| 6 | Compliance Guardian | Chem/Bio #1 | Why AI can't override ISO limits; audit trail screenshot |
-| 7 | Quantified impact | Chem/Bio #2 | Savings table; payback < 14 months; CO₂ avoided |
-| 8 | KILANI EnerOS roadmap | Roommate | Phase 1-5; cross-site dashboard mockup |
-| 9 | Team + tech stack | All faces | One photo strip; "5 students, 3 disciplines, 1 mission" |
-| 10 | Ask + thank you | Talel | Contact; GitHub; "Mr. Kilani, when can we visit Jebel Ouest?" |
-
-**Design rules:** dark mode, max 3 colors per slide, French headings + English technical bullets, every slide has one number with a TND or % unit.
-
----
-
-## 10. Risks + fallbacks
-
-| Risk | Probability | Impact | Mitigation |
-|---|---|---|---|
-| Particle sensor doesn't arrive | Med | High | Order today; backup = camera-based haze proxy + pre-recorded "real PMS5003 run" video |
-| Fan PWM unstable on stage | Low | Med | Test on 12V bench supply; pre-record working run as backup video |
-| Live demo fails during pitch | Med | High | Have video backup ready; jump to it within 10 seconds, narrate over |
-| LLM API down (no network) | Low | High | Pre-cache 3 demo prompts; fall back to local Ollama Gemma if needed |
-| Judges challenge ISO compliance claim | Med | Med | Chem/Bio #1 owns this; cite ISO 14644-1:2015 verbatim; show the hard clamp code |
-| KILANI rep asks specific TERIAK question we can't answer | Med | Low | Acknowledge openly: "we'd love a site visit to refine the model" — positive close |
-| Team exhaustion at pitch time | High | High | Sleep schedule; one designated pitcher rests at H18+; coffee + breakfast pre-pitch |
-| Spec book turns out to NOT be cleanroom-focused | Med | High | The architecture is generic — pivot the demo box to whatever KILANI subsidiary the spec emphasizes (drying for IKEL, etc.) within H1 |
-
----
-
-## 11. Pre-hackathon prep (April 24 → May 1)
-
-### This week (by Sunday April 26)
-
-- [ ] **Order PMS5003 particle sensor** (AliExpress Premium or local — call 2btrading first)
-- [ ] Confirm we can borrow an acrylic box from the chem/bio lab
-- [ ] Confirm with organizers: can we pre-build hardware before clock starts? Live demo allowed on stage?
-- [ ] Read the official KILANI spec book the moment it lands; flag if any pivot needed
-- [ ] Set up shared GitHub org; clone this repo; everyone pulls
-
-### Per-teammate (April 25 → April 30)
-
-**Talel (SW/AI lead)**
-- [ ] Run Chronos-Bolt zero-shot on a synthetic particle-count CSV (45 min)
-- [ ] Build the LangGraph state graph skeleton with 3 nodes (1 hour)
-- [ ] Decide: Streamlit or Next.js for the demo dashboard (Streamlit if time tight)
-- [ ] Memorize the 5-min pitch in French + English
-
-**Roommate (SW/AI #2)**
-- [ ] NestJS scaffold: get one sensor reading flowing MQTT → Postgres
-- [ ] Familiarize with TimescaleDB hypertables
-- [ ] Set up Mosquitto in docker-compose locally
-- [ ] Practice OpenAPI doc generation
-
-**IIA teammate (embedded)**
-- [ ] Test ESP32 + DHT22 + INA219 individually on breadboard
-- [ ] Get PMS5003 reading via UART (datasheet review)
-- [ ] Practice fan PWM control via MOSFET
-- [ ] Pre-build the box wiring as much as possible
-
-**Chem/Bio #1 (cleanroom science)**
-- [ ] Review ISO 14644-1:2015 (focus on Class 5/7/8 limits per m³)
-- [ ] Read 1-2 papers on cleanroom energy optimization (TSI / ETA / LBNL) — links in `docs/research/`
-- [ ] Prepare the "what is GMP" 30-second explainer for non-pharma judges
-
-**Chem/Bio #2 (KILANI domain + pitch)**
-- [ ] Read kilanigroupe.com/news end-to-end
-- [ ] Memorize the EBRD/Attijari TERIAK story
-- [ ] Calculate the savings table from STEG industrial tariff (peak vs off-peak winter)
-- [ ] Practice the French opening hook 20 times
+### Chem/Bio #2 (KILANI domain + lead pitcher)
+- [ ] Look up STEG industrial tariffs (HTA régime uniforme + four-tranche). Note the DT/kWh range we'll cite in ROI.
+- [ ] Verify the ADEME 2024 + STEG 2023 emission factors we have in `apps/doc-extraction/src/validation/emissions.py` (when it lands).
+- [ ] Memorize the 30-second French opening.
 
 ### Whole team
-
-- [ ] **Sunday April 26 evening:** Zoom or in-person meeting — lock final scope, walk through this doc together
-- [ ] **Wednesday April 29:** Full pitch rehearsal, recorded
-- [ ] **Friday April 30:** Pack the kit (box, ESP32, sensors, jumpers, soldering iron, multimeter, backup laptop, charger bricks)
+- [ ] One 30-minute stand-up at 18:00 today: walk through this strategy doc together, lock roles, confirm hardware, set up the team WhatsApp / Slack.
 
 ---
 
-## 12. The non-negotiables
-
-These are the things that must be true at H24 or we have not done our job:
-
-1. **A working tabletop cleanroom** that responds to a real smoke puff, on stage.
-2. **A dashboard** that shows particle count, fan power, ISO compliance status, and cumulative kWh saved.
-3. **A multi-agent AI controller** with a Compliance Guardian that refuses to violate ISO limits.
-4. **A pitch** delivered in fluent French with the EBRD/TERIAK hook in the first 30 seconds.
-5. **A savings table** in TND.
-6. **A vision slide** showing AURA → KILANI EnerOS roll-out across the group.
-7. **A backup video** of the demo working perfectly, ready to play if live fails.
-8. **A team that slept**.
-
-Everything else is bonus.
-
----
-
-## Appendix — sources & references
-
-- **Groupe Kilani (official):** [kilanigroupe.com](https://www.kilanigroupe.com/en) — group identity, subsidiaries, news
-- **TERIAK (Kilani pharma):** [teriak.com](https://www.teriak.com/En/) — Jebel Ouest + El Fejja sites, product portfolio
-- **EBRD/Attijari/TERIAK financing (May 2022):** [EBRD news](https://www.ebrd.com/news/2022/ebrd-and-attijari-bank-tunisia-support-local-pharmaceutical-sector.html), [SME Green Value Chain](https://ebrdgeff.com/tunisia-gvc/ebrd-and-attijari-bank-tunisia-support-local-pharmaceutical-sector/) — TND 5M loan, automated energy management at Jebel Ouest
-- **Kilani × Nestlé Grain d'Or acquisition (2022):** [Nestlé MENA press](https://www.nestle-mena.com/en/media/pr/nestle%CC%81-sells-grain-dor-to-kilani-groupe), [Kilani news](https://www.kilanigroupe.com/en/news/Partenariat-Groupe-kilani-Nestl%C3%A9)
-- **IKEL / Grain d'Or:** [Kilani IKEL page](https://www.kilanigroupe.com/en/activity/ikel) — Ain Zaghouan factory, Product of the Year 2025
-- **AI for pharma cleanroom HVAC:** [TSI](https://tsi.com/life-sciences/learn/the-ai-revolution-in-pharma-moving-from-reactive-to-predictive), [HPAC Engineering](https://www.hpac.com/technology/article/55321496/ai-putting-energy-intelligence-into-cleanrooms), [Etalytics](https://etalytics.com/industries/chemical-pharma) — 15-40% savings, 70% fan reduction
-- **Cleanroom energy benchmarks:** [LBNL Pharma Energy Guide](https://www.osti.gov/servlets/purl/923192), [ENERGY STAR pharma guide](https://www.energystar.gov/sites/default/files/buildings/tools/Pharmaceutical_Energy_Guide.pdf)
-- **ISO 14644 cleanroom design with energy lens:** [Wiley Energy Sci. Eng. 2026](https://scijournals.onlinelibrary.wiley.com/doi/full/10.1002/ese3.70365), [ISPE Pharmaceutical Engineering](https://ispe.org/pharmaceutical-engineering/september-october-2021/pharmaceutical-cleanroom-design-iso-14644-16)
-
----
-
-*Document v3 (KILANI-aligned) — generated April 28, 2026. Iterate before the team meeting on Sunday April 26.*
-
----
-
-# 13. Post-leak addendum (2026-04-30) — multimodal edge AI pivot
-
-> Added after credible leaks about the official spec emphasizing AI on edge, computer vision on real video, and a large real dataset. Formal record: `docs/architecture/ADR-002-post-leak-pivot.md`. Sections 1-12 above remain valid; this section adjusts the means.
-
-## 13.1. What changed in one paragraph
-
-AURA is now a **multimodal edge AI controller**. The PMS5003 stays. We add an ESP32-CAM (or Pi camera) for on-edge computer vision (PPE, occupancy, contamination plumes), and a Raspberry Pi 5 running Phi-3-mini Q4_K_M via llama.cpp for the French reasoning trace. Every model in the demo follows **foundation → fine-tune on leaked data → distill into student → quantize to INT8 → on-device**. The deck shows a four-bar accuracy chart for each modality.
-
-## 13.2. New roles in the system
-
-| Role | Where it runs | Model |
-|---|---|---|
-| Vision agent (PPE, occupancy, plume) | ESP32-S3 + camera / Pi 5 | YOLOv8n INT8 (distilled from YOLOv8m teacher) |
-| Forecaster (particles) | Pi 5 | Chronos-Bolt-tiny (distilled / fine-tuned) |
-| Reasoner (French explanation trace) | Pi 5 via llama.cpp | Phi-3-mini Q4_K_M |
-| Compliance Guardian | Cloud (NestJS rules) | Rule-based, non-overridable |
-| Supervisor | Cloud (LangGraph) | Claude Sonnet 4 |
-
-## 13.3. New agents, skills, commands
-
-- New agents: `edge-ai-optimizer`, `computer-vision-engineer`, `data-engineer`.
-- ml-engineer and ai-engineer: post-leak addenda (foundation-FT + edge LLMs).
-- New skills: `edge-quantization`, `tflite-micro-esp32`, `cv-video-pipeline`, `yolo-deployment`, `large-data-pipeline`, `model-distillation`, `llm-edge-deployment`, `video-data-curation`.
-- New slash commands: `/quantize-model`, `/profile-edge`, `/cv-experiment`, `/post-leak-pivot`.
-
-## 13.4. New repo locations
-
-- `apps/edge-runtime/` — model compression toolchain (quantize, distill, prune, export, benchmark)
-- `apps/cv-pipeline/` — video ingest + detection + tracking + CV inference serving
-- `apps/firmware/esp32-cam/` — on-device CV via TFLite-Micro + ESP-NN
-- `data/` — gitignored; raw, processed, calib, splits, eval (DVC tracked)
-- `models/` — gitignored; checkpoints + pre-quantization exports
-- `notebooks/` — Jupyter exploration only, no production code
-- `infra/edge-targets/` — YAML hardware budgets per device (one source of truth)
-
-## 13.5. Hardware additions to BoM (urgent — order today)
-
-| Item | Qty | Estimate (TND) | Status |
-|---|---:|---:|---|
-| ESP32-S3 DevKit (with PSRAM) | 2 | 90-130 | TO ORDER |
-| ESP32-CAM AI-Thinker | 2 | 50-80 | TO ORDER |
-| Raspberry Pi 5 (8 GB) | 1 | 350-450 | TO ORDER / borrow |
-| Pi Camera Module 3 | 1 | 90-120 | with Pi 5 order |
-| MicroSD 64 GB + USB-SSD 256 GB (swap) | 1+1 | 80-130 | TO ORDER |
-| Coral USB Accelerator | 1 | 220-280 | STRETCH |
-
-## 13.6. Adjusted 24-hour playbook (overlay on §7)
-
-| Hours | Track | Owner | Deliverable |
-|---|---|---|---|
-| H0 → H1 | Confirm spec compatibility | All | If pivot needed, amend ADR-002. Most likely paths still apply. |
-| H1 → H4 | Hardware bring-up | IIA | ESP32-S3 + ESP32-CAM + PMS5003 + Pi 5 booted |
-| H1 → H6 | Data ingestion | data-engineer + Talel | Leaked dataset → Parquet + frame_index + splits |
-| H4 → H8 | Vision baseline | computer-vision-engineer | YOLOv8n on auto-labels (Grounding-DINO + SAM-2), 70-80% mAP |
-| H6 → H10 | Vision teacher | ml-engineer | YOLOv8m fine-tuned on reviewed labels |
-| H8 → H12 | First edge artifact | edge-ai-optimizer | YOLOv8n student INT8 → ESP32-S3 + Pi 5 benchmarks |
-| H10 → H14 | LLM on Pi 5 | edge-ai-optimizer + ai-engineer | Phi-3-mini Q4_K_M GGUF running, French trace verified |
-| H12 → H16 | LangGraph multi-modal | ai-engineer | Vision + Forecaster + Reasoner + Guardian + Dispatcher wired |
-| H14 → H18 | Dashboard | frontend-designer | 4-bar accuracy chart + agent trace + kWh saved + camera tile |
-| H18 → H20 | Integration | All | Full smoke-event scenario hands-off |
-| H20 → H22 | Pitch + record | Chem/Bio #2 + Talel | "Perfect run" video; 3 deck rehearsals |
-| H22 → H24 | Sleep | All | Yes really |
-
-## 13.7. New non-negotiables (added to §12)
-
-9. **An on-device benchmark number for each edge artifact** — printed in the deck.
-10. **A 4-bar accuracy chart** per modality: zero-shot → fine-tuned teacher → distilled student → INT8 on-device.
-11. **A French reasoning trace generated by the Pi-5-resident LLM**, not a cloud call.
-12. **Faces blurred** in any stored frame — privacy story for KILANI.
-
-## 13.8. New risks (added to §10)
+## 11. Risks + fallbacks
 
 | Risk | Probability | Impact | Mitigation |
 |---|---|---|---|
-| ESP32-S3 inference too slow at imgsz=320 | Med | Med | Plan B: vision on Pi 5 only; ESP32-CAM as a relay. Plan C: 96×96 person-detect (ESP-WHO baseline). |
-| Phi-3-mini French quality is poor | Low | Med | Fall back to Gemma-2-2B-it Q4_K_M. Last resort: Sonnet 4 cloud "translator" pass. |
-| Leaked dataset doesn't materialize / unusable | Low | High | Fallback: NIH cleanroom video + MOT challenge + COCO; KILANI narrative still works. |
-| GPU rental fails (Lambda / Vast.ai) | Low | Med | Pre-cached fine-tunes on Talel's laptop + Talel's INSAT lab box. |
+| MQTT broker unreachable from ESP32 (campus WiFi) | Med | High | Phone hotspot on the laptop; HTTP POST fallback ready. |
+| Submission platform endpoint unreliable | Med | Med | Compute F1 locally on any provided ground truth; iterate offline. |
+| OCR fails on the official scanned PDFs (different camera quality) | Med | High | Pre-test PaddleOCR + Tesseract + docling on `data/raw/factures/` tonight; pick the winner. |
+| Track A model can't fit in 200 KB / 200 ms on ESP32 | Med | Low | Track B already gets us 75 pts; A is stretch. Plan to drop. |
+| Demo hardware fails on stage | Low | High | Pre-record a "perfect run" at H+38; jump to the video within 10 s. |
+| LLM API rate-limited mid-Part-2 | Low | High | Cache aggressively by SHA; batch in groups of ≤ 50 calls; fall back to a smaller model (Haiku) for low-stakes extractions. |
+| Team exhaustion at pitch time | High | High | Sleep 22:00 → 02:00 in pairs; one designated pitcher rests Day 3 01:00–05:00. |
+| Chem/Bio Track B numbers challenged in Q&A | Med | Med | Cite the audit PDF page number for every figure; bracket all ROI numbers (best / base / conservative). |
 
-## 13.9. The orienting question for every decision after this point
+---
 
-> *Does this make AURA's edge / vision / data-scale story stronger, or weaker?*
+## 12. Non-negotiables (must be true at H+22, or we have not done our job)
 
-If weaker, defer or cut. If stronger, ship it.
+1. ESP32 streaming 3 sensor types live to MQTT, dashboard chart updates every 1–2 s.
+2. Reconnection demo works (cut WiFi, ESP32 buffers, restore, no data loss).
+3. Document extraction pipeline runs end-to-end on at least the JPEG bills + Excel reports + one PDF, producing normalized kWh + CO₂ + F1 from the platform.
+4. Dashboard shows: live IoT chart, KPI strip (total kWh, tCO₂, uptime %, anomalies), sankey, anomaly feed.
+5. Track B top-3 scenarios in `apps/heat-recovery/scenarios/top3.xlsx` with bracketed ROI numbers.
+6. Pitch rehearsed twice; perfect-run video saved.
+7. Whole stack starts with one `docker compose up`.
+8. Team that slept.
 
+Anything else is bonus.
+
+---
+
+## 13. The compass question
+
+When a teammate asks "should I add this feature?", the answer is yes iff:
+
+> *Does this change a number on the rubric (F1, mAP, kWh-saved, MAE, latency, RAM, payback months, CO₂ factor) or a story in the pitch (the WiFi-cut moment, the one-bill-extracted-live moment, the audit-quoted heat source)?*
+
+If neither, defer until H+20 polish window.
+
+---
+
+## Appendix A — Owner agents quick reference
+
+| Need | Agent |
+|---|---|
+| Frontend / dashboard | `frontend-designer` |
+| Backend (NestJS / MQTT / TimescaleDB) | `backend-engineer` |
+| LangGraph orchestration / cloud LLM tools / MCP | `ai-engineer` |
+| ML training / forecasting / anomaly | `ml-engineer` |
+| Big-data / Parquet / DuckDB / splits / DVC | `data-engineer` |
+| Quantize → ESP32 / on-device benchmark | `edge-ai-optimizer` |
+| **OCR / table / Excel / submission API** | `document-intelligence-engineer` |
+| **Units / CO₂ / Track B** | `energy-domain-engineer` |
+
+## Appendix B — Slash commands quick reference
+
+| Command | What |
+|---|---|
+| `/install-all` | Full monorepo install |
+| `/new-feature <name>` | Vertical-slice scaffold |
+| `/lock-project <name>` | ADR + CLAUDE.md update |
+| `/extract-bills <dir>` | Run full extraction pipeline against a dir |
+| `/normalize-units <json>` | Canonicalize energy units → kWh |
+| `/co2-baseline <input>` | Compute CO₂ + reconcile balance |
+| `/heat-recovery-scan` | Track B inventory + MCDA + top-3 |
+| `/quantize-model <ckpt>` | One full compression cycle to TFLite-Micro |
+| `/profile-edge <artifact>` | On-device latency / RAM / flash benchmark |
+| `/post-leak-pivot` | Historical orientation (now superseded by ADR-003) |
+
+## Appendix C — Sources cited in scoring
+
+- ADEME Base Carbone v23 (2024) — emission factors
+- IPCC AR6 Annex II (2021) — global-warming potentials
+- IEA 2024 World Energy Outlook — grid factors
+- STEG Sustainability Report 2023 — Tunisian grid factor
+- ISO 50001 + ISO 14064 — energy management + GHG accounting
+- The audit PDF in `data/raw/audit/rapport_audit.pdf`
+
+---
+
+*This document supersedes the previous AURA-cleanroom strategy. The pivot is recorded in `docs/architecture/ADR-003-spec-alignment.md`. Any conflict between this file and code → update this file first.*
