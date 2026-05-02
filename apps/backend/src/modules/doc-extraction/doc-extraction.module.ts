@@ -11,10 +11,19 @@ import { AuditExtractorService } from './extraction/audit-extractor.service';
 import { ValidationService } from './validation/validation.service';
 import { SubmissionService } from './submission/submission.service';
 import { ExtractionCacheService } from './cache/extraction-cache.service';
+// Comparison pipeline (additive — does not touch existing providers/controllers)
+import { ComparisonController } from './comparison/comparison.controller';
+import { ComparisonService } from './comparison/comparison.service';
+import { PipelineBService } from './comparison/pipeline-b.service';
+import { AccuracyService } from './comparison/accuracy.service';
 
 @Module({
   imports: [ConfigModule],
-  controllers: [DocExtractionController],
+  controllers: [
+    DocExtractionController,
+    // Registers POST /extract/compare — existing routes are unaffected
+    ComparisonController,
+  ],
   providers: [
     // Core orchestration
     DocExtractionService,
@@ -33,11 +42,16 @@ import { ExtractionCacheService } from './cache/extraction-cache.service';
     SubmissionService,
     // Cache (Redis with memory fallback)
     ExtractionCacheService,
+    // Dual-pipeline comparison
+    ComparisonService,
+    PipelineBService,
+    AccuracyService,
   ],
   /**
    * Export DocExtractionService so the ai-agents bridge and other modules
    * can trigger extractions programmatically.
+   * Export ComparisonService in case the ai-agents orchestrator needs it directly.
    */
-  exports: [DocExtractionService, ValidationService],
+  exports: [DocExtractionService, ValidationService, ComparisonService],
 })
 export class DocExtractionModule {}
