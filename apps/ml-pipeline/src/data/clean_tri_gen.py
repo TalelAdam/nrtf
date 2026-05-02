@@ -78,6 +78,11 @@ OVERRIDES: dict[str, dict] = {
     # "FIN OCTOBER _4112025.xlsx::Feuil1": {"header_row_guess": 3, "date_col_guess": 1},
 }
 
+UNIT_PATTERN = re.compile(
+    r"\b(kwh|mwh|gwh|kw|mw|kvarh|m\^?3|nm\^?3|m³|nm³|m3/h|l/h|bar|°c|degc|kg|t|rpm|v|a|%)\b",
+    re.IGNORECASE,
+)
+
 # --------------------------------------------------------------------------------------
 # Utilities
 # --------------------------------------------------------------------------------------
@@ -126,12 +131,152 @@ def coerce_datetime(v: Any) -> datetime | None:
     return None
 
 
+def coerce_time(v: Any) -> tuple[int, int, int] | None:
+    """Coerce Excel time cells / strings into (hour, minute, second)."""
+    if v is None or v == "":
+        return None
+    if hasattr(v, "hour") and hasattr(v, "minute") and hasattr(v, "second"):
+        return int(v.hour), int(v.minute), int(v.second)
+    if isinstance(v, str):
+        s = v.strip()
+        for fmt in ("%H:%M:%S", "%H:%M"):
+            try:
+                t = datetime.strptime(s, fmt)
+                return t.hour, t.minute, t.second
+            except ValueError:
+                continue
+    return None
+
+
+def detect_unit(label: str) -> str:
+    m = UNIT_PATTERN.search(label or "")
+    return m.group(1) if m else ""
+
+
+def combine_date_time(date_value: Any, time_value: Any) -> datetime | None:
+    d = coerce_datetime(date_value)
+    if d is None:
+        return None
+    t = coerce_time(time_value)
+    if t is None:
+        return datetime(d.year, d.month, d.day)
+    return datetime(d.year, d.month, d.day, t[0], t[1], t[2])
+
+
 def file_sha256(path: Path) -> str:
     h = hashlib.sha256()
     with path.open("rb") as fh:
         for chunk in iter(lambda: fh.read(1 << 20), b""):
             h.update(chunk)
     return h.hexdigest()
+
+
+def find_transposed_date_time_rows(rows: list[list[Any]]) -> tuple[int, int] | None:
+    """
+    The tri-gen exports are often transposed:
+
+      row "Date"  -> timestamps across columns
+      row "Heure" -> times across columns
+      later rows  -> one measurement per row
+
+    Return zero-based (date_row, time_row) when that shape is detected.
+    """
+    for i, row in enumerate(rows[:40]):
+        text_cells = [str(c).strip().lower() for c in row[:8] if c not in (None, "")]
+        has_date_label = any(c == "date" or c.startswith("date ") for c in text_cells)
+        date_votes = sum(1 for c in row if coerce_datetime(c) is not None)
+        if not has_date_label and date_votes < 3:
+            continue
+
+        best_time_row = i + 1
+        best_votes = -1
+        for j in range(i + 1, min(i + 4, len(rows))):
+            votes = sum(1 for c in rows[j] if coerce_time(c) is not None)
+            text = " ".join(str(c).strip().lower() for c in rows[j][:8] if c not in (None, ""))
+            if "heure" in text:
+                votes += 10
+            if votes > best_votes:
+                best_time_row = j
+                best_votes = votes
+
+        if best_votes > 0:
+            return i, best_time_row
+    return None
+
+
+def clean_transposed_sheet(file: Path, sheet_meta: dict, rows: list[list[Any]], log: list[str]) -> list[dict]:
+    """Clean sheets where timestamps are columns and measurements are rows."""
+    key = f"{file.name}::{sheet_meta['sheet']}"
+    found = find_transposed_date_time_rows(rows)
+    if found is None:
+        log.append(f"[skip] {key}: transposed layout not detected")
+        return []
+
+    date_row_idx, time_row_idx = found
+    date_row = rows[date_row_idx]
+    time_row = rows[time_row_idx]
+    width = max(len(r) for r in rows)
+
+    timestamps: dict[int, datetime] = {}
+    last_date: Any = None
+    for col_idx in range(width):
+        if col_idx < len(date_row) and coerce_datetime(date_row[col_idx]) is not None:
+            last_date = date_row[col_idx]
+        time_value = time_row[col_idx] if col_idx < len(time_row) else None
+        ts = combine_date_time(last_date, time_value)
+        if ts is not None and coerce_time(time_value) is not None:
+            timestamps[col_idx] = ts
+
+    if not timestamps:
+        log.append(f"[skip] {key}: no usable timestamp columns found")
+        return []
+
+    out: list[dict] = []
+    current_group = ""
+    for r_idx in range(time_row_idx + 1, len(rows)):
+        row = rows[r_idx]
+        if not row or all(c is None or c == "" for c in row):
+            continue
+
+        group_cell = str(row[0]).strip() if len(row) > 0 and row[0] not in (None, "") else ""
+        metric_cell = str(row[1]).strip() if len(row) > 1 and row[1] not in (None, "") else ""
+
+        if group_cell:
+            current_group = group_cell
+        if not metric_cell:
+            continue
+
+        label = f"{current_group} - {metric_cell}" if current_group else metric_cell
+        sensor_id = LABEL_TO_SENSOR_ID.get(label, slugify(label))
+        unit = detect_unit(metric_cell) or detect_unit(current_group)
+
+        values_written = 0
+        for col_idx, ts in timestamps.items():
+            if col_idx >= len(row):
+                continue
+            val = coerce_number(row[col_idx])
+            if val is None:
+                continue
+            out.append({
+                "ts": ts,
+                "sensor_id": sensor_id,
+                "sensor_label": label,
+                "value": val,
+                "unit": unit,
+                "source_file": file.name,
+                "source_sheet": sheet_meta["sheet"],
+                "source_row": r_idx,
+            })
+            values_written += 1
+
+        if values_written == 0:
+            log.append(f"[drop] {key} row={r_idx}: metric {metric_cell!r} had no numeric timestamped values")
+
+    log.append(
+        f"[ok-transposed] {key}: date_row={date_row_idx} time_row={time_row_idx} "
+        f"timestamp_cols={len(timestamps)} rows={len(out)}"
+    )
+    return out
 
 
 # --------------------------------------------------------------------------------------
@@ -143,14 +288,13 @@ def clean_one_sheet(file: Path, sheet_meta: dict, log: list[str]) -> list[dict]:
     key = f"{file.name}::{sheet_meta['sheet']}"
     sheet_meta = {**sheet_meta, **OVERRIDES.get(key, {})}
 
-    if sheet_meta.get("date_col_guess") is None or not sheet_meta.get("sensor_columns"):
-        log.append(f"[skip] {key}: no date col or no sensor cols detected")
-        return []
-
     wb = load_workbook(file, read_only=True, data_only=True)
     ws = wb[sheet_meta["sheet"]]
     rows = [list(r) for r in ws.iter_rows(values_only=True)]
     wb.close()
+
+    if sheet_meta.get("date_col_guess") is None or not sheet_meta.get("sensor_columns"):
+        return clean_transposed_sheet(file, sheet_meta, rows, log)
 
     header_idx = sheet_meta["header_row_guess"]
     date_col = sheet_meta["date_col_guess"]

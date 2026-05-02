@@ -33,8 +33,6 @@ from __future__ import annotations
 
 import json
 import warnings
-from datetime import datetime
-from pathlib import Path
 
 import lightgbm as lgb
 import mlflow
@@ -127,9 +125,11 @@ def train_one_sensor(sensor_id: str, df: pd.DataFrame, log: list[str]) -> dict |
     baseline_metrics = all_metrics(y_test, y_pred_baseline)
 
     # LightGBM
-    X_train = split.train[feat_cols]; y_train = split.train["value"].to_numpy()
-    X_val   = split.val[feat_cols];   y_val   = split.val["value"].to_numpy()
-    X_test  = split.test[feat_cols];  # same y_test as above
+    X_train = split.train[feat_cols]
+    y_train = split.train["value"].to_numpy()
+    X_val = split.val[feat_cols]
+    y_val = split.val["value"].to_numpy()
+    X_test = split.test[feat_cols]
 
     train_set = lgb.Dataset(X_train, y_train, free_raw_data=False)
     val_set   = lgb.Dataset(X_val, y_val, reference=train_set, free_raw_data=False)

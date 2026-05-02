@@ -21,9 +21,9 @@ Activate the venv every new terminal:
 
 | # | Command | Reads from | Writes to |
 |---|---|---|---|
-| 1 | `python -m src.data.inspect_tri_gen` | raw `.xlsx` folder | `data/processed/tri-gen/_inspection_report.{md,json}` |
-| 2 | `python -m src.data.clean_tri_gen` | inspection report | `data/processed/tri-gen/long.parquet` + `by-sensor/<id>.xlsx` + `_build_manifest.json` + `_cleaning_log.txt` |
-| 3 | `python -m src.features.build_features` | `long.parquet` | `data/processed/tri-gen/features.parquet` |
+| 1 | `python -m src.data.inspect_tri_gen` | raw `.xlsx` folder | repo-root `data/processed/tri-gen/_inspection_report.{md,json}` |
+| 2 | `python -m src.data.clean_tri_gen` | inspection report | repo-root `data/processed/tri-gen/long.parquet` + `by-sensor/<id>.xlsx` + `_build_manifest.json` + `_cleaning_log.txt` |
+| 3 | `python -m src.features.build_features` | `long.parquet` | repo-root `data/processed/tri-gen/features.parquet` |
 | 4 | `python -m src.eda.run_eda` | `long.parquet` | `apps/ml-pipeline/reports/eda/` (open `index.html`) |
 | 5 | `python -m src.training.train_forecaster` | `features.parquet` | `checkpoints/forecaster/<sensor>/...` + MLflow run |
 | 6 | `python -m src.training.train_anomaly` | `features.parquet` | `checkpoints/anomaly/<sensor>/...` + MLflow run |

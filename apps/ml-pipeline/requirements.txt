@@ -1,4 +1,4 @@
-# NRTF ml-pipeline — Python dependencies
+# NRTF ml-pipeline - Python dependencies
 # Tested with Python 3.11
 #
 # Install:  python -m venv .venv && .venv\Scripts\activate && pip install -r requirements.txt
@@ -23,11 +23,6 @@ scikit-learn>=1.5         # IsolationForest, baselines, train/test split
 lightgbm>=4.5             # forecaster of choice
 statsmodels>=0.14         # STL decomposition, simple ARIMA baseline
 holidays>=0.55            # Tunisian holiday flags as a calendar feature
-
-# --- Serving ---
-fastapi>=0.115
-uvicorn[standard]>=0.30
-pydantic>=2.8
 
 # --- Experiment tracking / MLOps ---
 mlflow>=2.16

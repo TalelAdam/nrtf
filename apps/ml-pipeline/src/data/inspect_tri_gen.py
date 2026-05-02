@@ -63,7 +63,7 @@ from typing import Any
 # crisp error pointing them at requirements.txt.
 try:
     from openpyxl import load_workbook
-except ImportError as e:  # pragma: no cover
+except ImportError:  # pragma: no cover
     print("openpyxl is required. Run: pip install -r requirements.txt", file=sys.stderr)
     raise
 

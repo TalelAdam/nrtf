@@ -1,0 +1,72 @@
+version: "3.9"
+
+# ─────────────────────────────────────────────────────────────────────────────
+# mlapp · inference server
+#
+# Usage:
+#   docker compose up --build          # build image + start
+#   docker compose up -d               # detached
+#   docker compose logs -f mlapp       # tail logs
+#   docker compose down                # stop + remove containers
+# ─────────────────────────────────────────────────────────────────────────────
+
+services:
+  mlapp:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: runtime           # use the lean stage (skip builder)
+
+    image: nrtf/mlapp-server:latest
+
+    container_name: mlapp_server
+
+    restart: unless-stopped
+
+    ports:
+      - "${PORT:-8002}:8002"    # host:container — override PORT in .env
+
+    environment:
+      PORT: "${PORT:-8002}"
+      HOST: "0.0.0.0"
+      WORKERS: "${WORKERS:-1}"
+      MODEL_NAME: "${MODEL_NAME:-stub-identity-v1}"
+      MODEL_VERSION: "${MODEL_VERSION:-0.0.1}"
+      CORS_ORIGINS: "${CORS_ORIGINS:-*}"
+
+    # Mount a models directory so you can hot-swap model files without
+    # rebuilding the image (optional — remove if you bake models into the image).
+    volumes:
+      - type: bind
+        source: ../../../models          # ← repo root /models (gitignored)
+        target: /app/models
+        read_only: true
+
+    # Liveness / readiness (mirrors the Dockerfile HEALTHCHECK).
+    healthcheck:
+      test: ["CMD-SHELL", "python -c \"import urllib.request; urllib.request.urlopen('http://localhost:8002/healthz')\""]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+
+    # Resource guard — prevents the inference server from starving other
+    # services during the hackathon demo.
+    deploy:
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: 512M
+
+    networks:
+      - nrtf_default
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Reuse the project-wide network so mlapp can reach the NestJS backend,
+# TimescaleDB, and Redis without extra configuration.
+# Create it once with:  docker network create nrtf_default
+# (the main infra/docker/docker-compose.yml creates it automatically)
+# ─────────────────────────────────────────────────────────────────────────────
+networks:
+  nrtf_default:
+    external: true

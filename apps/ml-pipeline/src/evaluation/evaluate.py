@@ -83,7 +83,8 @@ def evaluate_forecaster(out_dir: Path) -> tuple[pd.DataFrame, list[Path]]:
         ax.xaxis.set_major_formatter(mdates.ConciseDateFormatter(mdates.AutoDateLocator()))
         fig.tight_layout()
         path = out_dir / f"{safe_filename(sensor_id)}.png"
-        fig.savefig(path, dpi=110); plt.close(fig)
+        fig.savefig(path, dpi=110)
+        plt.close(fig)
         plots.append(path)
 
     df = pd.DataFrame(rows).sort_values("lift_mae_pct", ascending=False)
@@ -100,7 +101,6 @@ def evaluate_anomaly(out_dir: Path) -> tuple[pd.DataFrame, list[Path]]:
     for sd in sorted(sensor_dirs, key=lambda p: p.name):
         sensor_id = sd.name
         events = pd.read_csv(sd / "events.csv", parse_dates=["ts"])
-        meta = json.loads((sd / "metadata.json").read_text(encoding="utf-8"))
 
         rows.append({
             "sensor_id": sensor_id,
@@ -123,7 +123,8 @@ def evaluate_anomaly(out_dir: Path) -> tuple[pd.DataFrame, list[Path]]:
         ax.xaxis.set_major_formatter(mdates.ConciseDateFormatter(mdates.AutoDateLocator()))
         fig.tight_layout()
         path = out_dir / f"{safe_filename(sensor_id)}.png"
-        fig.savefig(path, dpi=110); plt.close(fig)
+        fig.savefig(path, dpi=110)
+        plt.close(fig)
         plots.append(path)
 
     df = pd.DataFrame(rows).sort_values("flag_rate_pct", ascending=False)
@@ -174,8 +175,10 @@ def main() -> None:
     out = paths.eval_dir
     out.mkdir(parents=True, exist_ok=True)
 
-    fc_dir = out / "forecaster"; fc_dir.mkdir(exist_ok=True)
-    an_dir = out / "anomaly";    an_dir.mkdir(exist_ok=True)
+    fc_dir = out / "forecaster"
+    fc_dir.mkdir(exist_ok=True)
+    an_dir = out / "anomaly"
+    an_dir.mkdir(exist_ok=True)
 
     print("[eval] forecaster")
     fc_df, fc_plots = evaluate_forecaster(fc_dir)
