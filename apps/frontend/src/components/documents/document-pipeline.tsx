@@ -5,6 +5,7 @@ import { ScanSearch, BrainCircuit } from 'lucide-react';
 import { DocUploadZone } from './doc-upload-zone';
 import { ExtractionProgress, buildStagesFromResult } from './extraction-progress';
 import { ExtractionResults } from './extraction-results';
+import { UnitNormPanel } from './unit-norm-panel';
 import { ValidationPanel } from './validation-panel';
 import { SubmissionButton } from './submission-button';
 import type { ExtractionResult } from '@/hooks/use-extraction';
@@ -55,6 +56,7 @@ export function DocumentPipeline() {
             stages={buildStagesFromResult(result.status, result.qualityScore)}
           />
           <ExtractionResults result={result} />
+          <UnitNormPanel records={result.records ?? []} forceDemo />
           <ValidationPanel result={result} />
           <SubmissionButton result={result} />
         </>

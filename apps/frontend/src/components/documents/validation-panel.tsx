@@ -8,7 +8,8 @@ interface ValidationPanelProps {
 }
 
 export function ValidationPanel({ result }: ValidationPanelProps) {
-  if (!result.warnings.length) {
+  const warnings = result.warnings ?? [];
+  if (!warnings.length) {
     return (
       <div className="validation-panel validation-panel--ok">
         <span>All field consistency checks passed.</span>
@@ -20,10 +21,10 @@ export function ValidationPanel({ result }: ValidationPanelProps) {
     <div className="validation-panel validation-panel--warn">
       <div className="validation-header">
         <AlertTriangle size={18} />
-        <span>{result.warnings.length} validation warning{result.warnings.length !== 1 ? 's' : ''}</span>
+        <span>{warnings.length} validation warning{warnings.length !== 1 ? 's' : ''}</span>
       </div>
       <ul className="validation-list">
-        {result.warnings.map((w, i) => (
+        {warnings.map((w, i) => (
           <li key={i} className="validation-item">{w}</li>
         ))}
       </ul>
