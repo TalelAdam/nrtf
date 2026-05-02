@@ -35,4 +35,27 @@ export class WhrController {
   defaults() {
     return this.whrService.defaults();
   }
+
+  /**
+   * GET /whr/analytics
+   * Full WHR framework payload — integrates all 8 sections of the Engineering
+   * Report v2.0 (NRTF Hackathon 2024–2025, Track B Part 3):
+   *   §1  8 heat sources (W1–W8) + tri-gen gap alert
+   *   §2  5 equations (EQ-1 to EQ-5) with formulas, variables, limits
+   *   §3  Parameter traceability (source · reliability · sensitivity)
+   *   §4  MCDA scoring framework (weights · scales · live ranking · sensitivity)
+   *   §5  3 scenarios with ROI brackets (best / base / conservative) + 12-yr curves
+   *   §6  Data architecture (IoT · Pipeline P2 · user inputs)
+   *   §7  7 KPIs with formulas and visualization hints
+   *   §8  Mathematical model summary (categories A–D)
+   *       Pitch key message
+   *
+   * All numeric results are recalculated from the supplied query params
+   * (same params as /whr/calculate). Static metadata is always included.
+   */
+  @Get('analytics')
+  @UsePipes(new ValidationPipe({ transform: true, whitelist: true }))
+  analytics(@Query() dto: WhrParamsDto) {
+    return this.whrService.analytics(dto);
+  }
 }
