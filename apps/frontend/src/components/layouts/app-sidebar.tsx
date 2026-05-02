@@ -1,6 +1,6 @@
 "use client";
 
-import { Box, BrainCircuit, Factory, FileUp, Flame } from "lucide-react";
+import { Activity, Box, BrainCircuit, Factory, FileUp, Flame } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import type { Route } from "next";
@@ -9,6 +9,7 @@ const navItems = [
   { href: "/" as Route, label: "3D Viewer", icon: Box, description: "IoT factory model" },
   { href: "/whr" as Route, label: "WHR Analysis", icon: Flame, description: "Track B heat recovery" },
   { href: "/documents" as Route, label: "Documents", icon: FileUp, description: "Extraction pipeline" },
+  { href: "/ml-pipeline" as Route, label: "ML Pipeline", icon: Activity, description: "Model evaluation" },
   { href: "/chat" as Route, label: "AI Advisor", icon: BrainCircuit, description: "Energy intelligence" },
 ];
 

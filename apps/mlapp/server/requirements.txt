@@ -1,0 +1,16 @@
+# ── web framework ────────────────────────────────────────────────────────────
+fastapi==0.115.5
+uvicorn[standard]==0.32.1          # ASGI server (includes uvloop + httptools)
+
+# ── data / numerics ──────────────────────────────────────────────────────────
+numpy==1.26.4
+pydantic==2.9.2                    # data validation (FastAPI uses v2 by default)
+
+# ── (optional) real model backends — uncomment what you need ─────────────────
+# onnxruntime==1.19.2              # ONNX inference
+# lightgbm==4.5.0                  # LightGBM trees
+# scikit-learn==1.5.2              # IsolationForest / preprocessing
+# torch==2.4.1 --index-url https://download.pytorch.org/whl/cpu
+
+# ── observability ────────────────────────────────────────────────────────────
+python-json-logger==2.0.7          # structured JSON logs

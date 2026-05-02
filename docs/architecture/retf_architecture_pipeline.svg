@@ -1,0 +1,397 @@
+<svg viewBox="0 0 1480 1640" xmlns="http://www.w3.org/2000/svg" font-family="'Patrick Hand','Comic Sans MS','Bradley Hand',cursive,system-ui">
+  <title>Re-Tech Fusion — Architecture and Data Pipeline</title>
+  <desc>Industrial energy intelligence stack: ESP32 sensors via MQTT, document extraction, unified data layer, LangGraph AI pipeline, and three delivery surfaces.</desc>
+
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M0,0 L10,5 L0,10 z" fill="#282A3A"/>
+    </marker>
+    <marker id="arrowBeige" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M0,0 L10,5 L0,10 z" fill="#776B5D"/>
+    </marker>
+    <style>
+      .bg { fill: #FBF8F3; }
+      .card { fill:#FFFFFF; stroke:#282A3A; stroke-width:2; }
+      .cardBeige { fill:#F0E9DC; stroke:#776B5D; stroke-width:2; }
+      .cardNavy { fill:#282A3A; stroke:#282A3A; stroke-width:2; }
+      .laneLabel { font-size:14px; fill:#776B5D; letter-spacing:2px; }
+      .title { font-size:30px; fill:#282A3A; font-weight:700; }
+      .subtitle { font-size:15px; fill:#776B5D; }
+      .h2 { font-size:20px; fill:#282A3A; font-weight:700; }
+      .h3 { font-size:16px; fill:#282A3A; font-weight:700; }
+      .body { font-size:13px; fill:#282A3A; }
+      .bodyDim { font-size:13px; fill:#776B5D; }
+      .bodyLight { font-size:13px; fill:#F0E9DC; }
+      .pill { font-size:11px; fill:#776B5D; }
+      .edge { fill:none; stroke:#282A3A; stroke-width:2; stroke-linecap:round; }
+      .edgeDash { fill:none; stroke:#776B5D; stroke-width:2; stroke-linecap:round; stroke-dasharray:6 4; }
+      .edgeBig { fill:none; stroke:#282A3A; stroke-width:3; stroke-linecap:round; }
+      .lane { fill:none; stroke:#BBAB8C; stroke-width:1.5; stroke-dasharray:4 6; }
+    </style>
+  </defs>
+
+  <rect class="bg" x="0" y="0" width="1480" height="1640"/>
+
+  <g transform="translate(40,40)">
+    <text class="title" x="0" y="28">Re·Tech Fusion · Architecture &amp; Data Pipeline</text>
+    <text class="subtitle" x="0" y="54">INSAT Carthage · May 1–3 2026 · ESP32 → MQTT → Unified Data → AI → Dashboard + Edge + Heat Recovery</text>
+    <g transform="translate(960,8)">
+      <circle cx="10" cy="10" r="8" fill="#BBAB8C"/>
+      <text class="bodyDim" x="26" y="14">inputs / corpus</text>
+      <circle cx="160" cy="10" r="8" fill="#776B5D"/>
+      <text class="bodyDim" x="176" y="14">processing</text>
+      <circle cx="290" cy="10" r="8" fill="#282A3A"/>
+      <text class="bodyDim" x="306" y="14">core / delivery</text>
+    </g>
+  </g>
+
+  <g transform="translate(40,110)">
+    <rect class="lane" x="0" y="0" width="1400" height="240" rx="14"/>
+    <text class="laneLabel" x="14" y="22">SOURCES — REAL-TIME &amp; HETEROGENEOUS DOCUMENTS</text>
+    <g transform="translate(20,40)">
+      <rect class="cardBeige" x="0" y="0" width="380" height="180" rx="10"/>
+      <text class="h3" x="16" y="26">Part 1 · IoT Sensor Stand</text>
+      <text class="bodyDim" x="16" y="46">ESP32 + 3 sensors · canonical channel</text>
+      <g transform="translate(14,62)">
+        <rect class="card" x="0" y="0" width="110" height="100" rx="10"/>
+        <text class="h3" x="55" y="22" text-anchor="middle">Flow</text>
+        <text class="body" x="55" y="42" text-anchor="middle">YF-S201</text>
+        <text class="bodyDim" x="55" y="60" text-anchor="middle">pulse / IRQ</text>
+        <text class="pill" x="55" y="84" text-anchor="middle">flow_lpm</text>
+      </g>
+      <g transform="translate(135,62)">
+        <rect class="card" x="0" y="0" width="110" height="100" rx="10"/>
+        <text class="h3" x="55" y="22" text-anchor="middle">Heat</text>
+        <text class="body" x="55" y="42" text-anchor="middle">DS18B20 / TC</text>
+        <text class="bodyDim" x="55" y="60" text-anchor="middle">OneWire / SPI</text>
+        <text class="pill" x="55" y="84" text-anchor="middle">temp_c</text>
+      </g>
+      <g transform="translate(256,62)">
+        <rect class="card" x="0" y="0" width="110" height="100" rx="10"/>
+        <text class="h3" x="55" y="22" text-anchor="middle">Microwave</text>
+        <text class="body" x="55" y="42" text-anchor="middle">RCWL-0516</text>
+        <text class="bodyDim" x="55" y="60" text-anchor="middle">doppler</text>
+        <text class="pill" x="55" y="84" text-anchor="middle">presence</text>
+      </g>
+    </g>
+    <g transform="translate(420,40)">
+      <rect class="cardBeige" x="0" y="0" width="540" height="180" rx="10"/>
+      <text class="h3" x="16" y="26">Part 2 · Heterogeneous Document Corpus</text>
+      <text class="bodyDim" x="16" y="46">staged practice data · GIT-IGNORED · SHA-pinned manifests</text>
+      <g transform="translate(14,62)">
+        <rect class="card" x="0" y="0" width="160" height="100" rx="10"/>
+        <text class="h3" x="80" y="24" text-anchor="middle">Audit PDF</text>
+        <text class="body" x="80" y="44" text-anchor="middle">rapport_audit.pdf</text>
+        <text class="bodyDim" x="80" y="62" text-anchor="middle">15 pp · French</text>
+        <text class="pill" x="80" y="86" text-anchor="middle">tri-gen 1.2 MW + STEG + gas</text>
+      </g>
+      <g transform="translate(186,62)">
+        <rect class="card" x="0" y="0" width="160" height="100" rx="10"/>
+        <text class="h3" x="80" y="24" text-anchor="middle">Bills</text>
+        <text class="body" x="80" y="44" text-anchor="middle">33 JPEG + 5 PDF</text>
+        <text class="bodyDim" x="80" y="62" text-anchor="middle">factures/</text>
+        <text class="pill" x="80" y="86" text-anchor="middle">scanned · fra+ara</text>
+      </g>
+      <g transform="translate(358,62)">
+        <rect class="card" x="0" y="0" width="166" height="100" rx="10"/>
+        <text class="h3" x="83" y="24" text-anchor="middle">Tri-gen reports</text>
+        <text class="body" x="83" y="44" text-anchor="middle">22 monthly .xlsx</text>
+        <text class="bodyDim" x="83" y="62" text-anchor="middle">Jul 25 → Apr 26</text>
+        <text class="pill" x="83" y="86" text-anchor="middle">IoT-like time series</text>
+      </g>
+    </g>
+    <g transform="translate(980,40)">
+      <rect class="cardBeige" x="0" y="0" width="400" height="180" rx="10"/>
+      <text class="h3" x="16" y="26">Reference data (read-only)</text>
+      <text class="bodyDim" x="16" y="46">CO₂ &amp; energy normalization tables</text>
+      <g transform="translate(14,62)">
+        <rect class="card" x="0" y="0" width="180" height="100" rx="10"/>
+        <text class="h3" x="90" y="22" text-anchor="middle">Emission factors</text>
+        <text class="body" x="90" y="42" text-anchor="middle">IPCC · ADEME · IEA</text>
+        <text class="bodyDim" x="90" y="62" text-anchor="middle">cited per number</text>
+        <text class="pill" x="90" y="86" text-anchor="middle">kgCO₂e / kWh · /m³ · /L</text>
+      </g>
+      <g transform="translate(204,62)">
+        <rect class="card" x="0" y="0" width="168" height="100" rx="10"/>
+        <text class="h3" x="84" y="22" text-anchor="middle">Unit catalog</text>
+        <text class="body" x="84" y="42" text-anchor="middle">→ canonical kWh</text>
+        <text class="bodyDim" x="84" y="62" text-anchor="middle">m³ gas, L diesel,</text>
+        <text class="bodyDim" x="84" y="78" text-anchor="middle">kWh elec, MJ steam</text>
+        <text class="pill" x="84" y="98" text-anchor="middle">balance ±5%</text>
+      </g>
+    </g>
+  </g>
+
+  <g>
+    <path class="edgeBig" d="M 230 350 L 230 410" marker-end="url(#arrow)"/>
+    <path class="edgeBig" d="M 690 350 L 690 410" marker-end="url(#arrow)"/>
+    <path class="edgeDash" d="M 1180 350 C 1180 410, 1180 470, 1110 540" marker-end="url(#arrowBeige)"/>
+  </g>
+
+  <g transform="translate(40,410)">
+    <rect class="lane" x="0" y="0" width="1400" height="200" rx="14"/>
+    <text class="laneLabel" x="14" y="22">INGESTION — STREAM &amp; BATCH</text>
+    <g transform="translate(20,40)">
+      <rect class="card" x="0" y="0" width="380" height="140" rx="10"/>
+      <text class="h3" x="16" y="26">Mosquitto MQTT broker</text>
+      <text class="bodyDim" x="16" y="46">topic: factory/{site}/{zone}/{metric}</text>
+      <text class="body" x="16" y="72">QoS 1 · retained config · LWT</text>
+      <text class="body" x="16" y="92">JSON payload: ts, value, unit, src</text>
+      <rect class="cardBeige" x="16" y="102" width="348" height="28" rx="6"/>
+      <text class="pill" x="190" y="120" text-anchor="middle">infra/docker · iot-mqtt-pipeline skill</text>
+    </g>
+    <g transform="translate(420,40)">
+      <rect class="card" x="0" y="0" width="540" height="140" rx="10"/>
+      <text class="h3" x="16" y="26">Doc Extraction app · /extract-bills</text>
+      <text class="bodyDim" x="16" y="46">file-typing → preprocessing → OCR → LLM-assisted parse</text>
+      <g transform="translate(16,58)">
+        <rect class="cardBeige" x="0" y="0" width="120" height="68" rx="8"/>
+        <text class="body" x="60" y="22" text-anchor="middle">sharp</text>
+        <text class="bodyDim" x="60" y="40" text-anchor="middle">deskew · denoise</text>
+        <text class="pill" x="60" y="58" text-anchor="middle">JPEG / scan</text>
+      </g>
+      <g transform="translate(146,58)">
+        <rect class="cardBeige" x="0" y="0" width="120" height="68" rx="8"/>
+        <text class="body" x="60" y="22" text-anchor="middle">tesseract.js</text>
+        <text class="bodyDim" x="60" y="40" text-anchor="middle">fra + ara</text>
+        <text class="pill" x="60" y="58" text-anchor="middle">OCR</text>
+      </g>
+      <g transform="translate(276,58)">
+        <rect class="cardBeige" x="0" y="0" width="120" height="68" rx="8"/>
+        <text class="body" x="60" y="22" text-anchor="middle">pdf-parse · xlsx</text>
+        <text class="bodyDim" x="60" y="40" text-anchor="middle">native readers</text>
+        <text class="pill" x="60" y="58" text-anchor="middle">PDF / Excel</text>
+      </g>
+      <g transform="translate(406,58)">
+        <rect class="cardNavy" x="0" y="0" width="120" height="68" rx="8"/>
+        <text class="bodyLight" x="60" y="22" text-anchor="middle">Sonnet 4</text>
+        <text x="60" y="40" text-anchor="middle" fill="#BBAB8C" font-size="13">Pydantic schema</text>
+        <text x="60" y="58" text-anchor="middle" fill="#BBAB8C" font-size="11">constrained output</text>
+      </g>
+    </g>
+    <g transform="translate(980,40)">
+      <rect class="card" x="0" y="0" width="400" height="140" rx="10"/>
+      <text class="h3" x="16" y="26">Cache &amp; lineage</text>
+      <text class="bodyDim" x="16" y="46">aggressive caching by file SHA</text>
+      <g transform="translate(16,58)">
+        <rect class="cardBeige" x="0" y="0" width="170" height="68" rx="8"/>
+        <text class="body" x="85" y="22" text-anchor="middle">Redis</text>
+        <text class="bodyDim" x="85" y="40" text-anchor="middle">OCR + LLM results</text>
+        <text class="pill" x="85" y="58" text-anchor="middle">SHA → record</text>
+      </g>
+      <g transform="translate(196,58)">
+        <rect class="cardBeige" x="0" y="0" width="172" height="68" rx="8"/>
+        <text class="body" x="86" y="22" text-anchor="middle">DVC + manifests</text>
+        <text class="bodyDim" x="86" y="40" text-anchor="middle">_manifest.json</text>
+        <text class="pill" x="86" y="58" text-anchor="middle">data versioning</text>
+      </g>
+    </g>
+  </g>
+
+  <g>
+    <path class="edgeBig" d="M 230 610 L 230 690" marker-end="url(#arrow)"/>
+    <path class="edgeBig" d="M 690 610 L 690 690" marker-end="url(#arrow)"/>
+    <path class="edgeDash" d="M 1180 610 L 1180 690" marker-end="url(#arrowBeige)"/>
+  </g>
+
+  <g transform="translate(40,690)">
+    <rect class="lane" x="0" y="0" width="1400" height="220" rx="14"/>
+    <text class="laneLabel" x="14" y="22">UNIFIED DATA LAYER — NESTJS + TIMESCALEDB + REDIS</text>
+    <g transform="translate(20,40)">
+      <rect class="cardNavy" x="0" y="0" width="1360" height="160" rx="12"/>
+      <text x="16" y="26" font-size="18" font-weight="700" fill="#FBF8F3">NestJS 10 (Fastify) · Prisma · API + MQTT bridge + ai-bridge</text>
+      <text x="16" y="46" font-size="13" fill="#BBAB8C">modules: devices · readings · events · extracted-records · runs · scenarios</text>
+      <g transform="translate(16,60)">
+        <rect class="cardBeige" x="0" y="0" width="320" height="86" rx="10"/>
+        <text class="h3" x="160" y="24" text-anchor="middle">TimescaleDB</text>
+        <text class="body" x="160" y="44" text-anchor="middle">hypertables · cont. aggregates</text>
+        <text class="bodyDim" x="160" y="62" text-anchor="middle">readings(device_id, ts, metric, value)</text>
+        <text class="pill" x="160" y="80" text-anchor="middle">Part 1 + tri-gen series</text>
+      </g>
+      <g transform="translate(346,60)">
+        <rect class="cardBeige" x="0" y="0" width="320" height="86" rx="10"/>
+        <text class="h3" x="160" y="24" text-anchor="middle">Postgres tables</text>
+        <text class="body" x="160" y="44" text-anchor="middle">extracted_records · sources</text>
+        <text class="bodyDim" x="160" y="62" text-anchor="middle">page · bbox · confidence · OCR engine</text>
+        <text class="pill" x="160" y="80" text-anchor="middle">auditable lineage</text>
+      </g>
+      <g transform="translate(676,60)">
+        <rect class="cardBeige" x="0" y="0" width="320" height="86" rx="10"/>
+        <text class="h3" x="160" y="24" text-anchor="middle">Redis</text>
+        <text class="body" x="160" y="44" text-anchor="middle">queues · cache · pub/sub</text>
+        <text class="bodyDim" x="160" y="62" text-anchor="middle">rate-limit · live anomaly fan-out</text>
+        <text class="pill" x="160" y="80" text-anchor="middle">streaming layer</text>
+      </g>
+      <g transform="translate(1006,60)">
+        <rect class="cardBeige" x="0" y="0" width="338" height="86" rx="10"/>
+        <text class="h3" x="169" y="24" text-anchor="middle">Object store + Parquet</text>
+        <text class="body" x="169" y="44" text-anchor="middle">DuckDB · Polars (lazy + streaming)</text>
+        <text class="bodyDim" x="169" y="62" text-anchor="middle">zstd · partitioned by site/month</text>
+        <text class="pill" x="169" y="80" text-anchor="middle">batch analytics</text>
+      </g>
+    </g>
+  </g>
+
+  <g>
+    <path class="edgeBig" d="M 740 910 L 740 970" marker-end="url(#arrow)"/>
+  </g>
+
+  <g transform="translate(40,970)">
+    <rect class="lane" x="0" y="0" width="1400" height="290" rx="14"/>
+    <text class="laneLabel" x="14" y="22">AI PIPELINE — LANGGRAPH SUPERVISOR · 6 STAGES</text>
+    <g transform="translate(20,40)">
+      <rect class="cardNavy" x="0" y="0" width="1360" height="56" rx="10"/>
+      <text x="20" y="34" font-size="17" font-weight="700" fill="#FBF8F3">LangGraph Supervisor (Sonnet 4)  ·  tool calls + checkpointing  ·  apps/ai-agents</text>
+      <text x="1340" y="34" font-size="13" fill="#BBAB8C" text-anchor="end">/co2-baseline · /normalize-units · /heat-recovery-scan</text>
+    </g>
+    <g transform="translate(20,116)">
+      <g transform="translate(0,0)">
+        <rect class="card" x="0" y="0" width="210" height="150" rx="10"/>
+        <text class="h3" x="105" y="26" text-anchor="middle">1 · Extract</text>
+        <text class="body" x="105" y="50" text-anchor="middle">document-intelligence</text>
+        <text class="bodyDim" x="105" y="70" text-anchor="middle">OCR + LLM → records</text>
+        <text class="bodyDim" x="105" y="88" text-anchor="middle">Pydantic-validated</text>
+        <text class="pill" x="105" y="118" text-anchor="middle">source = page+bbox+conf</text>
+        <text class="pill" x="105" y="136" text-anchor="middle">cache by SHA</text>
+      </g>
+      <g transform="translate(225,0)">
+        <rect class="card" x="0" y="0" width="210" height="150" rx="10"/>
+        <text class="h3" x="105" y="26" text-anchor="middle">2 · Normalize units</text>
+        <text class="body" x="105" y="50" text-anchor="middle">→ canonical kWh</text>
+        <text class="bodyDim" x="105" y="70" text-anchor="middle">m³ · L · kWh · MJ</text>
+        <text class="bodyDim" x="105" y="88" text-anchor="middle">currency → TND</text>
+        <text class="pill" x="105" y="118" text-anchor="middle">balance check</text>
+        <text class="pill" x="105" y="136" text-anchor="middle">tolerance ±5%</text>
+      </g>
+      <g transform="translate(450,0)">
+        <rect class="card" x="0" y="0" width="210" height="150" rx="10"/>
+        <text class="h3" x="105" y="26" text-anchor="middle">3 · CO₂ baseline</text>
+        <text class="body" x="105" y="50" text-anchor="middle">scope 1 + 2</text>
+        <text class="bodyDim" x="105" y="70" text-anchor="middle">factor per source</text>
+        <text class="bodyDim" x="105" y="88" text-anchor="middle">IPCC / ADEME / IEA</text>
+        <text class="pill" x="105" y="118" text-anchor="middle">every kg cites EF</text>
+        <text class="pill" x="105" y="136" text-anchor="middle">kgCO₂e / month</text>
+      </g>
+      <g transform="translate(675,0)">
+        <rect class="card" x="0" y="0" width="210" height="150" rx="10"/>
+        <text class="h3" x="105" y="26" text-anchor="middle">4 · Forecast</text>
+        <text class="body" x="105" y="50" text-anchor="middle">Chronos · LightGBM</text>
+        <text class="bodyDim" x="105" y="70" text-anchor="middle">onnxruntime-node</text>
+        <text class="bodyDim" x="105" y="88" text-anchor="middle">horizon: hour · day · month</text>
+        <text class="pill" x="105" y="118" text-anchor="middle">MLflow runs</text>
+        <text class="pill" x="105" y="136" text-anchor="middle">MAPE / sMAPE</text>
+      </g>
+      <g transform="translate(900,0)">
+        <rect class="card" x="0" y="0" width="210" height="150" rx="10"/>
+        <text class="h3" x="105" y="26" text-anchor="middle">5 · Anomaly</text>
+        <text class="body" x="105" y="50" text-anchor="middle">rolling MAD + STL</text>
+        <text class="bodyDim" x="105" y="70" text-anchor="middle">IsolationForest server</text>
+        <text class="bodyDim" x="105" y="88" text-anchor="middle">ring buffer C on edge</text>
+        <text class="pill" x="105" y="118" text-anchor="middle">same algo, two runtimes</text>
+        <text class="pill" x="105" y="136" text-anchor="middle">precision @ low FPR</text>
+      </g>
+      <g transform="translate(1125,0)">
+        <rect class="cardBeige" x="0" y="0" width="215" height="150" rx="10"/>
+        <text class="h3" x="107" y="26" text-anchor="middle">6 · Heat Recovery</text>
+        <text class="body" x="107" y="50" text-anchor="middle">MCDA scoring</text>
+        <text class="bodyDim" x="107" y="70" text-anchor="middle">ΔT · flow · proximity</text>
+        <text class="bodyDim" x="107" y="88" text-anchor="middle">payback · ROI</text>
+        <text class="pill" x="107" y="118" text-anchor="middle">best · base · conservative</text>
+        <text class="pill" x="107" y="136" text-anchor="middle">top-3 scenarios</text>
+      </g>
+    </g>
+    <g stroke="#282A3A" stroke-width="2" fill="none">
+      <path d="M 250 1166 L 263 1166" marker-end="url(#arrow)"/>
+      <path d="M 475 1166 L 488 1166" marker-end="url(#arrow)"/>
+      <path d="M 700 1166 L 713 1166" marker-end="url(#arrow)"/>
+      <path d="M 925 1166 L 938 1166" marker-end="url(#arrow)"/>
+      <path d="M 1150 1166 L 1163 1166" marker-end="url(#arrow)"/>
+    </g>
+  </g>
+
+  <g>
+    <path class="edgeBig" d="M 250 1260 L 250 1320" marker-end="url(#arrow)"/>
+    <path class="edgeBig" d="M 740 1260 L 740 1320" marker-end="url(#arrow)"/>
+    <path class="edgeBig" d="M 1230 1260 L 1230 1320" marker-end="url(#arrow)"/>
+  </g>
+
+  <g transform="translate(40,1320)">
+    <rect class="lane" x="0" y="0" width="1400" height="280" rx="14"/>
+    <text class="laneLabel" x="14" y="22">DELIVERY — DASHBOARD · EDGE · HEAT RECOVERY REPORT</text>
+    <g transform="translate(20,40)">
+      <rect class="card" x="0" y="0" width="460" height="220" rx="10"/>
+      <text class="h2" x="20" y="32">Next.js Dashboard</text>
+      <text class="bodyDim" x="20" y="52">Tailwind · shadcn/ui · Recharts + Plotly sankey</text>
+      <g transform="translate(16,68)">
+        <rect class="cardBeige" x="0" y="0" width="200" height="36" rx="8"/>
+        <text class="body" x="100" y="23" text-anchor="middle">KPI strip · CO₂ · €</text>
+      </g>
+      <g transform="translate(228,68)">
+        <rect class="cardBeige" x="0" y="0" width="200" height="36" rx="8"/>
+        <text class="body" x="100" y="23" text-anchor="middle">Live IoT chart · MQTT</text>
+      </g>
+      <g transform="translate(16,114)">
+        <rect class="cardBeige" x="0" y="0" width="200" height="36" rx="8"/>
+        <text class="body" x="100" y="23" text-anchor="middle">Sankey · energy flows</text>
+      </g>
+      <g transform="translate(228,114)">
+        <rect class="cardBeige" x="0" y="0" width="200" height="36" rx="8"/>
+        <text class="body" x="100" y="23" text-anchor="middle">Anomaly feed · live</text>
+      </g>
+      <g transform="translate(16,160)">
+        <rect class="cardBeige" x="0" y="0" width="412" height="44" rx="8"/>
+        <text class="body" x="206" y="22" text-anchor="middle">Track B scenarios · ROI · best/base/conservative</text>
+        <text class="pill" x="206" y="38" text-anchor="middle">/heat-recovery-scan results</text>
+      </g>
+    </g>
+    <g transform="translate(500,40)">
+      <rect class="card" x="0" y="0" width="460" height="220" rx="10"/>
+      <text class="h2" x="20" y="32">Part 3A · Edge Runtime (stretch)</text>
+      <text class="bodyDim" x="20" y="52">on-device forecast + anomaly · ESP32-S3</text>
+      <g transform="translate(16,68)">
+        <rect class="cardBeige" x="0" y="0" width="200" height="56" rx="8"/>
+        <text class="body" x="100" y="22" text-anchor="middle">torch.ao + ai_edge_torch</text>
+        <text class="bodyDim" x="100" y="40" text-anchor="middle">INT8 PTQ</text>
+        <text class="pill" x="100" y="52" text-anchor="middle">/quantize-model</text>
+      </g>
+      <g transform="translate(228,68)">
+        <rect class="cardBeige" x="0" y="0" width="200" height="56" rx="8"/>
+        <text class="body" x="100" y="22" text-anchor="middle">TFLite-Micro + ESP-NN</text>
+        <text class="bodyDim" x="100" y="40" text-anchor="middle">model.h handoff</text>
+        <text class="pill" x="100" y="52" text-anchor="middle">/profile-edge</text>
+      </g>
+      <g transform="translate(16,134)">
+        <rect class="cardNavy" x="0" y="0" width="412" height="70" rx="8"/>
+        <text x="206" y="26" font-size="15" font-weight="700" fill="#FBF8F3" text-anchor="middle">PlatformIO · Arduino-ESP32 · ESP-IDF</text>
+        <text x="206" y="46" font-size="12" fill="#BBAB8C" text-anchor="middle">ring-buffer C anomaly · INT8 forecaster</text>
+        <text x="206" y="62" font-size="12" fill="#BBAB8C" text-anchor="middle">latency / RAM / flash benchmark</text>
+      </g>
+    </g>
+    <g transform="translate(980,40)">
+      <rect class="card" x="0" y="0" width="400" height="220" rx="10"/>
+      <text class="h2" x="20" y="32">Part 3B · Heat Recovery</text>
+      <text class="bodyDim" x="20" y="52">primary track · audit-driven</text>
+      <g transform="translate(16,68)">
+        <rect class="cardBeige" x="0" y="0" width="368" height="40" rx="8"/>
+        <text class="body" x="184" y="26" text-anchor="middle">Inventory of heat sources</text>
+      </g>
+      <g transform="translate(16,116)">
+        <rect class="cardBeige" x="0" y="0" width="368" height="40" rx="8"/>
+        <text class="body" x="184" y="26" text-anchor="middle">MCDA score &amp; rank</text>
+      </g>
+      <g transform="translate(16,164)">
+        <rect class="cardNavy" x="0" y="0" width="368" height="40" rx="8"/>
+        <text x="184" y="26" text-anchor="middle" fill="#FBF8F3" font-size="14" font-weight="700">Top-3 ROI scenarios → pitch</text>
+      </g>
+    </g>
+  </g>
+
+  <g transform="translate(40,1610)">
+    <text class="bodyDim" x="0" y="0">Compass: does this change a number on the rubric or a story in the pitch?  ·  Submission at H+22 of each part  ·  Pitch quality &gt; feature count</text>
+  </g>
+
+  <g>
+    <path d="M 730 1320 C 730 1280, 880 230, 230 230" class="edgeDash" marker-end="url(#arrowBeige)"/>
+    <text class="pill" x="900" y="244" fill="#776B5D">model.h flashed back to ESP32 (Part 3A loop)</text>
+  </g>
+</svg>

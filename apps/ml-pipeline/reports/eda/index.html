@@ -1,0 +1,861 @@
+<!doctype html><meta charset='utf-8'><title>Tri-gen EDA</title>
+<style>body{font-family:system-ui;margin:2em;max-width:1200px}h2{margin-top:2em}table{border-collapse:collapse}td,th{border:1px solid #ddd;padding:4px 8px;font-size:13px}img{max-width:100%;border:1px solid #eee;margin:6px 0}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(420px,1fr));gap:10px}</style>
+<h1>Tri-gen EDA report</h1>
+<p>Sensors: 51 · Rows: 844,458</p>
+<h2>Per-sensor summary</h2>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th>sensor_id</th>
+      <th>unit</th>
+      <th>n</th>
+      <th>ts_min</th>
+      <th>ts_max</th>
+      <th>mean</th>
+      <th>std</th>
+      <th>min</th>
+      <th>p50</th>
+      <th>max</th>
+      <th>zeros</th>
+      <th>negatives</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>achat_et_vente_energie_negative_production_kwh</td>
+      <td>KWh</td>
+      <td>16558</td>
+      <td>2025-01-01</td>
+      <td>2025-12-31 23:54:06</td>
+      <td>12380.980</td>
+      <td>2454.330</td>
+      <td>0.000</td>
+      <td>11959.000</td>
+      <td>25319.000</td>
+      <td>18</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>achat_et_vente_energie_negative_steg_kwh</td>
+      <td>KWh</td>
+      <td>16558</td>
+      <td>2025-01-01</td>
+      <td>2025-12-31 23:54:06</td>
+      <td>3579623.933</td>
+      <td>753984.760</td>
+      <td>0.000</td>
+      <td>3549078.000</td>
+      <td>6101053.000</td>
+      <td>18</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>achat_et_vente_energie_positive_production_kwh</td>
+      <td>KWh</td>
+      <td>16558</td>
+      <td>2025-01-01</td>
+      <td>2025-12-31 23:54:06</td>
+      <td>8422638.280</td>
+      <td>1629989.767</td>
+      <td>0.000</td>
+      <td>8313831.000</td>
+      <td>14869723.000</td>
+      <td>18</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>achat_et_vente_energie_positive_steg_kwh</td>
+      <td>KWh</td>
+      <td>16558</td>
+      <td>2025-01-01</td>
+      <td>2025-12-31 23:54:06</td>
+      <td>799203.250</td>
+      <td>64667.968</td>
+      <td>0.000</td>
+      <td>788205.000</td>
+      <td>1138092.000</td>
+      <td>18</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>consommation_auxiliare_energie_electrique_en_kwh</td>
+      <td>KWh</td>
+      <td>16558</td>
+      <td>2025-01-01</td>
+      <td>2025-12-31 23:54:06</td>
+      <td>622371.571</td>
+      <td>123004.478</td>
+      <td>0.000</td>
+      <td>600556.800</td>
+      <td>1157394.000</td>
+      <td>18</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>consommation_gaz_consommation_du_gaz_naturel_moteur_en_nm3_volume</td>
+      <td>Nm3</td>
+      <td>16558</td>
+      <td>2025-01-01</td>
+      <td>2025-12-31 23:54:06</td>
+      <td>2027979.391</td>
+      <td>400501.552</td>
+      <td>0.000</td>
+      <td>1994385.500</td>
+      <td>3616067.000</td>
+      <td>18</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>consommation_gaz_debit_du_gaz_naturel_moteur_en_nm3_h</td>
+      <td>Nm3</td>
+      <td>16558</td>
+      <td>2025-01-01</td>
+      <td>2025-12-31 23:54:06</td>
+      <td>264.098</td>
+      <td>42.709</td>
+      <td>0.000</td>
+      <td>270.890</td>
+      <td>295.660</td>
+      <td>380</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>energie_moteur_courant_phase_1_en_a</td>
+      <td>A</td>
+      <td>16558</td>
+      <td>2025-01-01</td>
+      <td>2025-12-31 23:54:06</td>
+      <td>1735.620</td>
+      <td>284.986</td>
+      <td>0.000</td>
+      <td>1782.000</td>
+      <td>2276.000</td>
+      <td>420</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>energie_moteur_courant_phase_2_en_a</td>
+      <td>A</td>
+      <td>16558</td>
+      <td>2025-01-01</td>
+      <td>2025-12-31 23:54:06</td>
+      <td>1758.624</td>
+      <td>288.780</td>
+      <td>0.000</td>
+      <td>1805.000</td>
+      <td>2227.000</td>
+      <td>420</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>energie_moteur_courant_phase_3_en_a</td>
+      <td>A</td>
+      <td>16558</td>
+      <td>2025-01-01</td>
+      <td>2025-12-31 23:54:06</td>
+      <td>1690.913</td>
+      <td>277.927</td>
+      <td>0.000</td>
+      <td>1736.000</td>
+      <td>2249.000</td>
+      <td>420</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>energie_moteur_energie_electrique_au_borne_de_l_alternateur_en_kwh</td>
+      <td>KWh</td>
+      <td>16558</td>
+      <td>2025-01-01</td>
+      <td>2025-12-31 23:54:06</td>
+      <td>9080853.102</td>
+      <td>1769290.468</td>
+      <td>0.000</td>
+      <td>8937860.000</td>
+      <td>16074070.000</td>
+      <td>17</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>energie_moteur_energie_reactive_en_kvarh</td>
+      <td>KVARh</td>
+      <td>16558</td>
+      <td>2025-01-01</td>
+      <td>2025-12-31 23:54:06</td>
+      <td>1816059.940</td>
+      <td>272492.876</td>
+      <td>0.000</td>
+      <td>1853562.500</td>
+      <td>2620598.000</td>
+      <td>17</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>energie_moteur_facteur_de_puissance</td>
+      <td></td>
+      <td>16558</td>
+      <td>2025-01-01</td>
+      <td>2025-12-31 23:54:06</td>
+      <td>0.971</td>
+      <td>0.033</td>
+      <td>0.000</td>
+      <td>0.980</td>
+      <td>1.000</td>
+      <td>14</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>energie_moteur_heure_de_fonctionnement</td>
+      <td></td>
+      <td>16558</td>
+      <td>2025-01-01</td>
+      <td>2025-12-31 23:54:06</td>
+      <td>7466.014</td>
+      <td>1660.892</td>
+      <td>0.000</td>
+      <td>7452.000</td>
+      <td>13505.000</td>
+      <td>17</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>energie_moteur_puissance_electrique_brute_en_kw</td>
+      <td>KW</td>
+      <td>16558</td>
+      <td>2025-01-01</td>
+      <td>2025-12-31 23:54:06</td>
+      <td>1169.540</td>
+      <td>191.580</td>
+      <td>0.000</td>
+      <td>1202.000</td>
+      <td>1479.000</td>
+      <td>420</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>energie_moteur_vitesse_en_rpm</td>
+      <td>rpm</td>
+      <td>16558</td>
+      <td>2025-01-01</td>
+      <td>2025-12-31 23:54:06</td>
+      <td>1442.843</td>
+      <td>287.925</td>
+      <td>0.000</td>
+      <td>1500.200</td>
+      <td>1530.800</td>
+      <td>634</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>energie_moteur_voltage_en_v</td>
+      <td>V</td>
+      <td>16558</td>
+      <td>2025-01-01</td>
+      <td>2025-12-31 23:54:06</td>
+      <td>401.594</td>
+      <td>13.393</td>
+      <td>0.000</td>
+      <td>402.000</td>
+      <td>414.000</td>
+      <td>16</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>energymeter_eau_chaude_alpha_consigne_de_temperature</td>
+      <td></td>
+      <td>16558</td>
+      <td>2025-01-01</td>
+      <td>2025-12-31 23:54:06</td>
+      <td>74.029</td>
+      <td>8.475</td>
+      <td>0.000</td>
+      <td>75.000</td>
+      <td>75.000</td>
+      <td>214</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>energymeter_eau_chaude_alpha_debit_en_m3_h</td>
+      <td>m3</td>
+      <td>16558</td>
+      <td>2025-01-01</td>
+      <td>2025-12-31 23:54:06</td>
+      <td>8.587</td>
+      <td>1.500</td>
+      <td>0.000</td>
+      <td>8.870</td>
+      <td>13.020</td>
+      <td>211</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>energymeter_eau_chaude_alpha_energie_en_kwh</td>
+      <td>kWh</td>
+      <td>16558</td>
+      <td>2025-01-01</td>
+      <td>2025-12-31 23:54:06</td>
+      <td>573818.006</td>
+      <td>133546.304</td>
+      <td>0.000</td>
+      <td>581061.800</td>
+      <td>1098960.000</td>
+      <td>211</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>energymeter_eau_chaude_alpha_lecture_de_temperature</td>
+      <td></td>
+      <td>16558</td>
+      <td>2025-01-01</td>
+      <td>2025-12-31 23:54:06</td>
+      <td>69.410</td>
+      <td>11.513</td>
+      <td>0.000</td>
+      <td>73.000</td>
+      <td>84.000</td>
+      <td>211</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>energymeter_eau_chaude_alpha_puissance_en_kw</td>
+      <td>KW</td>
+      <td>16558</td>
+      <td>2025-01-01</td>
+      <td>2025-12-31 23:54:06</td>
+      <td>83.899</td>
+      <td>44.210</td>
+      <td>0.000</td>
+      <td>77.515</td>
+      <td>293.920</td>
+      <td>202</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>energymeter_eau_chaude_alpha_sanitaire_consigne_de_temperature</td>
+      <td></td>
+      <td>16558</td>
+      <td>2025-01-01</td>
+      <td>2025-12-31 23:54:06</td>
+      <td>44.418</td>
+      <td>5.083</td>
+      <td>0.000</td>
+      <td>45.000</td>
+      <td>45.000</td>
+      <td>214</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>energymeter_eau_chaude_alpha_sanitaire_debit_en_m3_h</td>
+      <td>m3</td>
+      <td>16558</td>
+      <td>2025-01-01</td>
+      <td>2025-12-31 23:54:06</td>
+      <td>5.325</td>
+      <td>1.077</td>
+      <td>0.000</td>
+      <td>5.540</td>
+      <td>7.440</td>
+      <td>221</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>energymeter_eau_chaude_alpha_sanitaire_energie_en_kwh</td>
+      <td>kWh</td>
+      <td>16558</td>
+      <td>2025-01-01</td>
+      <td>2025-12-31 23:54:06</td>
+      <td>184809.097</td>
+      <td>43655.552</td>
+      <td>0.000</td>
+      <td>186810.900</td>
+      <td>323320.100</td>
+      <td>211</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>energymeter_eau_chaude_alpha_sanitaire_lecture_de_temperature</td>
+      <td></td>
+      <td>16558</td>
+      <td>2025-01-01</td>
+      <td>2025-12-31 23:54:06</td>
+      <td>43.831</td>
+      <td>5.554</td>
+      <td>0.000</td>
+      <td>45.000</td>
+      <td>62.000</td>
+      <td>211</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>energymeter_eau_chaude_alpha_sanitaire_puissance_en_kw</td>
+      <td>KW</td>
+      <td>16558</td>
+      <td>2025-01-01</td>
+      <td>2025-12-31 23:54:06</td>
+      <td>26.899</td>
+      <td>16.770</td>
+      <td>0.000</td>
+      <td>23.770</td>
+      <td>164.850</td>
+      <td>226</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>energymeter_eau_chaude_alpha_sanitaire_temperature_entree_tt07</td>
+      <td></td>
+      <td>16558</td>
+      <td>2025-01-01</td>
+      <td>2025-12-31 23:54:06</td>
+      <td>39.689</td>
+      <td>5.552</td>
+      <td>0.000</td>
+      <td>41.020</td>
+      <td>44.820</td>
+      <td>211</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>energymeter_eau_chaude_alpha_sanitaire_temperature_sortie_tt08</td>
+      <td></td>
+      <td>16558</td>
+      <td>2025-01-01</td>
+      <td>2025-12-31 23:54:06</td>
+      <td>44.115</td>
+      <td>5.525</td>
+      <td>0.000</td>
+      <td>44.920</td>
+      <td>63.270</td>
+      <td>211</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>energymeter_eau_chaude_alpha_temperature_entree_tt09</td>
+      <td></td>
+      <td>16558</td>
+      <td>2025-01-01</td>
+      <td>2025-12-31 23:54:06</td>
+      <td>61.085</td>
+      <td>11.161</td>
+      <td>0.000</td>
+      <td>62.880</td>
+      <td>79.770</td>
+      <td>211</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>energymeter_eau_chaude_alpha_temperature_sortie_tt10</td>
+      <td></td>
+      <td>16558</td>
+      <td>2025-01-01</td>
+      <td>2025-12-31 23:54:06</td>
+      <td>69.705</td>
+      <td>11.493</td>
+      <td>0.000</td>
+      <td>73.570</td>
+      <td>84.180</td>
+      <td>211</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>energymeter_eau_chaude_gamma_consigne_de_temperature</td>
+      <td></td>
+      <td>16558</td>
+      <td>2025-01-01</td>
+      <td>2025-12-31 23:54:06</td>
+      <td>72.436</td>
+      <td>17.021</td>
+      <td>0.000</td>
+      <td>75.000</td>
+      <td>80.000</td>
+      <td>853</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>energymeter_eau_chaude_gamma_debit_en_m3_h</td>
+      <td>m3</td>
+      <td>16558</td>
+      <td>2025-01-01</td>
+      <td>2025-12-31 23:54:06</td>
+      <td>11.031</td>
+      <td>3.698</td>
+      <td>0.000</td>
+      <td>12.550</td>
+      <td>17.360</td>
+      <td>889</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>energymeter_eau_chaude_gamma_energie_en_kwh</td>
+      <td>kWh</td>
+      <td>16558</td>
+      <td>2025-01-01</td>
+      <td>2025-12-31 23:54:06</td>
+      <td>469132.642</td>
+      <td>149624.095</td>
+      <td>0.000</td>
+      <td>470788.450</td>
+      <td>944259.600</td>
+      <td>850</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>energymeter_eau_chaude_gamma_lecture_de_temperature</td>
+      <td></td>
+      <td>16558</td>
+      <td>2025-01-01</td>
+      <td>2025-12-31 23:54:06</td>
+      <td>67.143</td>
+      <td>18.222</td>
+      <td>0.000</td>
+      <td>74.000</td>
+      <td>96.000</td>
+      <td>850</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>energymeter_eau_chaude_gamma_puissance_en_kw</td>
+      <td>KW</td>
+      <td>16558</td>
+      <td>2025-01-01</td>
+      <td>2025-12-31 23:54:06</td>
+      <td>71.395</td>
+      <td>33.129</td>
+      <td>0.000</td>
+      <td>72.050</td>
+      <td>560.810</td>
+      <td>1103</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>energymeter_eau_chaude_gamma_temperature_entree_tt13</td>
+      <td></td>
+      <td>16558</td>
+      <td>2025-01-01</td>
+      <td>2025-12-31 23:54:06</td>
+      <td>60.536</td>
+      <td>16.757</td>
+      <td>0.000</td>
+      <td>65.240</td>
+      <td>87.030</td>
+      <td>850</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>energymeter_eau_chaude_gamma_temperature_sortie_tt14</td>
+      <td></td>
+      <td>16558</td>
+      <td>2025-01-01</td>
+      <td>2025-12-31 23:54:06</td>
+      <td>66.350</td>
+      <td>18.398</td>
+      <td>0.000</td>
+      <td>71.620</td>
+      <td>94.300</td>
+      <td>850</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>energymeter_eau_chaude_recupere_debit_en_m3_h_fm02</td>
+      <td>m3</td>
+      <td>16558</td>
+      <td>2025-01-01</td>
+      <td>2025-12-31 23:54:06</td>
+      <td>11.035</td>
+      <td>8.438</td>
+      <td>0.000</td>
+      <td>12.820</td>
+      <td>26.480</td>
+      <td>5059</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>energymeter_eau_chaude_recupere_energie_en_kwh</td>
+      <td>kWh</td>
+      <td>16558</td>
+      <td>2025-01-01</td>
+      <td>2025-12-31 23:54:06</td>
+      <td>3277395.317</td>
+      <td>572211.631</td>
+      <td>0.000</td>
+      <td>3187987.000</td>
+      <td>5372600.000</td>
+      <td>15</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>energymeter_eau_chaude_recupere_puissance_en_kw</td>
+      <td>KW</td>
+      <td>16558</td>
+      <td>2025-01-01</td>
+      <td>2025-12-31 23:54:06</td>
+      <td>339.591</td>
+      <td>249.823</td>
+      <td>0.000</td>
+      <td>421.340</td>
+      <td>1210.120</td>
+      <td>5048</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>energymeter_eau_chaude_recupere_temperature_entree_tt04</td>
+      <td></td>
+      <td>16558</td>
+      <td>2025-01-01</td>
+      <td>2025-12-31 23:54:06</td>
+      <td>89.288</td>
+      <td>16.778</td>
+      <td>0.000</td>
+      <td>99.370</td>
+      <td>103.120</td>
+      <td>15</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>energymeter_eau_chaude_recupere_temperature_sortie_tt03</td>
+      <td></td>
+      <td>16558</td>
+      <td>2025-01-01</td>
+      <td>2025-12-31 23:54:06</td>
+      <td>71.848</td>
+      <td>7.251</td>
+      <td>0.000</td>
+      <td>72.470</td>
+      <td>98.810</td>
+      <td>15</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>energymeter_eau_glacee_debit_en_m3_h_fm01</td>
+      <td>m3</td>
+      <td>16558</td>
+      <td>2025-01-01</td>
+      <td>2025-12-31 23:54:06</td>
+      <td>58.860</td>
+      <td>34.276</td>
+      <td>0.000</td>
+      <td>74.800</td>
+      <td>145.600</td>
+      <td>3851</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>energymeter_eau_glacee_energie_en_kwh</td>
+      <td>kWh</td>
+      <td>16558</td>
+      <td>2025-01-01</td>
+      <td>2025-12-31 23:54:06</td>
+      <td>1801171.223</td>
+      <td>331132.619</td>
+      <td>0.000</td>
+      <td>1741697.000</td>
+      <td>3090301.000</td>
+      <td>15</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>energymeter_eau_glacee_puissance_en_kw</td>
+      <td>KW</td>
+      <td>16558</td>
+      <td>2025-01-01</td>
+      <td>2025-12-31 23:54:06</td>
+      <td>193.394</td>
+      <td>133.632</td>
+      <td>0.000</td>
+      <td>241.355</td>
+      <td>492.720</td>
+      <td>3952</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>energymeter_eau_glacee_temperature_entree_tt02</td>
+      <td></td>
+      <td>16558</td>
+      <td>2025-01-01</td>
+      <td>2025-12-31 23:54:06</td>
+      <td>11.011</td>
+      <td>8.354</td>
+      <td>0.000</td>
+      <td>6.350</td>
+      <td>38.060</td>
+      <td>15</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>energymeter_eau_glacee_temperature_sortie_tt01</td>
+      <td></td>
+      <td>16558</td>
+      <td>2025-01-01</td>
+      <td>2025-12-31 23:54:06</td>
+      <td>12.341</td>
+      <td>5.740</td>
+      <td>0.000</td>
+      <td>9.200</td>
+      <td>35.490</td>
+      <td>15</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>rendement_rendement_electrique</td>
+      <td></td>
+      <td>16558</td>
+      <td>2025-01-01</td>
+      <td>2025-12-31 23:54:06</td>
+      <td>41.278</td>
+      <td>11.669</td>
+      <td>0.000</td>
+      <td>42.230</td>
+      <td>1060.880</td>
+      <td>436</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>rendement_rendement_thermique</td>
+      <td></td>
+      <td>16558</td>
+      <td>2025-01-01</td>
+      <td>2025-12-31 23:54:06</td>
+      <td>18.953</td>
+      <td>12.682</td>
+      <td>0.000</td>
+      <td>21.290</td>
+      <td>918.240</td>
+      <td>221</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>rendement_rendement_total</td>
+      <td></td>
+      <td>16558</td>
+      <td>2025-01-01</td>
+      <td>2025-12-31 23:54:06</td>
+      <td>60.270</td>
+      <td>23.294</td>
+      <td>0.000</td>
+      <td>63.180</td>
+      <td>1979.120</td>
+      <td>50</td>
+      <td>0</td>
+    </tr>
+  </tbody>
+</table>
+<h2>Timeseries (per sensor)</h2><div class='grid'>
+<a href='01_timeseries/achat_et_vente_energie_negative_production_kwh.png'><img src='01_timeseries/achat_et_vente_energie_negative_production_kwh.png' alt='achat_et_vente_energie_negative_production_kwh.png'></a>
+<a href='01_timeseries/achat_et_vente_energie_negative_steg_kwh.png'><img src='01_timeseries/achat_et_vente_energie_negative_steg_kwh.png' alt='achat_et_vente_energie_negative_steg_kwh.png'></a>
+<a href='01_timeseries/achat_et_vente_energie_positive_production_kwh.png'><img src='01_timeseries/achat_et_vente_energie_positive_production_kwh.png' alt='achat_et_vente_energie_positive_production_kwh.png'></a>
+<a href='01_timeseries/achat_et_vente_energie_positive_steg_kwh.png'><img src='01_timeseries/achat_et_vente_energie_positive_steg_kwh.png' alt='achat_et_vente_energie_positive_steg_kwh.png'></a>
+<a href='01_timeseries/consommation_auxiliare_energie_electrique_en_kwh.png'><img src='01_timeseries/consommation_auxiliare_energie_electrique_en_kwh.png' alt='consommation_auxiliare_energie_electrique_en_kwh.png'></a>
+<a href='01_timeseries/consommation_gaz_consommation_du_gaz_naturel_moteur_en_nm3_volume.png'><img src='01_timeseries/consommation_gaz_consommation_du_gaz_naturel_moteur_en_nm3_volume.png' alt='consommation_gaz_consommation_du_gaz_naturel_moteur_en_nm3_volume.png'></a>
+<a href='01_timeseries/consommation_gaz_debit_du_gaz_naturel_moteur_en_nm3_h.png'><img src='01_timeseries/consommation_gaz_debit_du_gaz_naturel_moteur_en_nm3_h.png' alt='consommation_gaz_debit_du_gaz_naturel_moteur_en_nm3_h.png'></a>
+<a href='01_timeseries/energie_moteur_courant_phase_1_en_a.png'><img src='01_timeseries/energie_moteur_courant_phase_1_en_a.png' alt='energie_moteur_courant_phase_1_en_a.png'></a>
+<a href='01_timeseries/energie_moteur_courant_phase_2_en_a.png'><img src='01_timeseries/energie_moteur_courant_phase_2_en_a.png' alt='energie_moteur_courant_phase_2_en_a.png'></a>
+<a href='01_timeseries/energie_moteur_courant_phase_3_en_a.png'><img src='01_timeseries/energie_moteur_courant_phase_3_en_a.png' alt='energie_moteur_courant_phase_3_en_a.png'></a>
+<a href='01_timeseries/energie_moteur_energie_electrique_au_borne_de_l_alternateur_en_kwh.png'><img src='01_timeseries/energie_moteur_energie_electrique_au_borne_de_l_alternateur_en_kwh.png' alt='energie_moteur_energie_electrique_au_borne_de_l_alternateur_en_kwh.png'></a>
+<a href='01_timeseries/energie_moteur_energie_reactive_en_kvarh.png'><img src='01_timeseries/energie_moteur_energie_reactive_en_kvarh.png' alt='energie_moteur_energie_reactive_en_kvarh.png'></a>
+<a href='01_timeseries/energie_moteur_facteur_de_puissance.png'><img src='01_timeseries/energie_moteur_facteur_de_puissance.png' alt='energie_moteur_facteur_de_puissance.png'></a>
+<a href='01_timeseries/energie_moteur_heure_de_fonctionnement.png'><img src='01_timeseries/energie_moteur_heure_de_fonctionnement.png' alt='energie_moteur_heure_de_fonctionnement.png'></a>
+<a href='01_timeseries/energie_moteur_puissance_electrique_brute_en_kw.png'><img src='01_timeseries/energie_moteur_puissance_electrique_brute_en_kw.png' alt='energie_moteur_puissance_electrique_brute_en_kw.png'></a>
+<a href='01_timeseries/energie_moteur_vitesse_en_rpm.png'><img src='01_timeseries/energie_moteur_vitesse_en_rpm.png' alt='energie_moteur_vitesse_en_rpm.png'></a>
+<a href='01_timeseries/energie_moteur_voltage_en_v.png'><img src='01_timeseries/energie_moteur_voltage_en_v.png' alt='energie_moteur_voltage_en_v.png'></a>
+<a href='01_timeseries/energymeter_eau_chaude_alpha_consigne_de_temperature.png'><img src='01_timeseries/energymeter_eau_chaude_alpha_consigne_de_temperature.png' alt='energymeter_eau_chaude_alpha_consigne_de_temperature.png'></a>
+<a href='01_timeseries/energymeter_eau_chaude_alpha_debit_en_m3_h.png'><img src='01_timeseries/energymeter_eau_chaude_alpha_debit_en_m3_h.png' alt='energymeter_eau_chaude_alpha_debit_en_m3_h.png'></a>
+<a href='01_timeseries/energymeter_eau_chaude_alpha_energie_en_kwh.png'><img src='01_timeseries/energymeter_eau_chaude_alpha_energie_en_kwh.png' alt='energymeter_eau_chaude_alpha_energie_en_kwh.png'></a>
+<a href='01_timeseries/energymeter_eau_chaude_alpha_lecture_de_temperature.png'><img src='01_timeseries/energymeter_eau_chaude_alpha_lecture_de_temperature.png' alt='energymeter_eau_chaude_alpha_lecture_de_temperature.png'></a>
+<a href='01_timeseries/energymeter_eau_chaude_alpha_puissance_en_kw.png'><img src='01_timeseries/energymeter_eau_chaude_alpha_puissance_en_kw.png' alt='energymeter_eau_chaude_alpha_puissance_en_kw.png'></a>
+<a href='01_timeseries/energymeter_eau_chaude_alpha_sanitaire_consigne_de_temperature.png'><img src='01_timeseries/energymeter_eau_chaude_alpha_sanitaire_consigne_de_temperature.png' alt='energymeter_eau_chaude_alpha_sanitaire_consigne_de_temperature.png'></a>
+<a href='01_timeseries/energymeter_eau_chaude_alpha_sanitaire_debit_en_m3_h.png'><img src='01_timeseries/energymeter_eau_chaude_alpha_sanitaire_debit_en_m3_h.png' alt='energymeter_eau_chaude_alpha_sanitaire_debit_en_m3_h.png'></a>
+<a href='01_timeseries/energymeter_eau_chaude_alpha_sanitaire_energie_en_kwh.png'><img src='01_timeseries/energymeter_eau_chaude_alpha_sanitaire_energie_en_kwh.png' alt='energymeter_eau_chaude_alpha_sanitaire_energie_en_kwh.png'></a>
+<a href='01_timeseries/energymeter_eau_chaude_alpha_sanitaire_lecture_de_temperature.png'><img src='01_timeseries/energymeter_eau_chaude_alpha_sanitaire_lecture_de_temperature.png' alt='energymeter_eau_chaude_alpha_sanitaire_lecture_de_temperature.png'></a>
+<a href='01_timeseries/energymeter_eau_chaude_alpha_sanitaire_puissance_en_kw.png'><img src='01_timeseries/energymeter_eau_chaude_alpha_sanitaire_puissance_en_kw.png' alt='energymeter_eau_chaude_alpha_sanitaire_puissance_en_kw.png'></a>
+<a href='01_timeseries/energymeter_eau_chaude_alpha_sanitaire_temperature_entree_tt07.png'><img src='01_timeseries/energymeter_eau_chaude_alpha_sanitaire_temperature_entree_tt07.png' alt='energymeter_eau_chaude_alpha_sanitaire_temperature_entree_tt07.png'></a>
+<a href='01_timeseries/energymeter_eau_chaude_alpha_sanitaire_temperature_sortie_tt08.png'><img src='01_timeseries/energymeter_eau_chaude_alpha_sanitaire_temperature_sortie_tt08.png' alt='energymeter_eau_chaude_alpha_sanitaire_temperature_sortie_tt08.png'></a>
+<a href='01_timeseries/energymeter_eau_chaude_alpha_temperature_entree_tt09.png'><img src='01_timeseries/energymeter_eau_chaude_alpha_temperature_entree_tt09.png' alt='energymeter_eau_chaude_alpha_temperature_entree_tt09.png'></a>
+<a href='01_timeseries/energymeter_eau_chaude_alpha_temperature_sortie_tt10.png'><img src='01_timeseries/energymeter_eau_chaude_alpha_temperature_sortie_tt10.png' alt='energymeter_eau_chaude_alpha_temperature_sortie_tt10.png'></a>
+<a href='01_timeseries/energymeter_eau_chaude_gamma_consigne_de_temperature.png'><img src='01_timeseries/energymeter_eau_chaude_gamma_consigne_de_temperature.png' alt='energymeter_eau_chaude_gamma_consigne_de_temperature.png'></a>
+<a href='01_timeseries/energymeter_eau_chaude_gamma_debit_en_m3_h.png'><img src='01_timeseries/energymeter_eau_chaude_gamma_debit_en_m3_h.png' alt='energymeter_eau_chaude_gamma_debit_en_m3_h.png'></a>
+<a href='01_timeseries/energymeter_eau_chaude_gamma_energie_en_kwh.png'><img src='01_timeseries/energymeter_eau_chaude_gamma_energie_en_kwh.png' alt='energymeter_eau_chaude_gamma_energie_en_kwh.png'></a>
+<a href='01_timeseries/energymeter_eau_chaude_gamma_lecture_de_temperature.png'><img src='01_timeseries/energymeter_eau_chaude_gamma_lecture_de_temperature.png' alt='energymeter_eau_chaude_gamma_lecture_de_temperature.png'></a>
+<a href='01_timeseries/energymeter_eau_chaude_gamma_puissance_en_kw.png'><img src='01_timeseries/energymeter_eau_chaude_gamma_puissance_en_kw.png' alt='energymeter_eau_chaude_gamma_puissance_en_kw.png'></a>
+<a href='01_timeseries/energymeter_eau_chaude_gamma_temperature_entree_tt13.png'><img src='01_timeseries/energymeter_eau_chaude_gamma_temperature_entree_tt13.png' alt='energymeter_eau_chaude_gamma_temperature_entree_tt13.png'></a>
+<a href='01_timeseries/energymeter_eau_chaude_gamma_temperature_sortie_tt14.png'><img src='01_timeseries/energymeter_eau_chaude_gamma_temperature_sortie_tt14.png' alt='energymeter_eau_chaude_gamma_temperature_sortie_tt14.png'></a>
+<a href='01_timeseries/energymeter_eau_chaude_recupere_debit_en_m3_h_fm02.png'><img src='01_timeseries/energymeter_eau_chaude_recupere_debit_en_m3_h_fm02.png' alt='energymeter_eau_chaude_recupere_debit_en_m3_h_fm02.png'></a>
+<a href='01_timeseries/energymeter_eau_chaude_recupere_energie_en_kwh.png'><img src='01_timeseries/energymeter_eau_chaude_recupere_energie_en_kwh.png' alt='energymeter_eau_chaude_recupere_energie_en_kwh.png'></a>
+<a href='01_timeseries/energymeter_eau_chaude_recupere_puissance_en_kw.png'><img src='01_timeseries/energymeter_eau_chaude_recupere_puissance_en_kw.png' alt='energymeter_eau_chaude_recupere_puissance_en_kw.png'></a>
+<a href='01_timeseries/energymeter_eau_chaude_recupere_temperature_entree_tt04.png'><img src='01_timeseries/energymeter_eau_chaude_recupere_temperature_entree_tt04.png' alt='energymeter_eau_chaude_recupere_temperature_entree_tt04.png'></a>
+<a href='01_timeseries/energymeter_eau_chaude_recupere_temperature_sortie_tt03.png'><img src='01_timeseries/energymeter_eau_chaude_recupere_temperature_sortie_tt03.png' alt='energymeter_eau_chaude_recupere_temperature_sortie_tt03.png'></a>
+<a href='01_timeseries/energymeter_eau_glacee_debit_en_m3_h_fm01.png'><img src='01_timeseries/energymeter_eau_glacee_debit_en_m3_h_fm01.png' alt='energymeter_eau_glacee_debit_en_m3_h_fm01.png'></a>
+<a href='01_timeseries/energymeter_eau_glacee_energie_en_kwh.png'><img src='01_timeseries/energymeter_eau_glacee_energie_en_kwh.png' alt='energymeter_eau_glacee_energie_en_kwh.png'></a>
+<a href='01_timeseries/energymeter_eau_glacee_puissance_en_kw.png'><img src='01_timeseries/energymeter_eau_glacee_puissance_en_kw.png' alt='energymeter_eau_glacee_puissance_en_kw.png'></a>
+<a href='01_timeseries/energymeter_eau_glacee_temperature_entree_tt02.png'><img src='01_timeseries/energymeter_eau_glacee_temperature_entree_tt02.png' alt='energymeter_eau_glacee_temperature_entree_tt02.png'></a>
+<a href='01_timeseries/energymeter_eau_glacee_temperature_sortie_tt01.png'><img src='01_timeseries/energymeter_eau_glacee_temperature_sortie_tt01.png' alt='energymeter_eau_glacee_temperature_sortie_tt01.png'></a>
+<a href='01_timeseries/rendement_rendement_electrique.png'><img src='01_timeseries/rendement_rendement_electrique.png' alt='rendement_rendement_electrique.png'></a>
+<a href='01_timeseries/rendement_rendement_thermique.png'><img src='01_timeseries/rendement_rendement_thermique.png' alt='rendement_rendement_thermique.png'></a>
+<a href='01_timeseries/rendement_rendement_total.png'><img src='01_timeseries/rendement_rendement_total.png' alt='rendement_rendement_total.png'></a>
+</div>
+<h2>Missingness</h2><div class='grid'>
+<a href='02_missingness.png'><img src='02_missingness.png' alt='02_missingness.png'></a>
+</div>
+<h2>Weekly profile (per sensor)</h2><div class='grid'>
+<a href='03_weekly_profile/achat_et_vente_energie_negative_production_kwh.png'><img src='03_weekly_profile/achat_et_vente_energie_negative_production_kwh.png' alt='achat_et_vente_energie_negative_production_kwh.png'></a>
+<a href='03_weekly_profile/achat_et_vente_energie_negative_steg_kwh.png'><img src='03_weekly_profile/achat_et_vente_energie_negative_steg_kwh.png' alt='achat_et_vente_energie_negative_steg_kwh.png'></a>
+<a href='03_weekly_profile/achat_et_vente_energie_positive_production_kwh.png'><img src='03_weekly_profile/achat_et_vente_energie_positive_production_kwh.png' alt='achat_et_vente_energie_positive_production_kwh.png'></a>
+<a href='03_weekly_profile/achat_et_vente_energie_positive_steg_kwh.png'><img src='03_weekly_profile/achat_et_vente_energie_positive_steg_kwh.png' alt='achat_et_vente_energie_positive_steg_kwh.png'></a>
+<a href='03_weekly_profile/consommation_auxiliare_energie_electrique_en_kwh.png'><img src='03_weekly_profile/consommation_auxiliare_energie_electrique_en_kwh.png' alt='consommation_auxiliare_energie_electrique_en_kwh.png'></a>
+<a href='03_weekly_profile/consommation_gaz_consommation_du_gaz_naturel_moteur_en_nm3_volume.png'><img src='03_weekly_profile/consommation_gaz_consommation_du_gaz_naturel_moteur_en_nm3_volume.png' alt='consommation_gaz_consommation_du_gaz_naturel_moteur_en_nm3_volume.png'></a>
+<a href='03_weekly_profile/consommation_gaz_debit_du_gaz_naturel_moteur_en_nm3_h.png'><img src='03_weekly_profile/consommation_gaz_debit_du_gaz_naturel_moteur_en_nm3_h.png' alt='consommation_gaz_debit_du_gaz_naturel_moteur_en_nm3_h.png'></a>
+<a href='03_weekly_profile/energie_moteur_courant_phase_1_en_a.png'><img src='03_weekly_profile/energie_moteur_courant_phase_1_en_a.png' alt='energie_moteur_courant_phase_1_en_a.png'></a>
+<a href='03_weekly_profile/energie_moteur_courant_phase_2_en_a.png'><img src='03_weekly_profile/energie_moteur_courant_phase_2_en_a.png' alt='energie_moteur_courant_phase_2_en_a.png'></a>
+<a href='03_weekly_profile/energie_moteur_courant_phase_3_en_a.png'><img src='03_weekly_profile/energie_moteur_courant_phase_3_en_a.png' alt='energie_moteur_courant_phase_3_en_a.png'></a>
+<a href='03_weekly_profile/energie_moteur_energie_electrique_au_borne_de_l_alternateur_en_kwh.png'><img src='03_weekly_profile/energie_moteur_energie_electrique_au_borne_de_l_alternateur_en_kwh.png' alt='energie_moteur_energie_electrique_au_borne_de_l_alternateur_en_kwh.png'></a>
+<a href='03_weekly_profile/energie_moteur_energie_reactive_en_kvarh.png'><img src='03_weekly_profile/energie_moteur_energie_reactive_en_kvarh.png' alt='energie_moteur_energie_reactive_en_kvarh.png'></a>
+<a href='03_weekly_profile/energie_moteur_facteur_de_puissance.png'><img src='03_weekly_profile/energie_moteur_facteur_de_puissance.png' alt='energie_moteur_facteur_de_puissance.png'></a>
+<a href='03_weekly_profile/energie_moteur_heure_de_fonctionnement.png'><img src='03_weekly_profile/energie_moteur_heure_de_fonctionnement.png' alt='energie_moteur_heure_de_fonctionnement.png'></a>
+<a href='03_weekly_profile/energie_moteur_puissance_electrique_brute_en_kw.png'><img src='03_weekly_profile/energie_moteur_puissance_electrique_brute_en_kw.png' alt='energie_moteur_puissance_electrique_brute_en_kw.png'></a>
+<a href='03_weekly_profile/energie_moteur_vitesse_en_rpm.png'><img src='03_weekly_profile/energie_moteur_vitesse_en_rpm.png' alt='energie_moteur_vitesse_en_rpm.png'></a>
+<a href='03_weekly_profile/energie_moteur_voltage_en_v.png'><img src='03_weekly_profile/energie_moteur_voltage_en_v.png' alt='energie_moteur_voltage_en_v.png'></a>
+<a href='03_weekly_profile/energymeter_eau_chaude_alpha_consigne_de_temperature.png'><img src='03_weekly_profile/energymeter_eau_chaude_alpha_consigne_de_temperature.png' alt='energymeter_eau_chaude_alpha_consigne_de_temperature.png'></a>
+<a href='03_weekly_profile/energymeter_eau_chaude_alpha_debit_en_m3_h.png'><img src='03_weekly_profile/energymeter_eau_chaude_alpha_debit_en_m3_h.png' alt='energymeter_eau_chaude_alpha_debit_en_m3_h.png'></a>
+<a href='03_weekly_profile/energymeter_eau_chaude_alpha_energie_en_kwh.png'><img src='03_weekly_profile/energymeter_eau_chaude_alpha_energie_en_kwh.png' alt='energymeter_eau_chaude_alpha_energie_en_kwh.png'></a>
+<a href='03_weekly_profile/energymeter_eau_chaude_alpha_lecture_de_temperature.png'><img src='03_weekly_profile/energymeter_eau_chaude_alpha_lecture_de_temperature.png' alt='energymeter_eau_chaude_alpha_lecture_de_temperature.png'></a>
+<a href='03_weekly_profile/energymeter_eau_chaude_alpha_puissance_en_kw.png'><img src='03_weekly_profile/energymeter_eau_chaude_alpha_puissance_en_kw.png' alt='energymeter_eau_chaude_alpha_puissance_en_kw.png'></a>
+<a href='03_weekly_profile/energymeter_eau_chaude_alpha_sanitaire_consigne_de_temperature.png'><img src='03_weekly_profile/energymeter_eau_chaude_alpha_sanitaire_consigne_de_temperature.png' alt='energymeter_eau_chaude_alpha_sanitaire_consigne_de_temperature.png'></a>
+<a href='03_weekly_profile/energymeter_eau_chaude_alpha_sanitaire_debit_en_m3_h.png'><img src='03_weekly_profile/energymeter_eau_chaude_alpha_sanitaire_debit_en_m3_h.png' alt='energymeter_eau_chaude_alpha_sanitaire_debit_en_m3_h.png'></a>
+<a href='03_weekly_profile/energymeter_eau_chaude_alpha_sanitaire_energie_en_kwh.png'><img src='03_weekly_profile/energymeter_eau_chaude_alpha_sanitaire_energie_en_kwh.png' alt='energymeter_eau_chaude_alpha_sanitaire_energie_en_kwh.png'></a>
+<a href='03_weekly_profile/energymeter_eau_chaude_alpha_sanitaire_lecture_de_temperature.png'><img src='03_weekly_profile/energymeter_eau_chaude_alpha_sanitaire_lecture_de_temperature.png' alt='energymeter_eau_chaude_alpha_sanitaire_lecture_de_temperature.png'></a>
+<a href='03_weekly_profile/energymeter_eau_chaude_alpha_sanitaire_puissance_en_kw.png'><img src='03_weekly_profile/energymeter_eau_chaude_alpha_sanitaire_puissance_en_kw.png' alt='energymeter_eau_chaude_alpha_sanitaire_puissance_en_kw.png'></a>
+<a href='03_weekly_profile/energymeter_eau_chaude_alpha_sanitaire_temperature_entree_tt07.png'><img src='03_weekly_profile/energymeter_eau_chaude_alpha_sanitaire_temperature_entree_tt07.png' alt='energymeter_eau_chaude_alpha_sanitaire_temperature_entree_tt07.png'></a>
+<a href='03_weekly_profile/energymeter_eau_chaude_alpha_sanitaire_temperature_sortie_tt08.png'><img src='03_weekly_profile/energymeter_eau_chaude_alpha_sanitaire_temperature_sortie_tt08.png' alt='energymeter_eau_chaude_alpha_sanitaire_temperature_sortie_tt08.png'></a>
+<a href='03_weekly_profile/energymeter_eau_chaude_alpha_temperature_entree_tt09.png'><img src='03_weekly_profile/energymeter_eau_chaude_alpha_temperature_entree_tt09.png' alt='energymeter_eau_chaude_alpha_temperature_entree_tt09.png'></a>
+<a href='03_weekly_profile/energymeter_eau_chaude_alpha_temperature_sortie_tt10.png'><img src='03_weekly_profile/energymeter_eau_chaude_alpha_temperature_sortie_tt10.png' alt='energymeter_eau_chaude_alpha_temperature_sortie_tt10.png'></a>
+<a href='03_weekly_profile/energymeter_eau_chaude_gamma_consigne_de_temperature.png'><img src='03_weekly_profile/energymeter_eau_chaude_gamma_consigne_de_temperature.png' alt='energymeter_eau_chaude_gamma_consigne_de_temperature.png'></a>
+<a href='03_weekly_profile/energymeter_eau_chaude_gamma_debit_en_m3_h.png'><img src='03_weekly_profile/energymeter_eau_chaude_gamma_debit_en_m3_h.png' alt='energymeter_eau_chaude_gamma_debit_en_m3_h.png'></a>
+<a href='03_weekly_profile/energymeter_eau_chaude_gamma_energie_en_kwh.png'><img src='03_weekly_profile/energymeter_eau_chaude_gamma_energie_en_kwh.png' alt='energymeter_eau_chaude_gamma_energie_en_kwh.png'></a>
+<a href='03_weekly_profile/energymeter_eau_chaude_gamma_lecture_de_temperature.png'><img src='03_weekly_profile/energymeter_eau_chaude_gamma_lecture_de_temperature.png' alt='energymeter_eau_chaude_gamma_lecture_de_temperature.png'></a>
+<a href='03_weekly_profile/energymeter_eau_chaude_gamma_puissance_en_kw.png'><img src='03_weekly_profile/energymeter_eau_chaude_gamma_puissance_en_kw.png' alt='energymeter_eau_chaude_gamma_puissance_en_kw.png'></a>
+<a href='03_weekly_profile/energymeter_eau_chaude_gamma_temperature_entree_tt13.png'><img src='03_weekly_profile/energymeter_eau_chaude_gamma_temperature_entree_tt13.png' alt='energymeter_eau_chaude_gamma_temperature_entree_tt13.png'></a>
+<a href='03_weekly_profile/energymeter_eau_chaude_gamma_temperature_sortie_tt14.png'><img src='03_weekly_profile/energymeter_eau_chaude_gamma_temperature_sortie_tt14.png' alt='energymeter_eau_chaude_gamma_temperature_sortie_tt14.png'></a>
+<a href='03_weekly_profile/energymeter_eau_chaude_recupere_debit_en_m3_h_fm02.png'><img src='03_weekly_profile/energymeter_eau_chaude_recupere_debit_en_m3_h_fm02.png' alt='energymeter_eau_chaude_recupere_debit_en_m3_h_fm02.png'></a>
+<a href='03_weekly_profile/energymeter_eau_chaude_recupere_energie_en_kwh.png'><img src='03_weekly_profile/energymeter_eau_chaude_recupere_energie_en_kwh.png' alt='energymeter_eau_chaude_recupere_energie_en_kwh.png'></a>
+<a href='03_weekly_profile/energymeter_eau_chaude_recupere_puissance_en_kw.png'><img src='03_weekly_profile/energymeter_eau_chaude_recupere_puissance_en_kw.png' alt='energymeter_eau_chaude_recupere_puissance_en_kw.png'></a>
+<a href='03_weekly_profile/energymeter_eau_chaude_recupere_temperature_entree_tt04.png'><img src='03_weekly_profile/energymeter_eau_chaude_recupere_temperature_entree_tt04.png' alt='energymeter_eau_chaude_recupere_temperature_entree_tt04.png'></a>
+<a href='03_weekly_profile/energymeter_eau_chaude_recupere_temperature_sortie_tt03.png'><img src='03_weekly_profile/energymeter_eau_chaude_recupere_temperature_sortie_tt03.png' alt='energymeter_eau_chaude_recupere_temperature_sortie_tt03.png'></a>
+<a href='03_weekly_profile/energymeter_eau_glacee_debit_en_m3_h_fm01.png'><img src='03_weekly_profile/energymeter_eau_glacee_debit_en_m3_h_fm01.png' alt='energymeter_eau_glacee_debit_en_m3_h_fm01.png'></a>
+<a href='03_weekly_profile/energymeter_eau_glacee_energie_en_kwh.png'><img src='03_weekly_profile/energymeter_eau_glacee_energie_en_kwh.png' alt='energymeter_eau_glacee_energie_en_kwh.png'></a>
+<a href='03_weekly_profile/energymeter_eau_glacee_puissance_en_kw.png'><img src='03_weekly_profile/energymeter_eau_glacee_puissance_en_kw.png' alt='energymeter_eau_glacee_puissance_en_kw.png'></a>
+<a href='03_weekly_profile/energymeter_eau_glacee_temperature_entree_tt02.png'><img src='03_weekly_profile/energymeter_eau_glacee_temperature_entree_tt02.png' alt='energymeter_eau_glacee_temperature_entree_tt02.png'></a>
+<a href='03_weekly_profile/energymeter_eau_glacee_temperature_sortie_tt01.png'><img src='03_weekly_profile/energymeter_eau_glacee_temperature_sortie_tt01.png' alt='energymeter_eau_glacee_temperature_sortie_tt01.png'></a>
+<a href='03_weekly_profile/rendement_rendement_electrique.png'><img src='03_weekly_profile/rendement_rendement_electrique.png' alt='rendement_rendement_electrique.png'></a>
+<a href='03_weekly_profile/rendement_rendement_thermique.png'><img src='03_weekly_profile/rendement_rendement_thermique.png' alt='rendement_rendement_thermique.png'></a>
+<a href='03_weekly_profile/rendement_rendement_total.png'><img src='03_weekly_profile/rendement_rendement_total.png' alt='rendement_rendement_total.png'></a>
+</div>
+<h2>Correlation</h2><div class='grid'>
+<a href='04_correlation.png'><img src='04_correlation.png' alt='04_correlation.png'></a>
+</div>
+<h2>Seasonality (STL, top 5)</h2><div class='grid'>
+<a href='05_seasonality/achat_et_vente_energie_negative_production_kwh.png'><img src='05_seasonality/achat_et_vente_energie_negative_production_kwh.png' alt='achat_et_vente_energie_negative_production_kwh.png'></a>
+<a href='05_seasonality/energymeter_eau_chaude_recupere_debit_en_m3_h_fm02.png'><img src='05_seasonality/energymeter_eau_chaude_recupere_debit_en_m3_h_fm02.png' alt='energymeter_eau_chaude_recupere_debit_en_m3_h_fm02.png'></a>
+<a href='05_seasonality/energymeter_eau_chaude_alpha_sanitaire_temperature_sortie_tt08.png'><img src='05_seasonality/energymeter_eau_chaude_alpha_sanitaire_temperature_sortie_tt08.png' alt='energymeter_eau_chaude_alpha_sanitaire_temperature_sortie_tt08.png'></a>
+<a href='05_seasonality/energymeter_eau_chaude_alpha_temperature_entree_tt09.png'><img src='05_seasonality/energymeter_eau_chaude_alpha_temperature_entree_tt09.png' alt='energymeter_eau_chaude_alpha_temperature_entree_tt09.png'></a>
+<a href='05_seasonality/energymeter_eau_chaude_alpha_temperature_sortie_tt10.png'><img src='05_seasonality/energymeter_eau_chaude_alpha_temperature_sortie_tt10.png' alt='energymeter_eau_chaude_alpha_temperature_sortie_tt10.png'></a>
+</div>
+<h2>Distributions</h2><div class='grid'>
+<a href='06_distributions.png'><img src='06_distributions.png' alt='06_distributions.png'></a>
+</div>

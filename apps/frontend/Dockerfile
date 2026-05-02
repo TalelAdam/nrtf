@@ -27,6 +27,7 @@ RUN pnpm install --frozen-lockfile
 
 # Copy source
 COPY apps/frontend/ ./apps/frontend/
+COPY apps/ml-pipeline/reports/eval/ ./apps/ml-pipeline/reports/eval/
 COPY packages/ ./packages/
 
 WORKDIR /app/apps/frontend
