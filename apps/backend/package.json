@@ -48,7 +48,15 @@
     "rxjs": "^7.8.1",
     "socket.io": "^4.8.0",
     "viem": "^2.21.16",
-    "zod": "^3.23.8"
+    "zod": "^3.23.8",
+    "@fastify/multipart": "^8.3.0",
+    "@langchain/anthropic": "^0.3.0",
+    "@langchain/core": "^0.3.0",
+    "langchain": "^0.3.0",
+    "pdf-parse": "^1.1.1",
+    "sharp": "^0.33.5",
+    "tesseract.js": "^5.1.1",
+    "xlsx": "^0.18.5"
   },
   "devDependencies": {
     "@nestjs/cli": "^10.4.5",
@@ -72,7 +80,8 @@
     "ts-loader": "^9.5.1",
     "ts-node": "^10.9.2",
     "tsconfig-paths": "^4.2.0",
-    "typescript": "^5.5.4"
+    "typescript": "^5.5.4",
+    "@types/pdf-parse": "^1.1.4"
   },
   "jest": {
     "moduleFileExtensions": ["js", "json", "ts"],

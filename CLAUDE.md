@@ -88,11 +88,11 @@ Each folder has a `_manifest.json` with SHAs.
 | Time-series DB | TimescaleDB | Hypertables + continuous aggregates |
 | MQTT broker | Eclipse Mosquitto | ESP32 ↔ backend canonical channel |
 | Frontend | Next.js 14 + Tailwind + shadcn/ui + Recharts (+ Plotly for sankey) | Composable, fast |
-| AI orchestration | LangGraph + LangChain | Multi-agent for Part 2 (extract → norm → CO₂ → forecast → anomaly) |
+| AI orchestration | LangGraph.js + LangChain.js | Multi-agent for Part 2 (extract → norm → CO₂ → forecast → anomaly) |
 | Cloud LLM | Claude Sonnet 4 | Constrained-output extraction + supervisor reasoning |
-| OCR | PaddleOCR (lang=fr primary) + Tesseract (fra+ara fallback) + docling/Marker for dense layouts | French Tunisian bills |
-| Document parsing | pdfplumber + Camelot (native PDF), openpyxl + Polars (Excel), pdf2image (scanned PDF) | Heterogeneous spec |
-| ML | PyTorch + Chronos-Bolt + LightGBM + scikit-learn + Lightning | Foundation-first forecasting |
+| OCR | tesseract.js (fra+ara) + sharp image preprocessing | French Tunisian bills — pure JS |
+| Document parsing | pdf-parse (native PDF), SheetJS/xlsx (Excel), sharp + tesseract.js (scanned PDF/JPEG) | Heterogeneous spec |
+| ML | onnxruntime-node (serving) + LangChain.js tools for inference API | Foundation-first forecasting |
 | Anomaly | rolling-MAD + STL + IsolationForest server-side; ring-buffer C on ESP32 | Same algorithms, two runtimes |
 | Edge runtime | TFLite-Micro + ESP-NN (ESP32-S3) | Track A target |
 | Compression | torch.ao.quantization, ai_edge_torch | INT8 PTQ for the on-device forecaster |
@@ -137,7 +137,7 @@ Each folder has a `_manifest.json` with SHAs.
 ## Coding conventions
 
 - TypeScript strict mode, no `any` without reason.
-- Python: `ruff` for lint+format, `mypy` where feasible.
+
 - Conventional commits: `feat(backend):`, `fix(extraction):`, `chore(docs):`, etc.
 - Co-located tests per module.
 - Secrets via `.env` (never committed); `.env.example` documents shape.
@@ -159,11 +159,6 @@ Each folder has a `_manifest.json` with SHAs.
 ```bash
 # install everything (or /install-all)
 pnpm install
-cd apps/ai-agents     && pip install -r requirements.txt
-cd apps/ml-pipeline   && pip install -r requirements.txt
-cd apps/doc-extraction && pip install -r requirements.txt
-cd apps/edge-runtime  && pip install -r requirements.txt
-cd apps/heat-recovery && pip install -r requirements.txt
 
 # spin up local services
 docker compose -f infra/docker/docker-compose.yml up -d
@@ -171,16 +166,18 @@ docker compose -f infra/docker/docker-compose.yml up -d
 # dev (one terminal each)
 pnpm --filter backend  dev                                                # NestJS :3000
 pnpm --filter frontend dev                                                # Next.js :3001
-cd apps/ai-agents      && uvicorn src.api.server:app       --port 8001
-cd apps/ml-pipeline    && uvicorn src.inference.server:app --port 8002
-cd apps/doc-extraction && uvicorn src.inference.server:app --port 8003
+pnpm --filter @nrtf/ai-agents dev                                         # LangGraph.js agents :8001
+pnpm --filter @nrtf/ml-pipeline dev                                       # ONNX inference server :8002
 
 # tests
 pnpm --filter backend test
 pnpm --filter frontend test
-cd apps/ai-agents      && pytest
-cd apps/ml-pipeline    && pytest
-cd apps/doc-extraction && pytest
+pnpm --filter @nrtf/ai-agents test
+pnpm --filter @nrtf/ml-pipeline test
+
+# doc-extraction benchmarks (requires data/raw/factures/)
+pnpm --filter backend test -- --testPathPattern=extraction-benchmark.spec
+pnpm --filter backend test -- --testPathPattern=ocr.service.spec
 ```
 
 ## Sensor stand (Part 1)

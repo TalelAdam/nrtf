@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(where python:*)",
+      "Bash(py --version)",
+      "Bash(py -m pip list)",
+      "Bash(py:*)",
+      "Bash(\"C:/Users/talel/AppData/Local/Programs/Python/Python311/python.exe\" -m pip list)",
+      "Bash(\"C:/Users/talel/AppData/Local/Programs/Python/Python310/python.exe\" -m pip list)",
+      "Bash(iconv -f utf-8 -t utf-8//IGNORE)"
+    ]
+  }
+}
