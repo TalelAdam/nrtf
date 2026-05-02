@@ -70,11 +70,11 @@ describe('WHREngine — static mode (default sensor data)', () => {
   });
 
   it('ROI years should be positive and finite', () => {
-    expect(result.roi_s1).toBeFinite();
+    expect(Number.isFinite(result.roi_s1)).toBe(true);
     expect(result.roi_s1).toBeGreaterThan(0);
-    expect(result.roi_s2).toBeFinite();
+    expect(Number.isFinite(result.roi_s2)).toBe(true);
     expect(result.roi_s2).toBeGreaterThan(0);
-    expect(result.roi_s3).toBeFinite();
+    expect(Number.isFinite(result.roi_s3)).toBe(true);
     expect(result.roi_s3).toBeGreaterThan(0);
   });
 

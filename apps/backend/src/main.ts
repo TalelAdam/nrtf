@@ -25,6 +25,9 @@ async function bootstrap() {
     limits: { fileSize: 50 * 1024 * 1024, files: 1 },
   });
 
+  // Global prefix — must match Next.js rewrite: /api/:path* → backend/api/:path*
+  app.setGlobalPrefix('api');
+
   // Global validation + transformation pipeline
   app.useGlobalPipes(
     new ValidationPipe({

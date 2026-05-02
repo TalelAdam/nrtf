@@ -14,7 +14,7 @@
 
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { ChatAnthropic } from '@langchain/anthropic';
+import { ChatOpenAI } from '@langchain/openai';
 import { HumanMessage, SystemMessage } from '@langchain/core/messages';
 import { z } from 'zod';
 import * as XLSX from 'xlsx';
@@ -209,19 +209,27 @@ interface PartialExtraction {
 @Injectable()
 export class PipelineBService {
   private readonly logger = new Logger(PipelineBService.name);
-  private readonly llm: ChatAnthropic;
+  private _llm: ChatOpenAI | null = null;
 
   constructor(
     private readonly config: ConfigService,
     private readonly ocr: OcrService,
     private readonly cache: ExtractionCacheService,
-  ) {
-    this.llm = new ChatAnthropic({
-      model: this.config.get<string>('ANTHROPIC_MODEL', 'claude-sonnet-4-20250514'),
-      temperature: 0,
-      apiKey: this.config.get<string>('ANTHROPIC_API_KEY', ''),
-      maxTokens: 2048,
-    });
+  ) {}
+
+  private get llm(): ChatOpenAI {
+    if (!this._llm) {
+      const apiKey = this.config.get<string>('OPENROUTER_API_KEY');
+      if (!apiKey) throw new Error('OPENROUTER_API_KEY is not set — add it to .env or root .env');
+      this._llm = new ChatOpenAI({
+        apiKey,
+        model: this.config.get<string>('OPENROUTER_MODEL', 'meta-llama/llama-3.3-70b-instruct'),
+        temperature: 0,
+        maxTokens: 2048,
+        configuration: { baseURL: 'https://openrouter.ai/api/v1' },
+      });
+    }
+    return this._llm;
   }
 
   // ─── Public entrypoints ──────────────────────────────────────────────────
@@ -333,8 +341,9 @@ export class PipelineBService {
     text: string,
     targetFields: string[],
   ): Promise<Record<string, unknown>> {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const partialSchema = EnergyBillSchema.pick(
-      Object.fromEntries(targetFields.map((f) => [f, true])) as Record<string, true>,
+      Object.fromEntries(targetFields.map((f) => [f, true])) as any,
     );
 
     const structuredLlm = this.llm.withStructuredOutput(partialSchema, {

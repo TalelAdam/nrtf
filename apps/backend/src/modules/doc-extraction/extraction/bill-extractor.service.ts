@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { ChatAnthropic } from '@langchain/anthropic';
+import { ChatOpenAI } from '@langchain/openai';
 import { HumanMessage, SystemMessage } from '@langchain/core/messages';
 import pdfParse from 'pdf-parse';
 import { createHash } from 'crypto';
@@ -22,19 +22,27 @@ export interface BillExtractionResult {
 @Injectable()
 export class BillExtractorService {
   private readonly logger = new Logger(BillExtractorService.name);
-  private readonly llm: ChatAnthropic;
+  private _llm: ChatOpenAI | null = null;
 
   constructor(
     private readonly config: ConfigService,
     private readonly ocr: OcrService,
     private readonly cache: ExtractionCacheService,
-  ) {
-    this.llm = new ChatAnthropic({
-      model: this.config.get<string>('ANTHROPIC_MODEL', 'claude-sonnet-4-20250514'),
-      temperature: 0,
-      apiKey: this.config.get<string>('ANTHROPIC_API_KEY', ''),
-      maxTokens: 2048,
-    });
+  ) {}
+
+  private get llm(): ChatOpenAI {
+    if (!this._llm) {
+      const apiKey = this.config.get<string>('OPENROUTER_API_KEY');
+      if (!apiKey) throw new Error('OPENROUTER_API_KEY is not set — add it to .env or root .env');
+      this._llm = new ChatOpenAI({
+        apiKey,
+        model: this.config.get<string>('OPENROUTER_MODEL', 'meta-llama/llama-3.3-70b-instruct'),
+        temperature: 0,
+        maxTokens: 2048,
+        configuration: { baseURL: 'https://openrouter.ai/api/v1' },
+      });
+    }
+    return this._llm;
   }
 
   async extract(
@@ -81,8 +89,14 @@ export class BillExtractorService {
   }
 
   private async extractFromText(text: string, sha: string): Promise<EnergyBill> {
-    // Truncate to avoid excessive token usage (bills are typically < 2000 chars)
-    const snippet = text.slice(0, 4000);
+    // Sanitize OCR text: strip control characters and non-printable bytes that
+    // corrupt LLM JSON output (e.g. \u0008 sequences from tesseract garbage).
+    // Keep printable ASCII + common Arabic/French Unicode blocks.
+    const sanitized = text
+      .replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, ' ') // control chars
+      .replace(/\uFFFD/g, ' ')                              // replacement char
+      .replace(/ {3,}/g, '  ')                              // collapse excess spaces
+      .slice(0, 4000);
 
     const structuredLlm = this.llm.withStructuredOutput(EnergyBillSchema, {
       name: 'extract_energy_bill',
@@ -92,25 +106,34 @@ export class BillExtractorService {
       const result = await structuredLlm.invoke([
         new SystemMessage(BILL_SYSTEM_PROMPT),
         new HumanMessage(
-          `Document type: Tunisian utility bill\nSHA: ${sha.slice(0, 8)}\n\nOCR / PDF text:\n${snippet}`,
+          `Document type: Tunisian utility bill\nSHA: ${sha.slice(0, 8)}\n\nOCR / PDF text:\n${sanitized}`,
         ),
       ]);
       return result as EnergyBill;
     } catch (err) {
       this.logger.warn(`Structured output failed, retrying with raw JSON: ${(err as Error).message}`);
-      // Fallback: raw JSON extraction
-      const rawResult = await this.llm.invoke([
-        new SystemMessage(
-          BILL_SYSTEM_PROMPT +
-            '\n\nRespond ONLY with a valid JSON object. No markdown, no explanation.',
-        ),
-        new HumanMessage(`OCR text:\n${snippet}`),
-      ]);
-      const content = rawResult.content as string;
-      const jsonMatch = content.match(/\{[\s\S]*\}/);
-      if (!jsonMatch) throw new Error('LLM returned no JSON');
-      const parsed = JSON.parse(jsonMatch[0]) as unknown;
-      return EnergyBillSchema.parse(parsed);
+      // Fallback: ask for raw JSON, strip any markdown fences
+      try {
+        const rawResult = await this.llm.invoke([
+          new SystemMessage(
+            BILL_SYSTEM_PROMPT +
+              '\n\nRespond ONLY with a valid JSON object. No markdown, no explanation, no ocr_raw_text field.',
+          ),
+          new HumanMessage(`OCR text:\n${sanitized}`),
+        ]);
+        const content = (rawResult.content as string)
+          .replace(/```json?\n?/gi, '')
+          .replace(/```/g, '')
+          .trim();
+        const jsonMatch = content.match(/\{[\s\S]*\}/);
+        if (!jsonMatch) throw new Error('LLM returned no JSON object');
+        const parsed = JSON.parse(jsonMatch[0]) as unknown;
+        return EnergyBillSchema.parse(parsed);
+      } catch (innerErr) {
+        this.logger.error(`Both extraction paths failed: ${(innerErr as Error).message}`);
+        // Return minimal valid bill rather than crashing the request
+        return EnergyBillSchema.parse({ extraction_confidence: 0.1 });
+      }
     }
   }
 }

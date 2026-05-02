@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { ChatAnthropic } from '@langchain/anthropic';
+import { ChatOpenAI } from '@langchain/openai';
 import { HumanMessage, SystemMessage } from '@langchain/core/messages';
 import * as XLSX from 'xlsx';
 import { z } from 'zod';
@@ -28,18 +28,26 @@ export interface ExcelExtractionServiceResult {
 @Injectable()
 export class ExcelExtractorService {
   private readonly logger = new Logger(ExcelExtractorService.name);
-  private readonly llm: ChatAnthropic;
+  private _llm: ChatOpenAI | null = null;
 
   constructor(
     private readonly config: ConfigService,
     private readonly cache: ExtractionCacheService,
-  ) {
-    this.llm = new ChatAnthropic({
-      model: this.config.get<string>('ANTHROPIC_MODEL', 'claude-sonnet-4-20250514'),
-      temperature: 0,
-      apiKey: this.config.get<string>('ANTHROPIC_API_KEY', ''),
-      maxTokens: 4096,
-    });
+  ) {}
+
+  private get llm(): ChatOpenAI {
+    if (!this._llm) {
+      const apiKey = this.config.get<string>('OPENROUTER_API_KEY');
+      if (!apiKey) throw new Error('OPENROUTER_API_KEY is not set — add it to .env or root .env');
+      this._llm = new ChatOpenAI({
+        apiKey,
+        model: this.config.get<string>('OPENROUTER_MODEL', 'meta-llama/llama-3.3-70b-instruct'),
+        temperature: 0,
+        maxTokens: 4096,
+        configuration: { baseURL: 'https://openrouter.ai/api/v1' },
+      });
+    }
+    return this._llm;
   }
 
   async extract(buffer: Buffer, filename: string): Promise<ExcelExtractionServiceResult> {

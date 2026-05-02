@@ -18,6 +18,7 @@ export interface Esp32Reading {
 export class IoTService implements OnModuleInit, OnModuleDestroy {
   private readonly logger = new Logger(IoTService.name);
   private client: mqtt.MqttClient | null = null;
+  private mqttErrorLogged = false;
 
   constructor(
     private readonly config: ConfigService,
@@ -37,6 +38,7 @@ export class IoTService implements OnModuleInit, OnModuleDestroy {
     });
 
     this.client.on('connect', () => {
+      this.mqttErrorLogged = false;
       this.logger.log('MQTT connected');
       this.client!.subscribe(topic, { qos: 0 }, (err) => {
         if (err) this.logger.warn(`Subscribe error: ${err.message}`);
@@ -49,7 +51,10 @@ export class IoTService implements OnModuleInit, OnModuleDestroy {
     });
 
     this.client.on('error', (err: Error) => {
-      this.logger.warn(`MQTT error: ${err.message}`);
+      if (!this.mqttErrorLogged) {
+        this.logger.warn(`MQTT unavailable (will retry silently): ${err.message}`);
+        this.mqttErrorLogged = true;
+      }
     });
   }
 

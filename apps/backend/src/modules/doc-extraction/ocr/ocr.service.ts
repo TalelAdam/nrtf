@@ -92,7 +92,8 @@ export class OcrService implements OnModuleDestroy {
     }));
 
     const ocrResult: OcrResult = {
-      text: result.data.text,
+      // Strip control characters and null bytes that corrupt downstream JSON parsing
+      text: result.data.text.replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F\uFFFD]/g, ' '),
       confidence: result.data.confidence,
       words,
       engine: 'tesseract',

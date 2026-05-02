@@ -24,7 +24,7 @@ const DATA_DIR = join(__dirname, '../../../../../../data/raw');
  *   3. Assert that average quality score ≥ TARGET_QUALITY_SCORE
  *
  * Set env var TARGET_QUALITY_SCORE (0-1) to adjust CI threshold (default 0.3).
- * With ANTHROPIC_API_KEY unset, LLM extraction steps are skipped and only
+ * With OPENROUTER_API_KEY unset, LLM extraction steps are skipped and only
  * file-type detection + OCR are measured.
  */
 
@@ -36,8 +36,8 @@ describe('DocExtraction — end-to-end benchmark', () => {
   const mockConfig = {
     get: (key: string, def?: string) => {
       const map: Record<string, string | undefined> = {
-        ANTHROPIC_API_KEY: process.env['ANTHROPIC_API_KEY'],
-        ANTHROPIC_MODEL: 'claude-sonnet-4-20250514',
+        OPENROUTER_API_KEY: process.env['OPENROUTER_API_KEY'],
+        OPENROUTER_MODEL: process.env['OPENROUTER_MODEL'] ?? 'meta-llama/llama-3.3-70b-instruct',
         OCR_LANGUAGES: 'fra+ara',
         REDIS_URL: undefined,
         SUBMISSION_BASE_URL: 'http://localhost:9000',
@@ -244,7 +244,7 @@ describe('DocExtraction — end-to-end benchmark', () => {
 
       const successRows = rows.filter((r) => !r.error);
       if (successRows.length === 0) {
-        console.warn('[Benchmark] All extractions failed — likely no ANTHROPIC_API_KEY');
+        console.warn('[Benchmark] All extractions failed — likely no OPENROUTER_API_KEY');
         return;
       }
 
