@@ -38,7 +38,11 @@ button {
   grid-template-columns: 220px minmax(0, 1fr);
   min-height: 100vh;
   background:
-    radial-gradient(circle at 70% 15%, rgba(0, 229, 255, 0.11), transparent 28%),
+    radial-gradient(
+      circle at 70% 15%,
+      rgba(0, 229, 255, 0.11),
+      transparent 28%
+    ),
     linear-gradient(135deg, rgba(18, 24, 35, 0.92), rgba(15, 17, 23, 0.98));
 }
 
@@ -182,6 +186,44 @@ button {
   text-transform: uppercase;
 }
 
+.controls-toggle {
+  position: absolute;
+  z-index: 12;
+  top: 18px;
+  right: 18px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border: 1px solid rgba(0, 229, 255, 0.48);
+  background: rgba(8, 12, 18, 0.86);
+  color: #effcff;
+  transition:
+    background 180ms ease,
+    border-color 180ms ease,
+    transform 180ms ease;
+}
+
+.controls-toggle:hover {
+  border-color: rgba(55, 213, 118, 0.72);
+  background: rgba(55, 213, 118, 0.14);
+  transform: translateY(-1px);
+}
+
+.viewer-controls {
+  opacity: 1;
+  transition:
+    opacity 180ms ease,
+    visibility 180ms ease;
+}
+
+.viewer-controls.hidden {
+  pointer-events: none;
+  visibility: hidden;
+  opacity: 0;
+}
+
 .section-picker {
   position: absolute;
   z-index: 6;
@@ -256,6 +298,15 @@ button {
   text-transform: uppercase;
 }
 
+.empty-flags {
+  border: 1px dashed rgba(0, 229, 255, 0.24);
+  color: #8da4b3;
+  padding: 14px;
+  font-size: 0.7rem;
+  line-height: 1.45;
+  text-transform: uppercase;
+}
+
 .viewer-canvas {
   position: absolute;
   inset: 0;
@@ -273,6 +324,10 @@ button {
   box-shadow: -22px 0 60px rgba(0, 0, 0, 0.34);
   padding: 24px;
   animation: drawer-in 220ms ease-out;
+}
+
+.section-drawer.controls-hidden {
+  display: none;
 }
 
 .drawer-close {
@@ -327,6 +382,53 @@ button {
 .drawer-status.offline {
   border-color: rgba(255, 74, 92, 0.72);
   color: #ffacb5;
+}
+
+.camera-save-panel {
+  display: grid;
+  gap: 8px;
+  margin: 18px 0 22px;
+  border: 1px solid rgba(0, 229, 255, 0.18);
+  background: rgba(0, 229, 255, 0.045);
+  padding: 12px;
+}
+
+.save-view-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  min-height: 38px;
+  border: 1px solid rgba(0, 229, 255, 0.72);
+  background: rgba(0, 229, 255, 0.14);
+  color: #effcff;
+  font-size: 0.72rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  transition:
+    background 180ms ease,
+    transform 180ms ease;
+}
+
+.save-view-button:hover {
+  background: rgba(0, 229, 255, 0.23);
+  transform: translateY(-1px);
+}
+
+.flag-button {
+  border-color: rgba(55, 213, 118, 0.72);
+  background: rgba(55, 213, 118, 0.12);
+}
+
+.flag-button:hover {
+  background: rgba(55, 213, 118, 0.2);
+}
+
+.camera-save-panel span {
+  color: #8da4b3;
+  font-size: 0.68rem;
+  line-height: 1.45;
 }
 
 .metric-grid {
