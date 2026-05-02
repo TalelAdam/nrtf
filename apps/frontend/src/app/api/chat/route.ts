@@ -1,5 +1,7 @@
 import { NextRequest } from "next/server";
 
+const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY ?? "";
+
 const SYSTEM_PROMPT = `You are an expert industrial energy advisor for a pharmaceutical factory in Tunisia (Kilani Group). You specialize in waste heat recovery (WHR), energy efficiency optimization, and equipment diagnostics.
 
 Context about the factory:
@@ -17,6 +19,14 @@ Three recovery scenarios:
 - S2 — Compressor WHR loop for process hot water → ~960 MWh/yr
 - S3 — GEG desuperheater for domestic hot water → ~420 MWh/yr
 
+Your role:
+1. Diagnose energy waste patterns from sensor data and audit findings
+2. Recommend specific interventions with ROI estimates
+3. Explain engineering equations in accessible terms
+4. Help prioritize waste heat recovery scenarios using MCDA
+5. Calculate potential CO₂ reductions and cost savings
+6. Alert when sensor readings suggest abnormal energy consumption
+
 Be concise, technical but accessible. Use metric units. Reference Tunisian energy context (STEG tariffs, DT currency). Format responses with markdown when helpful.`;
 
 interface ChatMessage {
@@ -25,9 +35,7 @@ interface ChatMessage {
 }
 
 export async function POST(req: NextRequest) {
-  const apiKey = process.env.OPENROUTER_API_KEY;
-
-  if (!apiKey) {
+  if (!OPENROUTER_API_KEY) {
     return new Response(
       JSON.stringify({ error: "OPENROUTER_API_KEY not configured" }),
       { status: 500, headers: { "Content-Type": "application/json" } }
@@ -37,22 +45,25 @@ export async function POST(req: NextRequest) {
   const body = await req.json();
   const messages: ChatMessage[] = body.messages ?? [];
 
-  const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${apiKey}`,
-      "Content-Type": "application/json",
-      "HTTP-Referer": "https://nrtf.retechfusion.tn",
-      "X-Title": "ReTeqFusion Energy Advisor",
-    },
-    body: JSON.stringify({
-      model: "openai/gpt-4o-mini",
-      messages: [{ role: "system", content: SYSTEM_PROMPT }, ...messages],
-      stream: true,
-      max_tokens: 2048,
-      temperature: 0.7,
-    }),
-  });
+  const response = await fetch(
+    "https://openrouter.ai/api/v1/chat/completions",
+    {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${OPENROUTER_API_KEY}`,
+        "Content-Type": "application/json",
+        "HTTP-Referer": "https://nrtf.retechfusion.tn",
+        "X-Title": "ReTeqFusion Energy Advisor",
+      },
+      body: JSON.stringify({
+        model: "openai/gpt-4o-mini",
+        messages: [{ role: "system", content: SYSTEM_PROMPT }, ...messages],
+        stream: true,
+        max_tokens: 2048,
+        temperature: 0.7,
+      }),
+    }
+  );
 
   if (!response.ok) {
     const errText = await response.text();

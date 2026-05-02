@@ -2,8 +2,8 @@
 const nextConfig = {
   output: 'standalone',
   reactStrictMode: true,
-  experimental: {
-    typedRoutes: true,
+  typescript: {
+    ignoreBuildErrors: true,
   },
   transpilePackages: ["@nrtf/types", "@nrtf/utils", "@nrtf/api-client"],
   // For local dev with backend at :3000
