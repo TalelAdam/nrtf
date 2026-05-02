@@ -170,6 +170,15 @@ typechain-types/
 *.sqlite3
 prisma/migrations/dev.db*
 
+# temp / scratch files
+_tmp_*
+image.png
+package-lock.json
+
+# Claude Code worktrees
+.claude/worktrees/
+.claude/settings.local.json
+
 # OS
 .AppleDouble
 .LSOverride
