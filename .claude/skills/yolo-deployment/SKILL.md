@@ -5,7 +5,7 @@ description: Use when training and deploying a YOLO-family detector — Ultralyt
 
 # YOLO Deployment Pipeline (Ultralytics → Edge)
 
-The "boring strong default" recipe for any object detection task in NRTF. Used by `computer-vision-engineer`; quantization handed off to `edge-ai-optimizer`.
+Hedged kept under ADR-003 in case we need DocLayNet-style layout detection on scanned PDFs. Otherwise out of scope for Re·Tech Fusion. Quantization handed off to `edge-ai-optimizer` if invoked.
 
 ## Model selection cheat-sheet
 

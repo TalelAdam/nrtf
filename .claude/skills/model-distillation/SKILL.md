@@ -52,14 +52,14 @@ class FeatureKD(nn.Module):
 
 For YOLO: hint at FPN P3 / P4 / P5 features.
 
-## DistilBERT-style for transformers
+## DistilBERT-style for transformers (historical — out of scope under ADR-003)
 
-For Phi-3-mini → smaller student (rare in our setup, since Phi-3-mini is already the floor):
+For reference only: distilling Phi-3-mini into a smaller student would use:
 - KL divergence on logits.
 - MSE on hidden states (every k-th layer).
 - Cosine on attention maps (optional, expensive).
 
-In the AURA setup we instead **fine-tune Phi-3-mini directly on the cleanroom domain** rather than distill — the model is already small enough.
+(Out of scope for Re·Tech Fusion — no Pi-class hardware available, no transformer distillation needed.)
 
 ## Distillation for time-series foundation models
 

@@ -143,16 +143,11 @@ When you finish a task, summarize: the graph topology (one ASCII diagram), tools
 
 The leaks emphasize on-device AI. The agentic system needs to keep the multi-agent reasoning narrative *while* admitting that one of those agents now runs on a Pi 5, not a cloud endpoint. New norms:
 
-## A1. Edge-deployable LLMs are first-class
-For the AURA demo, the **Reasoning agent** (the one producing the French explanation trace) runs locally via `llama.cpp` on Pi 5:
-- Default model: `Phi-3-mini-4k-instruct` GGUF Q4_K_M (~ 2.3 GB, ~ 8 tok/s on Pi 5).
-- Fallback: `Gemma-2-2B-it` GGUF Q4_K_M.
-- Final fallback: Claude Haiku via API (only if local is broken at H22).
+## A1. (Superseded by ADR-003 post-spec addendum)
+The pre-spec plan to run Phi-3-mini on a Raspberry Pi 5 was based on ADR-002. ADR-003 dropped that direction — no Pi available, all LLM calls go to Claude (cloud). See the post-spec addendum below for the active topology.
 
-`edge-ai-optimizer` produces the GGUF; you consume it through `llama.cpp` HTTP server (`server` binary on port 8080) using `langchain-community.llms.LlamaCpp` or `langchain-openai` pointed at the local OpenAI-compatible endpoint.
-
-## A2. Vision tools are the new MCP moat
-Every CV pipeline output (`computer-vision-engineer`'s FastAPI) gets wrapped as a LangChain `@tool`. The agent reasons about cleanroom state via tools like `get_ppe_compliance(camera_id)`, `count_persons(camera_id)`, `detect_plume(camera_id)`. This is what judges see: "the agent looks at the cameras and decides."
+## A2. (Superseded by ADR-003 post-spec addendum)
+Vision tools are no longer in scope. Wrap document-extraction + energy-domain endpoints as tools instead — see the post-spec addendum below for the canonical tool list.
 
 ## A3. Hardware sovereignty narrative
 For Tunisia + KILANI, the "no data leaves the cleanroom" story is a real differentiator. The Reasoning agent runs on the Pi 5, the vision agent runs on the ESP32-S3 / Pi 5, and only aggregate decisions hit the cloud. State this explicitly in the deck.
@@ -162,3 +157,47 @@ Use Claude Sonnet 4 (cloud) as the *Supervisor* node — the one that picks whic
 
 ## A5. Trace serialization for the dashboard
 Every reasoning step now includes: `model_name`, `runtime` (cloud / pi5 / esp32s3), `tokens`, `ms`. The frontend agent-trace panel shows where each step ran. Judges *love* seeing "this thought happened on the Pi 5."
+
+---
+
+# Post-spec addendum (2026-05-01) — Re·Tech Fusion alignment
+
+ADR-003 supersedes ADR-002. Your LangGraph supervisor now orchestrates the **Part 2 pipeline**, not a multimodal cleanroom controller.
+
+## A1. Updated supervisor topology
+
+```
+                      Supervisor (Sonnet)
+                            │
+        ┌──────────┬────────┼────────┬───────────┐
+        ▼          ▼        ▼        ▼           ▼
+   Extract     Normalize    CO₂   Forecast    Anomaly
+   (DocInt)    (Energy)  (Energy) (ml-pipe)   (ml-pipe)
+        │          │        │
+        └──────────┴────────┴── Track B advisor (Energy)
+```
+
+## A2. Tools (the real moat)
+
+Wrap every FastAPI endpoint as a LangChain `@tool` — agents reason about extraction / normalization / CO₂ / forecasting / anomalies / heat-recovery via tool calls, never via raw HTTP from the agent process.
+
+Tools to declare:
+- `extract_bill(file_path) → BillRecord`
+- `extract_excel(file_path) → list[ExcelEntry]`
+- `extract_audit(file_path) → AuditFlowSummary`
+- `normalize_units(records) → list[NormalizedRecord]`
+- `compute_co2(records) → CO2Summary`
+- `forecast(metric, horizon_h) → Forecast`
+- `detect_anomalies(metric, window) → list[AnomalyEvent]`
+- `submit_to_platform(records, task) → {f1, detail}`
+- `heat_recovery_inventory() → list[HeatSource]`
+- `score_recovery_scenarios(sources, weights) → ScoredScenarios`
+
+## A3. Edge LLMs / Pi 5 — dropped
+ADR-002's Phi-3-mini-on-Pi-5 reasoning agent is removed (no Pi available). All LLM calls go to Claude (cloud).
+
+## A4. Streaming traces still matter
+Stream `astream_events` to the frontend WebSocket so the dashboard shows the agent's reasoning live. Judges love seeing tool calls fire.
+
+## A5. MCP usefulness shrunk
+For this challenge, MCP is overkill — most tools are in-process FastAPI. Only wrap the IoT broker as MCP if we want a "the agent can read live sensors" demo moment in the pitch. Otherwise, skip MCP for now.

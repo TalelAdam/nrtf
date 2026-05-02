@@ -143,7 +143,7 @@ The leaked spec emphasizes (a) AI on edge, (b) computer vision on real video, (c
 
 ## L1. Foundation-fine-tune-then-distill is the default
 Don't train from scratch on the leaked data. The pattern is:
-1. Pick a foundation model (Chronos-Bolt for time-series, YOLOv8/RT-DETR for detection, Phi-3-mini for reasoning, SAM-2 for segmentation).
+1. Pick a foundation model — Chronos-Bolt for time-series forecasting (the active task under ADR-003). YOLOv8 / SAM-2 / Phi-3-mini are out of scope under the spec-aligned direction.
 2. Fine-tune on the full leaked dataset on rented GPU (Lambda / Vast.ai / RunPod) — track in MLflow.
 3. Hand the fine-tuned teacher to `edge-ai-optimizer` with 500 calibration samples; receive a quantized student.
 4. The demo runs the student. The deck shows a 4-bar accuracy chart: zero-shot → fine-tuned teacher → distilled student → INT8 on-device.
@@ -151,8 +151,8 @@ Don't train from scratch on the leaked data. The pattern is:
 ## L2. Large-data pipeline through `data-engineer`
 You do not load Parquet directly. `data-engineer` provides Polars / DuckDB queries + frozen split manifests. Consume those. If a query feels slow, file a request — don't write a faster pandas loop.
 
-## L3. Video is now in scope
-Vision tasks (PPE, occupancy, plume) are jointly owned with `computer-vision-engineer`. You handle: training loops, loss design, KD recipes, MLflow tracking. CV-eng handles: data prep, augmentation, tracking, inference serving. Coordinate on the model checkpoint contract — same file format, same eval script.
+## L3. (Superseded by ADR-003 — see post-spec addendum below)
+Video and CV are out of scope under ADR-003 (no video data; ESP32-only edge). The current spec emphasizes time-series forecasting on sensor + Excel data; see the post-spec addendum below.
 
 ## L4. Every checkpoint is born edge-ready
 On every save, also export ONNX (FP32). `edge-ai-optimizer` will do INT8 from there. This avoids a "we trained but can't export" surprise at H10.
@@ -163,3 +163,29 @@ Every model card now lists both:
 - The on-device latency target the `edge-ai-optimizer` needs to hit (e.g. "Pi 5 ≤ 80 ms P95").
 
 If the latency target isn't filled in, the work isn't done.
+
+---
+
+# Post-spec addendum (2026-05-01) — Re·Tech Fusion alignment
+
+The official spec replaced the AURA-cleanroom direction. Your scope now:
+
+## ML1. Part 2 forecasting (counts toward §2.2 CO₂ block)
+Foundation-first as before. Inputs: IoT sensor time-series + monthly Excel reports (`data/raw/tri-gen/*.xlsx`). Targets: short-term sensor forecasts (24 h ahead) + longer-horizon energy-consumption forecasts (7 d / monthly). Try Chronos-Bolt-tiny zero-shot first; fall back to LightGBM with cycle features.
+
+## ML2. Part 2 anomaly detection (+15 bonus)
+Server-side: rolling-MAD z-score + STL + IsolationForest on residuals. Output schema in `anomaly-detection-timeseries` skill. Each event: `{type, ts, sensor/site, confidence}`.
+
+## ML3. Part 3A predictive model (stretch, ESP32-bound)
+Train the simplest possible multivariate sensor predictor (1-step-ahead, 8–32-input MLP or tiny LightGBM-as-MLP). Hand checkpoint + ONNX FP32 to `edge-ai-optimizer`. Constraint: post-INT8 model ≤ 200 KB, latency ≤ 200 ms, RAM ≤ 60 KB tensor arena.
+
+## ML4. Co-ownership boundary
+- `data-engineer` provides Parquet + frozen splits.
+- `energy-domain-engineer` adds `canonical_kwh` + `co2_kg` + `scope` columns before you train CO₂ estimators.
+- `document-intelligence-engineer` provides extracted records as a Polars DataFrame.
+
+## ML5. Out of scope (was in scope under ADR-002)
+- Computer vision on video — dropped.
+- YOLO training on cleanroom video — dropped.
+- Distillation from large vision teachers — dropped.
+- Edge LLM (Phi-3-mini on Pi) — dropped (no Pi).

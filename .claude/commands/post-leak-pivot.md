@@ -1,22 +1,23 @@
 ---
-description: Show the post-leak architectural shift in one screen — what changed, what owns it, what to read
-argument-hint:
-allowed-tools: Read, Glob
+description: (Superseded) Historical command from the pre-spec ADR-002 direction
 ---
 
-# /post-leak-pivot — orientation for the post-leak setup
+# /post-leak-pivot — SUPERSEDED by ADR-003
 
-Print a concise summary of how the project changed on 2026-04-30 in response to the leaks (AI on edge, computer vision on real video, large real data). Used to onboard a teammate or refresh memory after a context reset.
+This command oriented the team around the post-leak multimodal-edge-AI direction (ADR-002) before the official Re·Tech Fusion spec arrived on 2026-05-01.
 
-## What this command does
+The official spec replaced that direction. **Use ADR-003 + STRATEGY.md instead.**
 
-Prints, in this order:
+For current orientation, read in this order:
+1. `docs/brainstorm/STRATEGY.md` — single source of truth
+2. `docs/architecture/ADR-003-spec-alignment.md` — what changed and why
+3. `CLAUDE.md` — agents + skills + commands quick reference
+4. `data/raw/README.md` — practice data inventory
 
-1. **Pivot one-liner.** "AURA evolved from sensor + forecast to a multimodal edge AI system: vision + sensors + edge LLM, trained on the leaked KILANI dataset, distilled to ESP32-S3 / Pi 5."
-2. **What's new in `.claude/agents/`** — links to `edge-ai-optimizer.md`, `computer-vision-engineer.md`, `data-engineer.md`.
-3. **What's new in `.claude/skills/`** — eight new SKILL.md paths.
-4. **What's new in the repo** — `apps/edge-runtime/`, `apps/cv-pipeline/`, `apps/firmware/esp32-cam/`, `data/`, `models/`, `notebooks/`, `infra/edge-targets/`, `docs/`.
-5. **Read in this order** to catch up — `docs/architecture/ADR-002-post-leak-pivot.md`, then `docs/brainstorm/STRATEGY.md` (post-leak section), then the three new agent files.
-6. **Open decisions** (from STRATEGY.md §8) — order PMS5003 + ESP32-S3 + Pi 5 today; confirm spec at H0; pick demo-video fallback policy.
-
-Reads from `docs/architecture/ADR-002-post-leak-pivot.md` and `docs/brainstorm/STRATEGY.md` to stay accurate.
+Active commands for the spec-aligned direction:
+- `/extract-bills <dir>` — run extraction against a directory
+- `/normalize-units <json>` — kWh canonicalization
+- `/co2-baseline <input>` — CO₂ + balance reconciliation
+- `/heat-recovery-scan` — Track B inventory + MCDA + top-3
+- `/quantize-model <ckpt> esp32-s3` — Track A compression
+- `/profile-edge <artifact> esp32-s3` — on-device benchmark

@@ -17,7 +17,7 @@ The handoff pattern from `edge-ai-optimizer` to the firmware teammate. Lives bet
 ## Folder layout (firmware side)
 
 ```
-apps/firmware/esp32-cam/
+apps/firmware/esp32/
 ├── platformio.ini
 ├── include/
 │   └── model/
