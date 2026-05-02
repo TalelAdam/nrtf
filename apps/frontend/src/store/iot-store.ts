@@ -17,9 +17,11 @@ interface IoTState {
   connectionStatus: 'connected' | 'connecting' | 'disconnected';
   latest: Esp32Reading | null;
   history: Esp32Reading[]; // newest at end
+  tempAlert: boolean;
 
   setConnectionStatus: (status: IoTState['connectionStatus']) => void;
   pushReading: (r: Esp32Reading) => void;
+  setTempAlert: (v: boolean) => void;
   reset: () => void;
 }
 
@@ -27,6 +29,7 @@ export const useIoTStore = create<IoTState>((set) => ({
   connectionStatus: 'disconnected',
   latest: null,
   history: [],
+  tempAlert: false,
 
   setConnectionStatus: (status) => set({ connectionStatus: status }),
 
@@ -36,6 +39,8 @@ export const useIoTStore = create<IoTState>((set) => ({
       history: [...state.history.slice(-(HISTORY_SIZE - 1)), r],
     })),
 
+  setTempAlert: (v) => set({ tempAlert: v }),
+
   reset: () =>
-    set({ connectionStatus: 'disconnected', latest: null, history: [] }),
+    set({ connectionStatus: 'disconnected', latest: null, history: [], tempAlert: false }),
 }));

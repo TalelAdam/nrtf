@@ -1366,6 +1366,7 @@ button {
 
 /* ─── Sensor KPIs ─────────────────────────────────────────────── */
 .sensor-kpis-wrapper {
+  position: relative;
   padding: 14px 14px 10px;
   border-bottom: 1px solid rgba(187, 171, 140, 0.1);
 }
@@ -1412,6 +1413,12 @@ button {
 @keyframes pulse-dot {
   0%, 100% { opacity: 1; }
   50%       { opacity: 0.35; }
+}
+
+@keyframes temp-alert-pulse {
+  0%   { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
+  70%  { box-shadow: 0 0 0 14px rgba(239, 68, 68, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
 }
 
 /* ─── KPI grid ───────────────────────────────────────────────── */

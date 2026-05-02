@@ -2,6 +2,7 @@
 
 import { Activity, Cpu, Eye, EyeOff, Flag, Gauge, X } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import { useIoTStore } from "@/store/iot-store";
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
@@ -227,6 +228,7 @@ export function ThreeViewer({ modelPath }: { modelPath: string }) {
   const [controlsVisible, setControlsVisible] = useState(true);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const tempAlert = useIoTStore((s) => s.tempAlert);
 
   useEffect(() => {
     const mount = mountRef.current;
@@ -882,6 +884,36 @@ export function ThreeViewer({ modelPath }: { modelPath: string }) {
           <p>{selectedSection.notes}</p>
         </aside>
       ) : null}
+      {/* Temperature alert red dot overlay */}
+      {tempAlert && (
+        <div style={{
+          position: 'absolute',
+          top: 18,
+          right: 18,
+          zIndex: 50,
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          gap: 4,
+          pointerEvents: 'none',
+        }}>
+          <div style={{
+            width: 20,
+            height: 20,
+            borderRadius: '50%',
+            background: '#ef4444',
+            boxShadow: '0 0 0 0 rgba(239,68,68,0.7)',
+            animation: 'temp-alert-pulse 1s ease-out infinite',
+          }} />
+          <span style={{
+            fontSize: '0.55rem',
+            color: '#ef4444',
+            fontWeight: 700,
+            textTransform: 'uppercase',
+            letterSpacing: '0.06em',
+          }}>TEMP</span>
+        </div>
+      )}
       {isLoading ? (
         <div className="loading-overlay">
           <div className="spinner">Loading plant asset</div>
