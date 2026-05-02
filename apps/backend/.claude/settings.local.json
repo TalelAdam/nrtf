@@ -17,7 +17,11 @@
       "Bash(ls /c/Users/talel/Documents/Claude/Projects/NRTF/apps/frontend/.env*)",
       "Bash(docker exec nrtf-mosquitto:*)",
       "Bash(node -e ':*)",
-      "Bash(node:*)"
+      "Bash(node:*)",
+      "Bash(git add:*)",
+      "Bash(git -C /c/Users/talel/Documents/Claude/Projects/NRTF add README.md .gitignore apps/backend/src/modules/iot/iot.controller.ts apps/frontend/src/app/globals.css apps/frontend/src/components/dashboard/sensor-kpis.tsx apps/frontend/src/components/dashboard/three-viewer.tsx apps/frontend/src/store/iot-store.ts apps/firmware/arduino/sketches/data-acquisition/Data_aquisition_MQTT.ino)",
+      "Bash(git -C /c/Users/talel/Documents/Claude/Projects/NRTF status --short)",
+      "Bash(git:*)"
     ]
   }
 }
