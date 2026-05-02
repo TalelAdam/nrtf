@@ -1,4 +1,4 @@
-# apps/doc-extraction
+git # apps/doc-extraction
 
 Document intelligence service. Owns Re·Tech Fusion **Part 2** input pipeline: PDF invoices, scanned bills (JPEG), multi-sheet Excel reports → structured JSON with normalized units.
 

@@ -1,0 +1,1616 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WHR Dashboard Integration — Technical Spec</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=Syne:wght@400;600;700;800&display=swap');
+
+  :root {
+    --bg: #0a0e17;
+    --bg2: #0f1624;
+    --bg3: #141c2e;
+    --surface: #1a2438;
+    --surface2: #1e2b40;
+    --border: rgba(255,255,255,0.07);
+    --border2: rgba(255,255,255,0.12);
+    --cyan: #00d4ff;
+    --cyan-dim: rgba(0,212,255,0.12);
+    --cyan-border: rgba(0,212,255,0.3);
+    --green: #00ff9f;
+    --green-dim: rgba(0,255,159,0.1);
+    --amber: #ffb700;
+    --amber-dim: rgba(255,183,0,0.1);
+    --red: #ff4d6d;
+    --red-dim: rgba(255,77,109,0.1);
+    --purple: #a855f7;
+    --purple-dim: rgba(168,85,247,0.1);
+    --text: #e2e8f0;
+    --muted: #64748b;
+    --muted2: #94a3b8;
+    --mono: 'JetBrains Mono', monospace;
+    --head: 'Syne', sans-serif;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--mono);
+    font-size: 13px;
+    line-height: 1.7;
+  }
+
+  /* HEADER */
+  .header {
+    background: var(--bg2);
+    border-bottom: 1px solid var(--border2);
+    padding: 40px 60px 32px;
+    position: relative;
+    overflow: hidden;
+  }
+  .header::after {
+    content: '';
+    position: absolute;
+    top: 0; right: 0; bottom: 0;
+    width: 40%;
+    background: linear-gradient(135deg, transparent, rgba(0,212,255,0.04));
+    pointer-events: none;
+  }
+  .header-tag {
+    font-size: 10px;
+    color: var(--cyan);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .header-tag::before {
+    content: '';
+    display: inline-block;
+    width: 6px; height: 6px;
+    background: var(--cyan);
+    border-radius: 50%;
+    animation: pulse 2s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+  }
+  .header-title {
+    font-family: var(--head);
+    font-size: 36px;
+    font-weight: 800;
+    color: #fff;
+    line-height: 1.1;
+    margin-bottom: 8px;
+  }
+  .header-title span { color: var(--cyan); }
+  .header-sub {
+    font-size: 12px;
+    color: var(--muted2);
+    margin-bottom: 32px;
+  }
+  .header-pills {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 12px;
+    border-radius: 4px;
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    font-weight: 500;
+    border: 1px solid;
+  }
+  .pill-cyan { background: var(--cyan-dim); color: var(--cyan); border-color: var(--cyan-border); }
+  .pill-green { background: var(--green-dim); color: var(--green); border-color: rgba(0,255,159,0.3); }
+  .pill-amber { background: var(--amber-dim); color: var(--amber); border-color: rgba(255,183,0,0.3); }
+  .pill-red { background: var(--red-dim); color: var(--red); border-color: rgba(255,77,109,0.3); }
+
+  /* NAV */
+  .nav {
+    background: var(--bg2);
+    border-bottom: 1px solid var(--border);
+    padding: 0 60px;
+    display: flex;
+    gap: 0;
+    overflow-x: auto;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .nav a {
+    padding: 13px 16px;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--muted);
+    text-decoration: none;
+    white-space: nowrap;
+    border-bottom: 2px solid transparent;
+    transition: color 0.15s, border-color 0.15s;
+  }
+  .nav a:hover { color: var(--cyan); border-bottom-color: var(--cyan); }
+
+  /* LAYOUT */
+  .main { max-width: 1160px; margin: 0 auto; padding: 0 60px 80px; }
+
+  /* SECTIONS */
+  .section {
+    margin-top: 56px;
+    padding-top: 48px;
+    border-top: 1px solid var(--border);
+  }
+  .section-num {
+    font-size: 10px;
+    color: var(--cyan);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+  .section-title {
+    font-family: var(--head);
+    font-size: 22px;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 20px;
+  }
+  .section-title span { color: var(--cyan); }
+
+  /* CODE BLOCKS */
+  .code-block {
+    background: var(--bg);
+    border: 1px solid var(--border2);
+    border-radius: 6px;
+    margin: 16px 0;
+    overflow: hidden;
+  }
+  .code-header {
+    background: var(--bg3);
+    padding: 8px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid var(--border);
+  }
+  .code-lang {
+    font-size: 10px;
+    color: var(--cyan);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+  .code-file { font-size: 10px; color: var(--muted); }
+  .code-body {
+    padding: 20px;
+    overflow-x: auto;
+    line-height: 1.8;
+  }
+  pre { white-space: pre; color: var(--text); }
+
+  /* Syntax colors */
+  .kw { color: var(--purple); }
+  .fn { color: var(--cyan); }
+  .str { color: var(--green); }
+  .num { color: var(--amber); }
+  .cm { color: var(--muted); font-style: italic; }
+  .var { color: #e2e8f0; }
+  .op { color: var(--red); }
+  .dec { color: #f8a4d8; }
+  .cls { color: #fbbf24; }
+
+  /* TABLES */
+  .tbl-wrap { overflow-x: auto; margin: 16px 0; }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12px;
+  }
+  thead tr { border-bottom: 1px solid var(--cyan-border); }
+  thead th {
+    padding: 10px 14px;
+    text-align: left;
+    font-size: 9px;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--muted);
+    font-weight: 400;
+  }
+  tbody tr { border-bottom: 1px solid var(--border); transition: background 0.1s; }
+  tbody tr:hover { background: rgba(255,255,255,0.02); }
+  tbody td { padding: 11px 14px; color: var(--muted2); vertical-align: top; }
+  tbody td:first-child { color: var(--text); }
+
+  /* BADGES */
+  .b {
+    display: inline-block;
+    padding: 2px 7px;
+    border-radius: 3px;
+    font-size: 9px;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    font-weight: 500;
+    white-space: nowrap;
+  }
+  .bc { background: var(--cyan-dim); color: var(--cyan); border: 1px solid var(--cyan-border); }
+  .bg { background: var(--green-dim); color: var(--green); border: 1px solid rgba(0,255,159,0.25); }
+  .ba { background: var(--amber-dim); color: var(--amber); border: 1px solid rgba(255,183,0,0.25); }
+  .br { background: var(--red-dim); color: var(--red); border: 1px solid rgba(255,77,109,0.25); }
+  .bp { background: var(--purple-dim); color: var(--purple); border: 1px solid rgba(168,85,247,0.25); }
+
+  /* CALLOUTS */
+  .callout {
+    padding: 14px 18px;
+    border-radius: 6px;
+    margin: 14px 0;
+    border-left: 3px solid;
+  }
+  .callout p { font-size: 12px; margin: 0; }
+  .call-cyan { background: var(--cyan-dim); border-color: var(--cyan); }
+  .call-cyan p { color: rgba(0,212,255,0.85); }
+  .call-green { background: var(--green-dim); border-color: var(--green); }
+  .call-green p { color: rgba(0,255,159,0.85); }
+  .call-amber { background: var(--amber-dim); border-color: var(--amber); }
+  .call-amber p { color: rgba(255,183,0,0.85); }
+  .call-red { background: var(--red-dim); border-color: var(--red); }
+  .call-red p { color: rgba(255,77,109,0.85); }
+
+  /* ARCH DIAGRAM */
+  .arch {
+    background: var(--bg3);
+    border: 1px solid var(--border2);
+    border-radius: 8px;
+    padding: 32px;
+    margin: 20px 0;
+    display: grid;
+    grid-template-columns: 1fr 40px 1fr 40px 1fr;
+    gap: 0;
+    align-items: center;
+  }
+  .arch-layer {
+    background: var(--surface);
+    border: 1px solid var(--border2);
+    border-radius: 6px;
+    padding: 16px;
+  }
+  .arch-layer-title {
+    font-size: 9px;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    margin-bottom: 10px;
+    font-weight: 500;
+  }
+  .arch-item {
+    padding: 6px 10px;
+    border-radius: 4px;
+    font-size: 11px;
+    margin-bottom: 5px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .arch-item::before {
+    content: '';
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+  .ai-cyan { background: var(--cyan-dim); }
+  .ai-cyan .arch-item::before { background: var(--cyan); }
+  .ai-cyan .arch-layer-title { color: var(--cyan); }
+  .ai-green { background: var(--green-dim); }
+  .ai-green .arch-item::before { background: var(--green); }
+  .ai-green .arch-layer-title { color: var(--green); }
+  .ai-amber { background: var(--amber-dim); }
+  .ai-amber .arch-item::before { background: var(--amber); }
+  .ai-amber .arch-layer-title { color: var(--amber); }
+  .arch-arrow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--muted);
+    font-size: 18px;
+  }
+
+  /* STEP CARDS */
+  .steps { display: grid; gap: 12px; margin: 16px 0; }
+  .step {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 16px 20px;
+    display: grid;
+    grid-template-columns: 36px 1fr;
+    gap: 14px;
+    align-items: start;
+  }
+  .step-num {
+    width: 36px;
+    height: 36px;
+    background: var(--cyan-dim);
+    border: 1px solid var(--cyan-border);
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--cyan);
+    flex-shrink: 0;
+  }
+  .step-content h4 { font-size: 13px; color: #fff; margin-bottom: 4px; font-family: var(--head); }
+  .step-content p { font-size: 12px; color: var(--muted2); }
+  .step-time { font-size: 10px; color: var(--amber); margin-top: 4px; }
+
+  /* KPI GRID */
+  .kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin: 16px 0; }
+  .kpi-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 16px;
+  }
+  .kpi-icon { font-size: 18px; margin-bottom: 8px; }
+  .kpi-name { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 4px; }
+  .kpi-formula { font-size: 10px; color: var(--cyan); margin-bottom: 8px; }
+  .kpi-viz { font-size: 10px; color: var(--amber); border-top: 1px solid var(--border); padding-top: 8px; margin-top: 8px; }
+
+  /* INPUT TABLE */
+  .input-row { display: grid; grid-template-columns: 180px 100px 100px 1fr; gap: 0; }
+  .input-row > * { padding: 10px 14px; border-bottom: 1px solid var(--border); font-size: 12px; }
+
+  /* TIMELINE */
+  .timeline { position: relative; margin: 24px 0; }
+  .timeline::before {
+    content: '';
+    position: absolute;
+    left: 60px;
+    top: 0; bottom: 0;
+    width: 1px;
+    background: var(--border2);
+  }
+  .tl-item {
+    display: grid;
+    grid-template-columns: 120px 1fr;
+    gap: 20px;
+    padding: 12px 0;
+    position: relative;
+  }
+  .tl-item::before {
+    content: '';
+    position: absolute;
+    left: 59px;
+    top: 20px;
+    width: 8px; height: 8px;
+    background: var(--cyan);
+    border-radius: 50%;
+    border: 2px solid var(--bg);
+  }
+  .tl-time { font-size: 10px; color: var(--amber); text-align: right; padding-right: 20px; padding-top: 4px; }
+  .tl-content h4 { font-size: 12px; color: #fff; margin-bottom: 4px; }
+  .tl-content p { font-size: 11px; color: var(--muted2); }
+
+  /* VALIDATION GRID */
+  .val-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin: 16px 0; }
+  .val-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 16px;
+  }
+  .val-card h4 { font-size: 11px; color: var(--red); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 10px; }
+
+  /* INLINE */
+  code { background: var(--bg3); color: var(--cyan); padding: 1px 5px; border-radius: 3px; font-size: 11px; font-family: var(--mono); }
+  p { color: var(--muted2); font-size: 12px; margin-bottom: 12px; }
+  h3 { font-family: var(--head); font-size: 15px; color: #fff; margin: 24px 0 10px; }
+  strong { color: var(--text); }
+
+  /* FOOTER */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 24px 60px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  footer span { font-size: 10px; color: var(--muted); }
+
+  @media (max-width: 900px) {
+    .header, .main, footer { padding-left: 20px; padding-right: 20px; }
+    .nav { padding: 0 20px; }
+    .arch { grid-template-columns: 1fr; }
+    .arch-arrow { transform: rotate(90deg); }
+    .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+    .val-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="header-tag">live integration spec · hackathon 2024–2025 · track b</div>
+  <h1 class="header-title">WHR Calculation Module<br><span>Dashboard Integration</span></h1>
+  <p class="header-sub">Modular engineering feature · Plugs into existing IoT dashboard · Implementable in ≤ 2 hours</p>
+  <div class="header-pills">
+    <span class="pill pill-cyan">Python / Streamlit</span>
+    <span class="pill pill-green">Real-time + Static modes</span>
+    <span class="pill pill-amber">3 Recovery Scenarios</span>
+    <span class="pill pill-red">8 Heat Sources</span>
+  </div>
+</div>
+
+<!-- NAV -->
+<nav class="nav">
+  <a href="#s1">§1 Architecture</a>
+  <a href="#s2">§2 Data→Equations</a>
+  <a href="#s3">§3 Implementation</a>
+  <a href="#s4">§4 User Inputs</a>
+  <a href="#s5">§5 Outputs</a>
+  <a href="#s6">§6 Prioritization</a>
+  <a href="#s7">§7 RT vs Static</a>
+  <a href="#s8">§8 Error Handling</a>
+  <a href="#s9">§9 Execution Plan</a>
+</nav>
+
+<div class="main">
+
+<!-- ═══════════════════════════════════════════════════
+     §1 — FEATURE ARCHITECTURE
+═══════════════════════════════════════════════════ -->
+<div class="section" id="s1">
+  <div class="section-num">§1 · Feature Architecture</div>
+  <h2 class="section-title">Three-Layer <span>Integration Architecture</span></h2>
+
+  <p>The WHR module is a self-contained component that attaches to your existing dashboard without restructuring it. It reads from three data streams, runs the engineering model, and writes KPIs to the output layer.</p>
+
+  <div class="arch">
+    <div class="arch-layer ai-cyan">
+      <div class="arch-layer-title">INPUT LAYER</div>
+      <div class="arch-item">IoT sensors (Part 1)</div>
+      <div class="arch-item">DB / pipeline (Part 2)</div>
+      <div class="arch-item">User sidebar inputs</div>
+      <div class="arch-item">Default fallback values</div>
+    </div>
+    <div class="arch-arrow">→</div>
+    <div class="arch-layer ai-green">
+      <div class="arch-layer-title">PROCESSING LAYER</div>
+      <div class="arch-item">whr_engine.py</div>
+      <div class="arch-item">heat_calc() per source</div>
+      <div class="arch-item">scoring_model()</div>
+      <div class="arch-item">roi_calc()</div>
+    </div>
+    <div class="arch-arrow">→</div>
+    <div class="arch-layer ai-amber">
+      <div class="arch-layer-title">OUTPUT LAYER</div>
+      <div class="arch-item">KPI cards (4 metrics)</div>
+      <div class="arch-item">Priority ranking table</div>
+      <div class="arch-item">ROI curves (12-year)</div>
+      <div class="arch-item">Radar / scatter charts</div>
+    </div>
+  </div>
+
+  <h3>Module file structure — add only these files</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">bash</span>
+      <span class="code-file">project tree — new files only</span>
+    </div>
+    <div class="code-body"><pre>your_dashboard/
+├── app.py                      <span class="cm"># your existing file — add 1 tab import</span>
+├── whr/
+│   ├── __init__.py             <span class="cm"># empty</span>
+│   ├── engine.py               <span class="cm"># all calculations (EQ-1 to EQ-5)</span>
+│   ├── config.py               <span class="cm"># defaults, constants, scoring weights</span>
+│   ├── data_bridge.py          <span class="cm"># connects to your existing data sources</span>
+│   └── ui.py                   <span class="cm"># streamlit tab component</span>
+└── tests/
+    └── test_whr_engine.py      <span class="cm"># quick sanity checks</span></pre></div>
+  </div>
+
+  <h3>Integration point — add one tab to your existing app.py</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">python</span>
+      <span class="code-file">app.py — only addition needed</span>
+    </div>
+    <div class="code-body"><pre><span class="kw">import</span> <span class="var">streamlit</span> <span class="kw">as</span> <span class="var">st</span>
+<span class="kw">from</span> <span class="var">whr</span> <span class="kw">import</span> <span class="var">ui</span> <span class="kw">as</span> <span class="var">whr_ui</span>          <span class="cm"># ← only new import</span>
+
+<span class="cm"># Your existing tabs</span>
+<span class="var">tab1</span>, <span class="var">tab2</span>, <span class="var">tab_whr</span> = <span class="var">st</span>.<span class="fn">tabs</span>([
+    <span class="str">"IoT Dashboard"</span>,
+    <span class="str">"Energy Pipeline"</span>,
+    <span class="str">"♻ WHR Analysis"</span>   <span class="cm"># ← new tab</span>
+])
+
+<span class="kw">with</span> <span class="var">tab_whr</span>:
+    <span class="var">whr_ui</span>.<span class="fn">render</span>()           <span class="cm"># ← one line, entire feature</span></pre></div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════
+     §2 — DATA → EQUATIONS MAPPING
+═══════════════════════════════════════════════════ -->
+<div class="section" id="s2">
+  <div class="section-num">§2 · Data → Equations Mapping</div>
+  <h2 class="section-title">Input Sources <span>per Equation</span></h2>
+
+  <div class="tbl-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Equation</th>
+          <th>Formula</th>
+          <th>Parameter</th>
+          <th>Source</th>
+          <th>Variable name</th>
+          <th>Default if missing</th>
+          <th>Output</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td rowspan="5"><strong>EQ-1</strong><br>Sensible heat<br>W1 fumées</td>
+          <td rowspan="5"><code>Q=V̇·Cp·ΔT·η</code></td>
+          <td>Flue gas temp T_in</td>
+          <td><span class="b bc">IoT P1</span> thermocouple</td>
+          <td><code>t_flue_in</code></td>
+          <td>190°C</td>
+          <td rowspan="5">Q_W1 [kW]<br>E_W1 [MWh/an]</td>
+        </tr>
+        <tr>
+          <td>Target temp T_out</td>
+          <td><span class="b bp">User input</span></td>
+          <td><code>t_flue_out_target</code></td>
+          <td>130°C</td>
+        </tr>
+        <tr>
+          <td>Flue gas flow V̇</td>
+          <td><span class="b bc">IoT P1</span> GN meter → derived</td>
+          <td><code>v_flue</code></td>
+          <td>0.850 Nm³/s</td>
+        </tr>
+        <tr>
+          <td>Cp volumetric</td>
+          <td><span class="b bg">Standard</span> GN combustion</td>
+          <td><code>Cp_flue</code></td>
+          <td>1.36 kJ/Nm³K</td>
+        </tr>
+        <tr>
+          <td>η exchanger</td>
+          <td><span class="b bp">User input</span></td>
+          <td><code>eta_hx</code></td>
+          <td>0.78</td>
+        </tr>
+        <tr>
+          <td rowspan="4"><strong>EQ-2</strong><br>Purge steam<br>W5 purges</td>
+          <td rowspan="4"><code>Q=ṁ·h_fg</code></td>
+          <td>Purge flow rate ṁ</td>
+          <td><span class="b ba">Pipeline P2</span> or estimated</td>
+          <td><code>m_purge</code></td>
+          <td>3–5% of steam flow</td>
+          <td rowspan="4">Q_W5 [kW]<br>E_W5 [MWh/an]</td>
+        </tr>
+        <tr>
+          <td>Vaporization enthalpy h_fg</td>
+          <td><span class="b bg">Standard</span> steam tables</td>
+          <td><code>h_fg</code></td>
+          <td>2108 kJ/kg @5bar</td>
+        </tr>
+        <tr>
+          <td>Boiler load factor</td>
+          <td><span class="b ba">Pipeline P2</span> audit</td>
+          <td><code>tau_boiler</code></td>
+          <td>0.40</td>
+        </tr>
+        <tr>
+          <td>Operating hours</td>
+          <td><span class="b ba">Pipeline P2</span> schedule</td>
+          <td><code>h_boiler</code></td>
+          <td>7920 h/yr</td>
+        </tr>
+        <tr>
+          <td rowspan="4"><strong>EQ-3</strong><br>Volumetric flue<br>W1 derivation</td>
+          <td rowspan="4"><code>V̇=V̇_GN×r_stoich</code></td>
+          <td>GN flow rate V̇_GN</td>
+          <td><span class="b bc">IoT P1</span> GN meter</td>
+          <td><code>v_gn</code></td>
+          <td>278 Nm³/h</td>
+          <td rowspan="4">V̇_flue [Nm³/s]<br>→ feeds EQ-1</td>
+        </tr>
+        <tr>
+          <td>Stoich ratio r</td>
+          <td><span class="b bg">Standard</span></td>
+          <td><code>r_stoich</code></td>
+          <td>11 Nm³/Nm³</td>
+        </tr>
+        <tr>
+          <td>Boiler nominal power</td>
+          <td><span class="b ba">Pipeline P2</span> nameplate</td>
+          <td><code>P_boiler_nom</code></td>
+          <td>1840 kW</td>
+        </tr>
+        <tr>
+          <td>Boiler efficiency</td>
+          <td><span class="b bg">Standard</span></td>
+          <td><code>eta_boiler</code></td>
+          <td>0.92</td>
+        </tr>
+        <tr>
+          <td rowspan="4"><strong>EQ-4</strong><br>Compressor heat<br>W2 récup.</td>
+          <td rowspan="4"><code>Q=P·τ·η_p·η_r</code></td>
+          <td>Installed power P_elec</td>
+          <td><span class="b ba">Pipeline P2</span> nameplate</td>
+          <td><code>P_comp_nom</code></td>
+          <td>132 kW</td>
+          <td rowspan="4">Q_W2 [kW]<br>E_W2 [MWh/an]</td>
+        </tr>
+        <tr>
+          <td>Load factor τ</td>
+          <td><span class="b bc">IoT P1</span> energy meter</td>
+          <td><code>tau_comp</code></td>
+          <td>0.39 (measured)</td>
+        </tr>
+        <tr>
+          <td>η_thermal loss</td>
+          <td><span class="b bg">Standard</span></td>
+          <td><code>eta_p_comp</code></td>
+          <td>0.80</td>
+        </tr>
+        <tr>
+          <td>η_WHR kit recovery</td>
+          <td><span class="b bp">User input</span></td>
+          <td><code>eta_r_comp</code></td>
+          <td>0.65</td>
+        </tr>
+        <tr>
+          <td rowspan="3"><strong>EQ-5</strong><br>GEG desuperheating<br>W3 condensers</td>
+          <td rowspan="3"><code>Q_dsh=12%·Q_cond</code></td>
+          <td>GEG total cooling capacity</td>
+          <td><span class="b ba">Pipeline P2</span> nameplate</td>
+          <td><code>Q_GEG_frig</code></td>
+          <td>2650 kW</td>
+          <td rowspan="3">Q_W3 [kW]<br>E_W3 [MWh/an]</td>
+        </tr>
+        <tr>
+          <td>GEG compressor power</td>
+          <td><span class="b ba">Pipeline P2</span> audit</td>
+          <td><code>P_GEG_comp</code></td>
+          <td>721 kW</td>
+        </tr>
+        <tr>
+          <td>Desuperheating fraction</td>
+          <td><span class="b bg">Standard</span> R134a typical</td>
+          <td><code>f_dsh</code></td>
+          <td>0.12</td>
+        </tr>
+        <tr>
+          <td><strong>EQ-ROI</strong><br>Financial model</td>
+          <td><code>ROI=CAPEX/Savings</code></td>
+          <td>Energy price, CAPEX, CO₂ factor</td>
+          <td><span class="b bp">User input</span></td>
+          <td><code>p_gn, p_elec, capex_s1/s2/s3</code></td>
+          <td>95/165 DT/MWh, see §4</td>
+          <td>ROI [yrs], Savings [DT/yr]</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════
+     §3 — IMPLEMENTATION LOGIC
+═══════════════════════════════════════════════════ -->
+<div class="section" id="s3">
+  <div class="section-num">§3 · Implementation Logic</div>
+  <h2 class="section-title">Complete <span>Engine Code</span></h2>
+
+  <h3>whr/config.py — all constants and defaults in one place</h3>
+  <div class="code-block">
+    <div class="code-header"><span class="code-lang">python</span><span class="code-file">whr/config.py</span></div>
+    <div class="code-body"><pre><span class="cm"># ─── PHYSICAL CONSTANTS (do not change) ───────────────────────────</span>
+<span class="dec">CONST</span> = {
+    <span class="str">"Cp_air"</span>:       <span class="num">1.005</span>,    <span class="cm"># kJ/(kg·K)</span>
+    <span class="str">"Cp_flue_vol"</span>:  <span class="num">1.36</span>,     <span class="cm"># kJ/(Nm³·K) — GN combustion products</span>
+    <span class="str">"Cp_water"</span>:     <span class="num">4.18</span>,     <span class="cm"># kJ/(kg·K)</span>
+    <span class="str">"h_fg_5bar"</span>:    <span class="num">2108</span>,    <span class="cm"># kJ/kg — vaporization enthalpy @5 bar</span>
+    <span class="str">"r_stoich_GN"</span>:  <span class="num">11.0</span>,     <span class="cm"># Nm³_flue / Nm³_GN (stoichiometric)</span>
+    <span class="str">"PCI_GN"</span>:       <span class="num">10350</span>,   <span class="cm"># kJ/Nm³ — natural gas lower heating value</span>
+    <span class="str">"f_CO2_GN"</span>:     <span class="num">0.202</span>,    <span class="cm"># kgCO₂/kWh — direct combustion (IPCC)</span>
+    <span class="str">"f_CO2_elec"</span>:   <span class="num">0.43</span>,     <span class="cm"># kgCO₂/kWh — STEG Tunisian mix</span>
+}
+
+<span class="cm"># ─── EQUIPMENT DATA (from audit, pipeline P2) ─────────────────────</span>
+<span class="dec">EQUIPMENT</span> = {
+    <span class="str">"P_boiler_nom"</span>: <span class="num">1840</span>,    <span class="cm"># kW installed (Mangazzini PVR15+PVR5EU)</span>
+    <span class="str">"eta_boiler"</span>:   <span class="num">0.92</span>,     <span class="cm"># combustion efficiency</span>
+    <span class="str">"h_boiler"</span>:     <span class="num">7920</span>,    <span class="cm"># h/yr — 330 days × 24h</span>
+    <span class="str">"P_comp_nom"</span>:   <span class="num">132</span>,      <span class="cm"># kW — D132RS-8A nameplate</span>
+    <span class="str">"tau_comp"</span>:     <span class="num">0.39</span>,     <span class="cm"># load factor MEASURED from audit</span>
+    <span class="str">"h_comp"</span>:       <span class="num">8400</span>,    <span class="cm"># h/yr — from counter 19279h/2.3yrs</span>
+    <span class="str">"Q_GEG_frig"</span>:   <span class="num">2650</span>,    <span class="cm"># kW total cooling (6× GEG Carrier)</span>
+    <span class="str">"P_GEG_comp"</span>:   <span class="num">721</span>,      <span class="cm"># kW GEG compressor (COP assumption)</span>
+    <span class="str">"h_GEG"</span>:        <span class="num">4800</span>,    <span class="cm"># h/yr — seasonal (55% of 8760)</span>
+    <span class="str">"tau_boiler"</span>:   <span class="num">0.40</span>,     <span class="cm"># boiler average load — estimated</span>
+}
+
+<span class="cm"># ─── USER DEFAULTS (overridable via sidebar) ──────────────────────</span>
+<span class="dec">DEFAULTS</span> = {
+    <span class="str">"t_flue_in"</span>:           <span class="num">190</span>,    <span class="cm"># °C — assumption, confirm with sensor</span>
+    <span class="str">"t_flue_out_target"</span>:   <span class="num">130</span>,    <span class="cm"># °C — acid dew point constraint +75°C</span>
+    <span class="str">"eta_hx"</span>:              <span class="num">0.78</span>,   <span class="cm"># plate HX efficiency</span>
+    <span class="str">"eta_r_comp"</span>:          <span class="num">0.65</span>,   <span class="cm"># WHR kit efficiency</span>
+    <span class="str">"p_gn"</span>:                <span class="num">95</span>,     <span class="cm"># DT/MWh — BP2 tariff estimate</span>
+    <span class="str">"p_elec"</span>:              <span class="num">165</span>,    <span class="cm"># DT/MWh — HTA STEG tariff</span>
+    <span class="str">"capex_s1"</span>:            <span class="num">45000</span>, <span class="cm"># DT — 2× economizers + installation</span>
+    <span class="str">"capex_s2"</span>:            <span class="num">19000</span>, <span class="cm"># DT — WHR kit compressor</span>
+    <span class="str">"capex_s3"</span>:            <span class="num">110000</span>,<span class="cm"># DT — desuperheater system</span>
+}
+
+<span class="cm"># ─── SCORING WEIGHTS (w1+w2+w3+w4+w5 must = 1.0) ─────────────────</span>
+<span class="dec">WEIGHTS</span> = {
+    <span class="str">"C1_energy"</span>:      <span class="num">0.30</span>,
+    <span class="str">"C2_co2"</span>:         <span class="num">0.20</span>,
+    <span class="str">"C3_feasibility"</span>: <span class="num">0.20</span>,
+    <span class="str">"C4_capex"</span>:        <span class="num">0.15</span>,
+    <span class="str">"C5_roi"</span>:          <span class="num">0.15</span>,
+}
+
+<span class="cm"># ─── SENSOR VALIDATION RANGES ─────────────────────────────────────</span>
+<span class="dec">VALID_RANGES</span> = {
+    <span class="str">"t_flue_in"</span>:    (<span class="num">100</span>, <span class="num">350</span>),  <span class="cm"># °C</span>
+    <span class="str">"tau_comp"</span>:     (<span class="num">0.05</span>, <span class="num">1.0</span>),
+    <span class="str">"t_cta_extract"</span>:(<span class="num">18</span>, <span class="num">30</span>),    <span class="cm"># °C</span>
+    <span class="str">"P_comp_meas"</span>:  (<span class="num">0</span>, <span class="num">150</span>),    <span class="cm"># kW</span>
+}</pre></div>
+  </div>
+
+  <h3>whr/engine.py — calculation logic, fully traceable</h3>
+  <div class="code-block">
+    <div class="code-header"><span class="code-lang">python</span><span class="code-file">whr/engine.py</span></div>
+    <div class="code-body"><pre><span class="kw">from</span> <span class="var">dataclasses</span> <span class="kw">import</span> <span class="var">dataclass</span>
+<span class="kw">from</span> <span class="var">typing</span> <span class="kw">import</span> <span class="var">Optional</span>
+<span class="kw">import</span> <span class="var">numpy</span> <span class="kw">as</span> <span class="var">np</span>
+<span class="kw">from</span> <span class="var">.config</span> <span class="kw">import</span> <span class="var">CONST</span>, <span class="var">EQUIPMENT</span>, <span class="var">DEFAULTS</span>, <span class="var">WEIGHTS</span>
+
+
+<span class="cm"># ─── DATA CONTAINERS ──────────────────────────────────────────────</span>
+<span class="dec">@dataclass</span>
+<span class="kw">class</span> <span class="cls">SensorData</span>:
+    <span class="str">"""Live or cached sensor readings from Part 1 IoT."""</span>
+    t_flue_in:      <span class="var">Optional</span>[<span class="var">float</span>] = <span class="kw">None</span>   <span class="cm"># °C — thermocouple cheminée</span>
+    v_gn_flow:      <span class="var">Optional</span>[<span class="var">float</span>] = <span class="kw">None</span>   <span class="cm"># Nm³/h — GN meter</span>
+    P_comp_meas:    <span class="var">Optional</span>[<span class="var">float</span>] = <span class="kw">None</span>   <span class="cm"># kW — compressor energy meter</span>
+    t_GEG_in:       <span class="var">Optional</span>[<span class="var">float</span>] = <span class="kw">None</span>   <span class="cm"># °C — GEG condenser inlet temp</span>
+    t_GEG_out:      <span class="var">Optional</span>[<span class="var">float</span>] = <span class="kw">None</span>   <span class="cm"># °C — GEG condenser outlet temp</span>
+    t_cta_extract:  <span class="var">Optional</span>[<span class="var">float</span>] = <span class="kw">None</span>   <span class="cm"># °C — CTA extract air temp</span>
+    is_realtime:    <span class="var">bool</span> = <span class="kw">False</span>
+
+<span class="dec">@dataclass</span>
+<span class="kw">class</span> <span class="cls">UserParams</span>:
+    <span class="str">"""User-controlled parameters from dashboard sidebar."""</span>
+    t_flue_in:          <span class="var">float</span> = <span class="var">DEFAULTS</span>[<span class="str">"t_flue_in"</span>]
+    t_flue_out_target:  <span class="var">float</span> = <span class="var">DEFAULTS</span>[<span class="str">"t_flue_out_target"</span>]
+    eta_hx:             <span class="var">float</span> = <span class="var">DEFAULTS</span>[<span class="str">"eta_hx"</span>]
+    eta_r_comp:         <span class="var">float</span> = <span class="var">DEFAULTS</span>[<span class="str">"eta_r_comp"</span>]
+    p_gn:               <span class="var">float</span> = <span class="var">DEFAULTS</span>[<span class="str">"p_gn"</span>]
+    p_elec:             <span class="var">float</span> = <span class="var">DEFAULTS</span>[<span class="str">"p_elec"</span>]
+    capex_s1:           <span class="var">float</span> = <span class="var">DEFAULTS</span>[<span class="str">"capex_s1"</span>]
+    capex_s2:           <span class="var">float</span> = <span class="var">DEFAULTS</span>[<span class="str">"capex_s2"</span>]
+    capex_s3:           <span class="var">float</span> = <span class="var">DEFAULTS</span>[<span class="str">"capex_s3"</span>]
+
+<span class="dec">@dataclass</span>
+<span class="kw">class</span> <span class="cls">WHRResult</span>:
+    <span class="str">"""All outputs from a single engine.run() call."""</span>
+    <span class="cm"># Powers [kW]</span>
+    Q_W1: <span class="var">float</span>; Q_W2: <span class="var">float</span>; Q_W3: <span class="var">float</span>; Q_W5: <span class="var">float</span>
+    <span class="cm"># Annual energy [MWh/yr]</span>
+    E_W1: <span class="var">float</span>; E_W2: <span class="var">float</span>; E_W3: <span class="var">float</span>; E_W5: <span class="var">float</span>
+    E_total: <span class="var">float</span>
+    <span class="cm"># CO2 [tCO2/yr]</span>
+    co2_W1: <span class="var">float</span>; co2_W2: <span class="var">float</span>; co2_W3: <span class="var">float</span>
+    co2_total: <span class="var">float</span>
+    <span class="cm"># Financial [DT]</span>
+    savings_s1: <span class="var">float</span>; savings_s2: <span class="var">float</span>; savings_s3: <span class="var">float</span>
+    savings_total: <span class="var">float</span>
+    roi_s1: <span class="var">float</span>; roi_s2: <span class="var">float</span>; roi_s3: <span class="var">float</span>
+    roi_weighted: <span class="var">float</span>
+    <span class="cm"># Scores</span>
+    scores: <span class="var">dict</span>  <span class="cm"># {source_id: {C1..C5, total}}</span>
+    data_source: <span class="var">str</span>  <span class="cm"># "realtime" | "static"</span>
+    warnings: <span class="var">list</span>    <span class="cm"># list of validation warnings</span>
+
+
+<span class="cm"># ─── MAIN ENGINE CLASS ────────────────────────────────────────────</span>
+<span class="kw">class</span> <span class="cls">WHREngine</span>:
+
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="var">self</span>, <span class="var">sensors</span>: <span class="cls">SensorData</span>, <span class="var">params</span>: <span class="cls">UserParams</span>):
+        <span class="var">self</span>.<span class="var">s</span> = <span class="var">sensors</span>
+        <span class="var">self</span>.<span class="var">p</span> = <span class="var">params</span>
+        <span class="var">self</span>.<span class="var">warnings</span> = []
+
+    <span class="kw">def</span> <span class="fn">_resolve</span>(<span class="var">self</span>, <span class="var">sensor_val</span>, <span class="var">default</span>, <span class="var">name</span>):
+        <span class="str">"""Use sensor if valid, else fallback to default with warning."""</span>
+        <span class="kw">if</span> <span class="var">sensor_val</span> <span class="kw">is not</span> <span class="kw">None</span>:
+            <span class="kw">from</span> <span class="var">.config</span> <span class="kw">import</span> <span class="var">VALID_RANGES</span>
+            <span class="kw">if</span> <span class="var">name</span> <span class="kw">in</span> <span class="var">VALID_RANGES</span>:
+                <span class="var">lo</span>, <span class="var">hi</span> = <span class="var">VALID_RANGES</span>[<span class="var">name</span>]
+                <span class="kw">if not</span> (<span class="var">lo</span> <= <span class="var">sensor_val</span> <= <span class="var">hi</span>):
+                    <span class="var">self</span>.<span class="var">warnings</span>.<span class="fn">append</span>(
+                        <span class="var">f</span><span class="str">"{name}={sensor_val} out of range [{lo},{hi}] → using default {default}"</span>
+                    )
+                    <span class="kw">return</span> <span class="var">default</span>, <span class="str">"default"</span>
+            <span class="kw">return</span> <span class="var">sensor_val</span>, <span class="str">"sensor"</span>
+        <span class="var">self</span>.<span class="var">warnings</span>.<span class="fn">append</span>(<span class="var">f</span><span class="str">"{name}: no sensor → using default {default}"</span>)
+        <span class="kw">return</span> <span class="var">default</span>, <span class="str">"default"</span>
+
+    <span class="cm"># ─ EQ-1 + EQ-3: W1 Flue gas from boilers ─────────────────────</span>
+    <span class="kw">def</span> <span class="fn">calc_W1</span>(<span class="var">self</span>) -> <span class="var">tuple</span>:
+        <span class="cm"># Step 1: resolve T_in from sensor or default</span>
+        <span class="var">T_in</span>, <span class="var">src</span> = <span class="var">self</span>.<span class="fn">_resolve</span>(<span class="var">self</span>.<span class="var">s</span>.<span class="var">t_flue_in</span>, <span class="var">self</span>.<span class="var">p</span>.<span class="var">t_flue_in</span>, <span class="str">"t_flue_in"</span>)
+        <span class="var">T_out</span> = <span class="var">self</span>.<span class="var">p</span>.<span class="var">t_flue_out_target</span>   <span class="cm"># user-defined constraint (≥130°C acid dew)</span>
+
+        <span class="cm"># Step 2: derive flue gas flow via GN meter (EQ-3)</span>
+        <span class="kw">if</span> <span class="var">self</span>.<span class="var">s</span>.<span class="var">v_gn_flow</span> <span class="kw">is not</span> <span class="kw">None</span>:
+            <span class="var">v_gn_nm3h</span> = <span class="var">self</span>.<span class="var">s</span>.<span class="var">v_gn_flow</span>
+        <span class="kw">else</span>:
+            <span class="cm"># derive from nominal: P_nom × τ_boiler / η / PCI × 3600</span>
+            <span class="var">v_gn_nm3h</span> = (
+                <span class="var">EQUIPMENT</span>[<span class="str">"P_boiler_nom"</span>] * <span class="var">EQUIPMENT</span>[<span class="str">"tau_boiler"</span>]
+                / <span class="var">EQUIPMENT</span>[<span class="str">"eta_boiler"</span>]
+                / <span class="var">CONST</span>[<span class="str">"PCI_GN"</span>] * <span class="num">3600</span>
+            )  <span class="cm"># Nm³/h</span>
+
+        <span class="var">v_flue_m3s</span> = (
+            <span class="var">v_gn_nm3h</span> * <span class="var">CONST</span>[<span class="str">"r_stoich_GN"</span>] / <span class="num">3600</span>
+        )  <span class="cm"># Nm³/s — EQ-3</span>
+
+        <span class="cm"># Step 3: sensible heat recovery (EQ-1 volumetric form)</span>
+        <span class="var">Q_kw</span> = (
+            <span class="var">v_flue_m3s</span> * <span class="var">CONST</span>[<span class="str">"Cp_flue_vol"</span>]
+            * (<span class="var">T_in</span> - <span class="var">T_out</span>) * <span class="var">self</span>.<span class="var">p</span>.<span class="var">eta_hx</span>
+        )
+        <span class="var">E_mwh</span> = <span class="var">Q_kw</span> * <span class="var">EQUIPMENT</span>[<span class="str">"h_boiler"</span>] / <span class="num">1000</span>
+        <span class="kw">return</span> <span class="var">round</span>(<span class="var">Q_kw</span>, <span class="num">1</span>), <span class="var">round</span>(<span class="var">E_mwh</span>, <span class="num">1</span>)
+
+    <span class="cm"># ─ EQ-4: W2 Compressor heat recovery ─────────────────────────</span>
+    <span class="kw">def</span> <span class="fn">calc_W2</span>(<span class="var">self</span>) -> <span class="var">tuple</span>:
+        <span class="cm"># Resolve load factor from live energy meter or audit value</span>
+        <span class="kw">if</span> <span class="var">self</span>.<span class="var">s</span>.<span class="var">P_comp_meas</span> <span class="kw">is not</span> <span class="kw">None</span>:
+            <span class="var">tau</span> = <span class="var">self</span>.<span class="var">s</span>.<span class="var">P_comp_meas</span> / <span class="var">EQUIPMENT</span>[<span class="str">"P_comp_nom"</span>]
+            <span class="var">tau</span> = <span class="var">max</span>(<span class="num">0.05</span>, <span class="var">min</span>(<span class="num">1.0</span>, <span class="var">tau</span>))  <span class="cm"># clamp</span>
+        <span class="kw">else</span>:
+            <span class="var">tau</span> = <span class="var">EQUIPMENT</span>[<span class="str">"tau_comp"</span>]
+
+        <span class="var">Q_kw</span> = (
+            <span class="var">EQUIPMENT</span>[<span class="str">"P_comp_nom"</span>] * <span class="var">tau</span>
+            * <span class="num">0.80</span>                   <span class="cm"># η_thermal loss (1 - isentropic η)</span>
+            * <span class="var">self</span>.<span class="var">p</span>.<span class="var">eta_r_comp</span>    <span class="cm"># WHR kit efficiency</span>
+        )
+        <span class="var">E_mwh</span> = <span class="var">Q_kw</span> * <span class="var">EQUIPMENT</span>[<span class="str">"h_comp"</span>] / <span class="num">1000</span>
+        <span class="kw">return</span> <span class="var">round</span>(<span class="var">Q_kw</span>, <span class="num">1</span>), <span class="var">round</span>(<span class="var">E_mwh</span>, <span class="num">1</span>)
+
+    <span class="cm"># ─ EQ-5: W3 GEG desuperheating ────────────────────────────────</span>
+    <span class="kw">def</span> <span class="fn">calc_W3</span>(<span class="var">self</span>) -> <span class="var">tuple</span>:
+        <span class="var">Q_cond</span> = <span class="var">EQUIPMENT</span>[<span class="str">"Q_GEG_frig"</span>] + <span class="var">EQUIPMENT</span>[<span class="str">"P_GEG_comp"</span>]
+        <span class="var">Q_kw</span>   = <span class="num">0.12</span> * <span class="var">Q_cond</span>       <span class="cm"># desuperheating fraction</span>
+        <span class="var">E_mwh</span>  = <span class="var">Q_kw</span> * <span class="var">EQUIPMENT</span>[<span class="str">"h_GEG"</span>] / <span class="num">1000</span>
+        <span class="kw">return</span> <span class="var">round</span>(<span class="var">Q_kw</span>, <span class="num">1</span>), <span class="var">round</span>(<span class="var">E_mwh</span>, <span class="num">1</span>)
+
+    <span class="cm"># ─ EQ-2: W5 Boiler purge flash ────────────────────────────────</span>
+    <span class="kw">def</span> <span class="fn">calc_W5</span>(<span class="var">self</span>) -> <span class="var">tuple</span>:
+        <span class="var">steam_kgs</span> = (
+            <span class="var">EQUIPMENT</span>[<span class="str">"P_boiler_nom"</span>] * <span class="var">EQUIPMENT</span>[<span class="str">"tau_boiler"</span>]
+            / <span class="var">CONST</span>[<span class="str">"h_fg_5bar"</span>]
+        )  <span class="cm"># kg/s</span>
+        <span class="var">m_purge</span> = <span class="num">0.04</span> * <span class="var">steam_kgs</span>   <span class="cm"># 4% typical purge rate</span>
+        <span class="var">Q_kw</span>    = <span class="var">m_purge</span> * <span class="var">CONST</span>[<span class="str">"h_fg_5bar"</span>]
+        <span class="var">E_mwh</span>   = <span class="var">Q_kw</span> * <span class="var">EQUIPMENT</span>[<span class="str">"h_boiler"</span>] / <span class="num">1000</span>
+        <span class="kw">return</span> <span class="var">round</span>(<span class="var">Q_kw</span>, <span class="num">1</span>), <span class="var">round</span>(<span class="var">E_mwh</span>, <span class="num">1</span>)
+
+    <span class="cm"># ─ CO2 and financial calculations ─────────────────────────────</span>
+    <span class="kw">def</span> <span class="fn">calc_co2</span>(<span class="var">self</span>, <span class="var">E_mwh</span>, <span class="var">energy_type</span>=<span class="str">"GN"</span>) -> <span class="var">float</span>:
+        <span class="var">factor</span> = <span class="var">CONST</span>[<span class="str">"f_CO2_GN"</span>] <span class="kw">if</span> <span class="var">energy_type</span>==<span class="str">"GN"</span> <span class="kw">else</span> <span class="var">CONST</span>[<span class="str">"f_CO2_elec"</span>]
+        <span class="kw">return</span> <span class="var">round</span>(<span class="var">E_mwh</span> * <span class="var">factor</span>, <span class="num">1</span>)  <span class="cm"># tCO2/yr</span>
+
+    <span class="kw">def</span> <span class="fn">calc_savings</span>(<span class="var">self</span>, <span class="var">E_mwh</span>, <span class="var">energy_type</span>=<span class="str">"GN"</span>) -> <span class="var">float</span>:
+        <span class="var">price</span> = <span class="var">self</span>.<span class="var">p</span>.<span class="var">p_gn</span> <span class="kw">if</span> <span class="var">energy_type</span>==<span class="str">"GN"</span> <span class="kw">else</span> <span class="var">self</span>.<span class="var">p</span>.<span class="var">p_elec</span>
+        <span class="kw">return</span> <span class="var">round</span>(<span class="var">E_mwh</span> * <span class="var">price</span>, <span class="num">0</span>)    <span class="cm"># DT/yr</span>
+
+    <span class="cm"># ─ Scoring model ──────────────────────────────────────────────</span>
+    <span class="kw">def</span> <span class="fn">calc_scores</span>(<span class="var">self</span>, <span class="var">results_map</span>) -> <span class="var">dict</span>:
+        <span class="cm">"""
+        results_map: {
+          "W1": {"E": 174, "co2": 35.1, "feasibility": 10, "capex": 45000, "roi": 2.7},
+          ...
+        }
+        """</span>
+        <span class="kw">def</span> <span class="fn">score_energy</span>(<span class="var">e</span>):
+            <span class="kw">if</span> <span class="var">e</span> >= <span class="num">500</span>:  <span class="kw">return</span> <span class="num">9.5</span>
+            <span class="kw">if</span> <span class="var">e</span> >= <span class="num">300</span>:  <span class="kw">return</span> <span class="num">7.5</span>
+            <span class="kw">if</span> <span class="var">e</span> >= <span class="num">150</span>:  <span class="kw">return</span> <span class="num">5.5</span>
+            <span class="kw">if</span> <span class="var">e</span> >= <span class="num">50</span>:   <span class="kw">return</span> <span class="num">3.5</span>
+            <span class="kw">return</span> <span class="num">1.5</span>
+
+        <span class="kw">def</span> <span class="fn">score_co2</span>(<span class="var">c</span>):
+            <span class="kw">if</span> <span class="var">c</span> >= <span class="num">100</span>:  <span class="kw">return</span> <span class="num">9.5</span>
+            <span class="kw">if</span> <span class="var">c</span> >= <span class="num">60</span>:   <span class="kw">return</span> <span class="num">7.5</span>
+            <span class="kw">if</span> <span class="var">c</span> >= <span class="num">30</span>:   <span class="kw">return</span> <span class="num">5.5</span>
+            <span class="kw">if</span> <span class="var">c</span> >= <span class="num">10</span>:   <span class="kw">return</span> <span class="num">3.5</span>
+            <span class="kw">return</span> <span class="num">1.5</span>
+
+        <span class="kw">def</span> <span class="fn">score_capex</span>(<span class="var">c</span>):
+            <span class="kw">if</span> <span class="var">c</span> < <span class="num">20000</span>:   <span class="kw">return</span> <span class="num">9.5</span>   <span class="cm"># quick win</span>
+            <span class="kw">if</span> <span class="var">c</span> < <span class="num">50000</span>:   <span class="kw">return</span> <span class="num">7.5</span>
+            <span class="kw">if</span> <span class="var">c</span> < <span class="num">100000</span>:  <span class="kw">return</span> <span class="num">5.5</span>
+            <span class="kw">if</span> <span class="var">c</span> < <span class="num">200000</span>:  <span class="kw">return</span> <span class="num">3.5</span>
+            <span class="kw">return</span> <span class="num">1.5</span>
+
+        <span class="kw">def</span> <span class="fn">score_roi</span>(<span class="var">r</span>):
+            <span class="kw">if</span> <span class="var">r</span> < <span class="num">1</span>:    <span class="kw">return</span> <span class="num">9.5</span>
+            <span class="kw">if</span> <span class="var">r</span> < <span class="num">2</span>:    <span class="kw">return</span> <span class="num">7.5</span>
+            <span class="kw">if</span> <span class="var">r</span> < <span class="num">3</span>:    <span class="kw">return</span> <span class="num">5.5</span>
+            <span class="kw">if</span> <span class="var">r</span> < <span class="num">5</span>:    <span class="kw">return</span> <span class="num">3.5</span>
+            <span class="kw">return</span> <span class="num">1.5</span>
+
+        <span class="var">w</span> = <span class="var">WEIGHTS</span>
+        <span class="var">scored</span> = {}
+        <span class="kw">for</span> <span class="var">src_id</span>, <span class="var">d</span> <span class="kw">in</span> <span class="var">results_map</span>.<span class="fn">items</span>():
+            <span class="var">c1</span> = <span class="fn">score_energy</span>(<span class="var">d</span>[<span class="str">"E"</span>])
+            <span class="var">c2</span> = <span class="fn">score_co2</span>(<span class="var">d</span>[<span class="str">"co2"</span>])
+            <span class="var">c3</span> = <span class="var">d</span>.<span class="fn">get</span>(<span class="str">"feasibility"</span>, <span class="num">5</span>)  <span class="cm"># set manually per source</span>
+            <span class="var">c4</span> = <span class="fn">score_capex</span>(<span class="var">d</span>[<span class="str">"capex"</span>])
+            <span class="var">c5</span> = <span class="fn">score_roi</span>(<span class="var">d</span>[<span class="str">"roi"</span>])
+            <span class="var">total</span> = (
+                <span class="var">w</span>[<span class="str">"C1_energy"</span>]      * <span class="var">c1</span> +
+                <span class="var">w</span>[<span class="str">"C2_co2"</span>]         * <span class="var">c2</span> +
+                <span class="var">w</span>[<span class="str">"C3_feasibility"</span>] * <span class="var">c3</span> +
+                <span class="var">w</span>[<span class="str">"C4_capex"</span>]       * <span class="var">c4</span> +
+                <span class="var">w</span>[<span class="str">"C5_roi"</span>]         * <span class="var">c5</span>
+            )
+            <span class="var">scored</span>[<span class="var">src_id</span>] = {
+                <span class="str">"C1"</span>: <span class="var">c1</span>, <span class="str">"C2"</span>: <span class="var">c2</span>, <span class="str">"C3"</span>: <span class="var">c3</span>,
+                <span class="str">"C4"</span>: <span class="var">c4</span>, <span class="str">"C5"</span>: <span class="var">c5</span>,
+                <span class="str">"total"</span>: <span class="var">round</span>(<span class="var">total</span>, <span class="num">2</span>)
+            }
+        <span class="kw">return</span> <span class="var">scored</span>
+
+    <span class="cm"># ─ MAIN ENTRY POINT ───────────────────────────────────────────</span>
+    <span class="kw">def</span> <span class="fn">run</span>(<span class="var">self</span>) -> <span class="cls">WHRResult</span>:
+        <span class="cm"># 1. Compute heat powers and annual energies</span>
+        <span class="var">Q_W1</span>, <span class="var">E_W1</span> = <span class="var">self</span>.<span class="fn">calc_W1</span>()
+        <span class="var">Q_W2</span>, <span class="var">E_W2</span> = <span class="var">self</span>.<span class="fn">calc_W2</span>()
+        <span class="var">Q_W3</span>, <span class="var">E_W3</span> = <span class="var">self</span>.<span class="fn">calc_W3</span>()
+        <span class="var">Q_W5</span>, <span class="var">E_W5</span> = <span class="var">self</span>.<span class="fn">calc_W5</span>()
+
+        <span class="cm"># 2. CO2 reductions</span>
+        <span class="var">co2_W1</span> = <span class="var">self</span>.<span class="fn">calc_co2</span>(<span class="var">E_W1</span>, <span class="str">"GN"</span>)
+        <span class="var">co2_W2</span> = <span class="var">self</span>.<span class="fn">calc_co2</span>(<span class="var">E_W2</span>, <span class="str">"elec"</span>)   <span class="cm"># replaces electric heating</span>
+        <span class="var">co2_W3</span> = <span class="var">self</span>.<span class="fn">calc_co2</span>(<span class="var">E_W3</span>, <span class="str">"elec"</span>)
+
+        <span class="cm"># 3. Savings and ROI per scenario</span>
+        <span class="var">sav_s1</span> = <span class="var">self</span>.<span class="fn">calc_savings</span>(<span class="var">E_W1</span>, <span class="str">"GN"</span>)
+        <span class="var">sav_s2</span> = <span class="var">self</span>.<span class="fn">calc_savings</span>(<span class="var">E_W2</span>, <span class="str">"elec"</span>)
+        <span class="var">sav_s3</span> = <span class="var">self</span>.<span class="fn">calc_savings</span>(<span class="var">E_W3</span>, <span class="str">"elec"</span>)
+        <span class="var">roi_s1</span> = <span class="var">round</span>(<span class="var">self</span>.<span class="var">p</span>.<span class="var">capex_s1</span> / <span class="var">sav_s1</span>, <span class="num">2</span>) <span class="kw">if</span> <span class="var">sav_s1</span> > <span class="num">0</span> <span class="kw">else</span> <span class="var">float</span>(<span class="str">"inf"</span>)
+        <span class="var">roi_s2</span> = <span class="var">round</span>(<span class="var">self</span>.<span class="var">p</span>.<span class="var">capex_s2</span> / <span class="var">sav_s2</span>, <span class="num">2</span>) <span class="kw">if</span> <span class="var">sav_s2</span> > <span class="num">0</span> <span class="kw">else</span> <span class="var">float</span>(<span class="str">"inf"</span>)
+        <span class="var">roi_s3</span> = <span class="var">round</span>(<span class="var">self</span>.<span class="var">p</span>.<span class="var">capex_s3</span> / <span class="var">sav_s3</span>, <span class="num">2</span>) <span class="kw">if</span> <span class="var">sav_s3</span> > <span class="num">0</span> <span class="kw">else</span> <span class="var">float</span>(<span class="str">"inf"</span>)
+        <span class="var">capex_total</span> = <span class="var">self</span>.<span class="var">p</span>.<span class="var">capex_s1</span> + <span class="var">self</span>.<span class="var">p</span>.<span class="var">capex_s2</span> + <span class="var">self</span>.<span class="var">p</span>.<span class="var">capex_s3</span>
+        <span class="var">sav_total</span>   = <span class="var">sav_s1</span> + <span class="var">sav_s2</span> + <span class="var">sav_s3</span>
+
+        <span class="cm"># 4. Scoring model</span>
+        <span class="var">src_map</span> = {
+            <span class="str">"W1"</span>: {<span class="str">"E"</span>: <span class="var">E_W1</span>, <span class="str">"co2"</span>: <span class="var">co2_W1</span>, <span class="str">"feasibility"</span>: <span class="num">10.0</span>, <span class="str">"capex"</span>: <span class="var">self</span>.<span class="var">p</span>.<span class="var">capex_s1</span>, <span class="str">"roi"</span>: <span class="var">roi_s1</span>},
+            <span class="str">"W2"</span>: {<span class="str">"E"</span>: <span class="var">E_W2</span>, <span class="str">"co2"</span>: <span class="var">co2_W2</span>, <span class="str">"feasibility"</span>:  <span class="num">9.0</span>, <span class="str">"capex"</span>: <span class="var">self</span>.<span class="var">p</span>.<span class="var">capex_s2</span>, <span class="str">"roi"</span>: <span class="var">roi_s2</span>},
+            <span class="str">"W3"</span>: {<span class="str">"E"</span>: <span class="var">E_W3</span>, <span class="str">"co2"</span>: <span class="var">co2_W3</span>, <span class="str">"feasibility"</span>:  <span class="num">7.0</span>, <span class="str">"capex"</span>: <span class="var">self</span>.<span class="var">p</span>.<span class="var">capex_s3</span>, <span class="str">"roi"</span>: <span class="var">roi_s3</span>},
+        }
+        <span class="var">scores</span> = <span class="var">self</span>.<span class="fn">calc_scores</span>(<span class="var">src_map</span>)
+
+        <span class="kw">return</span> <span class="cls">WHRResult</span>(
+            <span class="var">Q_W1</span>=<span class="var">Q_W1</span>, <span class="var">Q_W2</span>=<span class="var">Q_W2</span>, <span class="var">Q_W3</span>=<span class="var">Q_W3</span>, <span class="var">Q_W5</span>=<span class="var">Q_W5</span>,
+            <span class="var">E_W1</span>=<span class="var">E_W1</span>, <span class="var">E_W2</span>=<span class="var">E_W2</span>, <span class="var">E_W3</span>=<span class="var">E_W3</span>, <span class="var">E_W5</span>=<span class="var">E_W5</span>,
+            <span class="var">E_total</span>=<span class="var">round</span>(<span class="var">E_W1</span>+<span class="var">E_W2</span>+<span class="var">E_W3</span>, <span class="num">1</span>),
+            <span class="var">co2_W1</span>=<span class="var">co2_W1</span>, <span class="var">co2_W2</span>=<span class="var">co2_W2</span>, <span class="var">co2_W3</span>=<span class="var">co2_W3</span>,
+            <span class="var">co2_total</span>=<span class="var">round</span>(<span class="var">co2_W1</span>+<span class="var">co2_W2</span>+<span class="var">co2_W3</span>, <span class="num">1</span>),
+            <span class="var">savings_s1</span>=<span class="var">sav_s1</span>, <span class="var">savings_s2</span>=<span class="var">sav_s2</span>, <span class="var">savings_s3</span>=<span class="var">sav_s3</span>,
+            <span class="var">savings_total</span>=<span class="var">sav_total</span>,
+            <span class="var">roi_s1</span>=<span class="var">roi_s1</span>, <span class="var">roi_s2</span>=<span class="var">roi_s2</span>, <span class="var">roi_s3</span>=<span class="var">roi_s3</span>,
+            <span class="var">roi_weighted</span>=<span class="var">round</span>(<span class="var">capex_total</span>/<span class="var">sav_total</span>, <span class="num">2</span>) <span class="kw">if</span> <span class="var">sav_total</span> > <span class="num">0</span> <span class="kw">else</span> <span class="num">99</span>,
+            <span class="var">scores</span>=<span class="var">scores</span>,
+            <span class="var">data_source</span>=<span class="str">"realtime"</span> <span class="kw">if</span> <span class="var">self</span>.<span class="var">s</span>.<span class="var">is_realtime</span> <span class="kw">else</span> <span class="str">"static"</span>,
+            <span class="var">warnings</span>=<span class="var">self</span>.<span class="var">warnings</span>
+        )</pre></div>
+  </div>
+
+  <h3>whr/data_bridge.py — connect to your existing data sources</h3>
+  <div class="code-block">
+    <div class="code-header"><span class="code-lang">python</span><span class="code-file">whr/data_bridge.py — adapt to your actual DB/API</span></div>
+    <div class="code-body"><pre><span class="kw">from</span> <span class="var">.engine</span> <span class="kw">import</span> <span class="cls">SensorData</span>
+
+<span class="kw">def</span> <span class="fn">fetch_realtime_sensors</span>() -> <span class="cls">SensorData</span>:
+    <span class="str">"""
+    Connect to your existing IoT layer (Part 1).
+    Replace the body with your actual data source call.
+    """</span>
+    <span class="kw">try</span>:
+        <span class="cm"># ── Option A: your existing DB query ──────────────────────</span>
+        <span class="cm"># from your_db import query_latest</span>
+        <span class="cm"># row = query_latest("SELECT t_flue, v_gn, P_comp FROM sensors LIMIT 1")</span>
+        <span class="cm"># return SensorData(t_flue_in=row["t_flue"], v_gn_flow=row["v_gn"], ...)</span>
+
+        <span class="cm"># ── Option B: your existing REST/MQTT endpoint ────────────</span>
+        <span class="cm"># import requests</span>
+        <span class="cm"># data = requests.get("http://your-iot-api/latest").json()</span>
+        <span class="cm"># return SensorData(t_flue_in=data.get("t_flue_in"), ...)</span>
+
+        <span class="cm"># ── Option C: your existing st.session_state ──────────────</span>
+        <span class="kw">import</span> <span class="var">streamlit</span> <span class="kw">as</span> <span class="var">st</span>
+        <span class="var">iot</span> = <span class="var">st</span>.<span class="var">session_state</span>.<span class="fn">get</span>(<span class="str">"iot_latest"</span>, {})
+        <span class="kw">return</span> <span class="cls">SensorData</span>(
+            <span class="var">t_flue_in</span>     = <span class="var">iot</span>.<span class="fn">get</span>(<span class="str">"t_flue_in"</span>),
+            <span class="var">v_gn_flow</span>     = <span class="var">iot</span>.<span class="fn">get</span>(<span class="str">"v_gn_flow"</span>),
+            <span class="var">P_comp_meas</span>   = <span class="var">iot</span>.<span class="fn">get</span>(<span class="str">"P_comp_kw"</span>),
+            <span class="var">t_GEG_in</span>      = <span class="var">iot</span>.<span class="fn">get</span>(<span class="str">"t_GEG_in"</span>),
+            <span class="var">t_GEG_out</span>     = <span class="var">iot</span>.<span class="fn">get</span>(<span class="str">"t_GEG_out"</span>),
+            <span class="var">t_cta_extract</span> = <span class="var">iot</span>.<span class="fn">get</span>(<span class="str">"t_cta_extract"</span>),
+            <span class="var">is_realtime</span>   = <span class="var">len</span>(<span class="var">iot</span>) > <span class="num">0</span>
+        )
+    <span class="kw">except</span> <span class="cls">Exception</span> <span class="kw">as</span> <span class="var">e</span>:
+        <span class="cm"># If connection fails → return all None → engine uses defaults</span>
+        <span class="kw">return</span> <span class="cls">SensorData</span>()</pre></div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════
+     §4 — USER INPUT DESIGN
+═══════════════════════════════════════════════════ -->
+<div class="section" id="s4">
+  <div class="section-num">§4 · User Input Design</div>
+  <h2 class="section-title">Sidebar <span>Parameter Controls</span></h2>
+
+  <div class="tbl-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Parameter</th>
+          <th>Widget</th>
+          <th>Default</th>
+          <th>Range</th>
+          <th>Why needed</th>
+          <th>Impact if changed</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>GN price (DT/MWh)</strong></td>
+          <td><code>st.number_input</code></td>
+          <td>95</td>
+          <td>50–200</td>
+          <td>Drives savings_s1 (boiler), savings_s3 (GEG). Varies by tariff class (BP1/BP2/BP3).</td>
+          <td>±10% → ±10% on ROI S1</td>
+        </tr>
+        <tr>
+          <td><strong>Electricity price (DT/MWh)</strong></td>
+          <td><code>st.number_input</code></td>
+          <td>165</td>
+          <td>80–300</td>
+          <td>Drives savings_s2 (compressor). Critical: S2 substitutes electric heating.</td>
+          <td>±20% → ±20% on ROI S2</td>
+        </tr>
+        <tr>
+          <td><strong>Flue gas temp (°C)</strong></td>
+          <td><code>st.slider</code></td>
+          <td>190</td>
+          <td>130–300</td>
+          <td>Unknown until sensor installed. Replaces hypothesis. Drives Q_W1 linearly.</td>
+          <td>160°C → Q_W1 −30%</td>
+        </tr>
+        <tr>
+          <td><strong>Target flue-out (°C)</strong></td>
+          <td><code>st.slider</code></td>
+          <td>130</td>
+          <td>110–160</td>
+          <td>Acid dew point constraint. Must stay ≥110°C for GN. Lower = more energy but corrosion risk.</td>
+          <td>120°C → Q_W1 +25%</td>
+        </tr>
+        <tr>
+          <td><strong>HX efficiency η (%)</strong></td>
+          <td><code>st.slider</code></td>
+          <td>78</td>
+          <td>60–90</td>
+          <td>Plate HX efficiency (0.65–0.85 typical). Depends on final equipment selection.</td>
+          <td>85% → Q_W1 +9%</td>
+        </tr>
+        <tr>
+          <td><strong>WHR kit efficiency η (%)</strong></td>
+          <td><code>st.slider</code></td>
+          <td>65</td>
+          <td>50–80</td>
+          <td>Compressor after-cooler recovery efficiency. Confirm with KOMPRESSOR manufacturer.</td>
+          <td>75% → Q_W2 +15%</td>
+        </tr>
+        <tr>
+          <td><strong>CAPEX S1 (DT)</strong></td>
+          <td><code>st.number_input</code></td>
+          <td>45,000</td>
+          <td>20k–100k</td>
+          <td>2 economizers + installation. Refine with actual vendor quotes.</td>
+          <td>Direct on ROI_S1</td>
+        </tr>
+        <tr>
+          <td><strong>CAPEX S2 (DT)</strong></td>
+          <td><code>st.number_input</code></td>
+          <td>19,000</td>
+          <td>10k–40k</td>
+          <td>WHR kit + installation. Tightest estimate — low variance.</td>
+          <td>Direct on ROI_S2</td>
+        </tr>
+        <tr>
+          <td><strong>CAPEX S3 (DT)</strong></td>
+          <td><code>st.number_input</code></td>
+          <td>110,000</td>
+          <td>60k–200k</td>
+          <td>Desuperheater system + integration. Widest uncertainty — needs vendor quote.</td>
+          <td>Direct on ROI_S3</td>
+        </tr>
+        <tr>
+          <td><strong>Scoring weights w₁–w₅</strong></td>
+          <td><code>5× st.slider</code> (sum=1)</td>
+          <td>[0.30,0.20,0.20,0.15,0.15]</td>
+          <td>0–0.5 each</td>
+          <td>Decision-maker priority. Demonstrates sensitivity live during jury demo.</td>
+          <td>Reorders priority ranking</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>Sidebar implementation — whr/ui.py (sidebar section)</h3>
+  <div class="code-block">
+    <div class="code-header"><span class="code-lang">python</span><span class="code-file">whr/ui.py — sidebar inputs</span></div>
+    <div class="code-body"><pre><span class="kw">def</span> <span class="fn">render_sidebar</span>() -> <span class="cls">UserParams</span>:
+    <span class="var">st</span>.<span class="var">sidebar</span>.<span class="fn">markdown</span>(<span class="str">"### ♻ WHR Parameters"</span>)
+
+    <span class="kw">with</span> <span class="var">st</span>.<span class="var">sidebar</span>.<span class="fn">expander</span>(<span class="str">"Energy Prices"</span>, <span class="var">expanded</span>=<span class="kw">True</span>):
+        <span class="var">p_gn</span>   = <span class="var">st</span>.<span class="fn">number_input</span>(<span class="str">"GN price (DT/MWh)"</span>,  <span class="num">50.0</span>, <span class="num">200.0</span>, <span class="num">95.0</span>,  <span class="num">1.0</span>)
+        <span class="var">p_elec</span> = <span class="var">st</span>.<span class="fn">number_input</span>(<span class="str">"Elec price (DT/MWh)"</span>, <span class="num">80.0</span>, <span class="num">300.0</span>, <span class="num">165.0</span>, <span class="num">1.0</span>)
+
+    <span class="kw">with</span> <span class="var">st</span>.<span class="var">sidebar</span>.<span class="fn">expander</span>(<span class="str">"Engineering Assumptions"</span>):
+        <span class="var">t_in</span>  = <span class="var">st</span>.<span class="fn">slider</span>(<span class="str">"Flue gas T_in (°C)"</span>,    <span class="num">130</span>, <span class="num">300</span>, <span class="num">190</span>)
+        <span class="var">t_out</span> = <span class="var">st</span>.<span class="fn">slider</span>(<span class="str">"Flue gas T_out (°C)"</span>,   <span class="num">110</span>, <span class="num">160</span>, <span class="num">130</span>)
+        <span class="var">eta_hx</span>    = <span class="var">st</span>.<span class="fn">slider</span>(<span class="str">"HX efficiency (%)"</span>,    <span class="num">60</span>,  <span class="num">90</span>,  <span class="num">78</span>) / <span class="num">100</span>
+        <span class="var">eta_r</span>     = <span class="var">st</span>.<span class="fn">slider</span>(<span class="str">"WHR kit η (%)"</span>,         <span class="num">50</span>,  <span class="num">80</span>,  <span class="num">65</span>) / <span class="num">100</span>
+
+    <span class="kw">with</span> <span class="var">st</span>.<span class="var">sidebar</span>.<span class="fn">expander</span>(<span class="str">"CAPEX Estimates (DT)"</span>):
+        <span class="var">c1</span> = <span class="var">st</span>.<span class="fn">number_input</span>(<span class="str">"S1 Economizer"</span>,    <span class="num">0</span>, <span class="num">200000</span>, <span class="num">45000</span>,  <span class="num">1000</span>)
+        <span class="var">c2</span> = <span class="var">st</span>.<span class="fn">number_input</span>(<span class="str">"S2 Compressor WHR"</span>, <span class="num">0</span>, <span class="num">100000</span>, <span class="num">19000</span>,  <span class="num">1000</span>)
+        <span class="var">c3</span> = <span class="var">st</span>.<span class="fn">number_input</span>(<span class="str">"S3 GEG Desuperheater"</span>, <span class="num">0</span>, <span class="num">400000</span>, <span class="num">110000</span>, <span class="num">5000</span>)
+
+    <span class="kw">with</span> <span class="var">st</span>.<span class="var">sidebar</span>.<span class="fn">expander</span>(<span class="str">"Scoring Weights"</span>):
+        <span class="var">w1</span> = <span class="var">st</span>.<span class="fn">slider</span>(<span class="str">"C1 Energy"</span>,      <span class="num">0.0</span>, <span class="num">0.5</span>, <span class="num">0.30</span>, <span class="num">0.05</span>)
+        <span class="var">w2</span> = <span class="var">st</span>.<span class="fn">slider</span>(<span class="str">"C2 CO2"</span>,         <span class="num">0.0</span>, <span class="num">0.5</span>, <span class="num">0.20</span>, <span class="num">0.05</span>)
+        <span class="var">w3</span> = <span class="var">st</span>.<span class="fn">slider</span>(<span class="str">"C3 Feasibility"</span>, <span class="num">0.0</span>, <span class="num">0.5</span>, <span class="num">0.20</span>, <span class="num">0.05</span>)
+        <span class="var">w4</span> = <span class="var">st</span>.<span class="fn">slider</span>(<span class="str">"C4 CAPEX"</span>,       <span class="num">0.0</span>, <span class="num">0.5</span>, <span class="num">0.15</span>, <span class="num">0.05</span>)
+        <span class="var">w5</span> = <span class="var">1.0</span> - <span class="var">w1</span> - <span class="var">w2</span> - <span class="var">w3</span> - <span class="var">w4</span>  <span class="cm"># forced to sum=1</span>
+        <span class="var">st</span>.<span class="fn">caption</span>(<span class="var">f</span><span class="str">f"C5 ROI = {w5:.2f} (auto)"</span>)
+
+    <span class="kw">return</span> <span class="cls">UserParams</span>(
+        <span class="var">t_flue_in</span>=<span class="var">t_in</span>, <span class="var">t_flue_out_target</span>=<span class="var">t_out</span>,
+        <span class="var">eta_hx</span>=<span class="var">eta_hx</span>, <span class="var">eta_r_comp</span>=<span class="var">eta_r</span>,
+        <span class="var">p_gn</span>=<span class="var">p_gn</span>, <span class="var">p_elec</span>=<span class="var">p_elec</span>,
+        <span class="var">capex_s1</span>=<span class="var">c1</span>, <span class="var">capex_s2</span>=<span class="var">c2</span>, <span class="var">capex_s3</span>=<span class="var">c3</span>
+    )</pre></div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════
+     §5 — OUTPUTS & VISUALIZATION
+═══════════════════════════════════════════════════ -->
+<div class="section" id="s5">
+  <div class="section-num">§5 · Outputs & Visualization</div>
+  <h2 class="section-title">KPIs and <span>Chart Specs</span></h2>
+
+  <div class="kpi-grid">
+    <div class="kpi-card">
+      <div class="kpi-name">Recoverable Energy</div>
+      <div class="kpi-formula">E = Q × h / 1000 [MWh/yr]</div>
+      <p style="font-size:11px;color:var(--muted2);margin:0">Sum of W1+W2+W3 annual energy. Updated live from sensor inputs.</p>
+      <div class="kpi-viz">→ st.metric() card + horizontal bar chart by source</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-name">CO₂ Avoided</div>
+      <div class="kpi-formula">tCO₂ = E × f_CO₂ / 1000</div>
+      <p style="font-size:11px;color:var(--muted2);margin:0">GN factor 0.202, elec factor 0.43 kgCO₂/kWh. Split by energy type.</p>
+      <div class="kpi-viz">→ st.metric() + stacked bar (current vs WHR)</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-name">ROI / Payback</div>
+      <div class="kpi-formula">ROI = CAPEX / Savings [yr]</div>
+      <p style="font-size:11px;color:var(--muted2);margin:0">Per scenario and weighted total. Line chart over 12 years.</p>
+      <div class="kpi-viz">→ st.metric() + line chart cumulative cash-flow</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-name">Priority Score</div>
+      <div class="kpi-formula">Score = Σ(wᵢ × sᵢ) / 10</div>
+      <p style="font-size:11px;color:var(--muted2);margin:0">Multicriteria weighted score. Dynamic — reacts to sidebar weight sliders.</p>
+      <div class="kpi-viz">→ ranking table + radar chart (Plotly)</div>
+    </div>
+  </div>
+
+  <h3>Complete visualization code — whr/ui.py (main render)</h3>
+  <div class="code-block">
+    <div class="code-header"><span class="code-lang">python</span><span class="code-file">whr/ui.py — full render() function</span></div>
+    <div class="code-body"><pre><span class="kw">import</span> <span class="var">streamlit</span> <span class="kw">as</span> <span class="var">st</span>
+<span class="kw">import</span> <span class="var">pandas</span> <span class="kw">as</span> <span class="var">pd</span>
+<span class="kw">import</span> <span class="var">plotly.express</span> <span class="kw">as</span> <span class="var">px</span>
+<span class="kw">import</span> <span class="var">plotly.graph_objects</span> <span class="kw">as</span> <span class="var">go</span>
+<span class="kw">import</span> <span class="var">numpy</span> <span class="kw">as</span> <span class="var">np</span>
+<span class="kw">from</span> <span class="var">.engine</span> <span class="kw">import</span> <span class="cls">WHREngine</span>
+<span class="kw">from</span> <span class="var">.data_bridge</span> <span class="kw">import</span> <span class="fn">fetch_realtime_sensors</span>
+<span class="kw">from</span> <span class="var">.ui</span> <span class="kw">import</span> <span class="fn">render_sidebar</span>
+
+<span class="kw">def</span> <span class="fn">render</span>():
+    <span class="cm"># ── 0. Sidebar inputs + sensor fetch ──────────────────────────</span>
+    <span class="var">params</span>  = <span class="fn">render_sidebar</span>()
+    <span class="var">sensors</span> = <span class="fn">fetch_realtime_sensors</span>()
+
+    <span class="cm"># ── 1. Run engine ─────────────────────────────────────────────</span>
+    <span class="var">res</span> = <span class="cls">WHREngine</span>(<span class="var">sensors</span>, <span class="var">params</span>).<span class="fn">run</span>()
+
+    <span class="cm"># ── 2. Status banner ──────────────────────────────────────────</span>
+    <span class="var">mode_color</span> = <span class="str">"🟢"</span> <span class="kw">if</span> <span class="var">res</span>.<span class="var">data_source</span>==<span class="str">"realtime"</span> <span class="kw">else</span> <span class="str">"🟡"</span>
+    <span class="var">st</span>.<span class="fn">caption</span>(<span class="var">f</span><span class="str">"{mode_color} Mode: {res.data_source.upper()} | Warnings: {len(res.warnings)}"</span>)
+    <span class="kw">if</span> <span class="var">res</span>.<span class="var">warnings</span>:
+        <span class="kw">with</span> <span class="var">st</span>.<span class="fn">expander</span>(<span class="str">f"⚠ {len(res.warnings)} data warning(s)"</span>):
+            <span class="kw">for</span> <span class="var">w</span> <span class="kw">in</span> <span class="var">res</span>.<span class="var">warnings</span>: <span class="var">st</span>.<span class="fn">warning</span>(<span class="var">w</span>)
+
+    <span class="cm"># ── 3. Top KPI row ────────────────────────────────────────────</span>
+    <span class="var">k1</span>, <span class="var">k2</span>, <span class="var">k3</span>, <span class="var">k4</span> = <span class="var">st</span>.<span class="fn">columns</span>(<span class="num">4</span>)
+    <span class="var">k1</span>.<span class="fn">metric</span>(<span class="str">"♻ Recoverable Energy"</span>, <span class="var">f</span><span class="str">"{res.E_total:.0f} MWh/yr"</span>,
+              <span class="var">delta</span>=<span class="var">f</span><span class="str">"vs 0 (baseline)"</span>)
+    <span class="var">k2</span>.<span class="fn">metric</span>(<span class="str">"🌱 CO₂ Avoided"</span>,        <span class="var">f</span><span class="str">"{res.co2_total:.1f} tCO₂/yr"</span>)
+    <span class="var">k3</span>.<span class="fn">metric</span>(<span class="str">"💰 Annual Savings"</span>,     <span class="var">f</span><span class="str">"{res.savings_total:,.0f} DT/yr"</span>)
+    <span class="var">k4</span>.<span class="fn">metric</span>(<span class="str">"📈 Weighted ROI"</span>,       <span class="var">f</span><span class="str">"{res.roi_weighted:.1f} yrs"</span>)
+
+    <span class="var">st</span>.<span class="fn">divider</span>()
+
+    <span class="cm"># ── 4. Energy breakdown chart ─────────────────────────────────</span>
+    <span class="var">col_a</span>, <span class="var">col_b</span> = <span class="var">st</span>.<span class="fn">columns</span>(<span class="num">2</span>)
+
+    <span class="kw">with</span> <span class="var">col_a</span>:
+        <span class="var">st</span>.<span class="fn">subheader</span>(<span class="str">"Energy by Source (MWh/yr)"</span>)
+        <span class="var">df_e</span> = <span class="var">pd</span>.<span class="cls">DataFrame</span>({
+            <span class="str">"Source"</span>: [<span class="str">"W1 Flue gas"</span>, <span class="str">"W2 Compressor"</span>, <span class="str">"W3 GEG Cond."</span>],
+            <span class="str">"E_MWh"</span>: [<span class="var">res</span>.<span class="var">E_W1</span>, <span class="var">res</span>.<span class="var">E_W2</span>, <span class="var">res</span>.<span class="var">E_W3</span>],
+            <span class="str">"Scenario"</span>: [<span class="str">"S1"</span>, <span class="str">"S2"</span>, <span class="str">"S3"</span>],
+            <span class="str">"Color"</span>: [<span class="str">"#f59e0b"</span>, <span class="str">"#10b981"</span>, <span class="str">"#00d4ff"</span>]
+        })
+        <span class="var">fig_e</span> = <span class="var">px</span>.<span class="fn">bar</span>(<span class="var">df_e</span>, <span class="var">x</span>=<span class="str">"E_MWh"</span>, <span class="var">y</span>=<span class="str">"Source"</span>, <span class="var">orientation</span>=<span class="str">"h"</span>,
+                       <span class="var">color</span>=<span class="str">"Scenario"</span>, <span class="var">text</span>=<span class="str">"E_MWh"</span>,
+                       <span class="var">color_discrete_map</span>={<span class="str">"S1"</span>:<span class="str">"#f59e0b"</span>,<span class="str">"S2"</span>:<span class="str">"#10b981"</span>,<span class="str">"S3"</span>:<span class="str">"#00d4ff"</span>})
+        <span class="var">fig_e</span>.<span class="fn">update_traces</span>(<span class="var">texttemplate</span>=<span class="str">"%{x:.0f} MWh"</span>, <span class="var">textposition</span>=<span class="str">"outside"</span>)
+        <span class="var">fig_e</span>.<span class="fn">update_layout</span>(<span class="var">height</span>=<span class="num">240</span>, <span class="var">margin</span>=<span class="var">dict</span>(<span class="var">l</span>=<span class="num">0</span>,<span class="var">r</span>=<span class="num">0</span>,<span class="var">t</span>=<span class="num">20</span>,<span class="var">b</span>=<span class="num">0</span>),
+                            <span class="var">plot_bgcolor</span>=<span class="str">"rgba(0,0,0,0)"</span>, <span class="var">paper_bgcolor</span>=<span class="str">"rgba(0,0,0,0)"</span>)
+        <span class="var">st</span>.<span class="fn">plotly_chart</span>(<span class="var">fig_e</span>, <span class="var">use_container_width</span>=<span class="kw">True</span>)
+
+    <span class="kw">with</span> <span class="var">col_b</span>:
+        <span class="var">st</span>.<span class="fn">subheader</span>(<span class="str">"ROI Cumulative Cash-flow (12 yr)"</span>)
+        <span class="var">years</span> = <span class="var">np</span>.<span class="fn">arange</span>(<span class="num">0</span>, <span class="num">13</span>)
+        <span class="var">fig_roi</span> = <span class="var">go</span>.<span class="cls">Figure</span>()
+        <span class="kw">for</span> <span class="var">label</span>, <span class="var">capex</span>, <span class="var">sav</span>, <span class="var">col</span> <span class="kw">in</span> [
+            (<span class="str">"S1 Economizer"</span>,   <span class="var">params</span>.<span class="var">capex_s1</span>, <span class="var">res</span>.<span class="var">savings_s1</span>, <span class="str">"#f59e0b"</span>),
+            (<span class="str">"S2 Compressor"</span>,  <span class="var">params</span>.<span class="var">capex_s2</span>, <span class="var">res</span>.<span class="var">savings_s2</span>, <span class="str">"#10b981"</span>),
+            (<span class="str">"S3 GEG Cond."</span>,    <span class="var">params</span>.<span class="var">capex_s3</span>, <span class="var">res</span>.<span class="var">savings_s3</span>, <span class="str">"#00d4ff"</span>),
+        ]:
+            <span class="var">cum</span> = [-<span class="var">capex</span> + <span class="var">sav</span>*<span class="var">y</span> <span class="kw">for</span> <span class="var">y</span> <span class="kw">in</span> <span class="var">years</span>]
+            <span class="var">fig_roi</span>.<span class="fn">add_trace</span>(<span class="var">go</span>.<span class="cls">Scatter</span>(<span class="var">x</span>=<span class="var">years</span>, <span class="var">y</span>=<span class="var">cum</span>, <span class="var">name</span>=<span class="var">label</span>,
+                               <span class="var">line</span>=<span class="var">dict</span>(<span class="var">color</span>=<span class="var">col</span>, <span class="var">width</span>=<span class="num">2</span>)))
+        <span class="var">fig_roi</span>.<span class="fn">add_hline</span>(<span class="var">y</span>=<span class="num">0</span>, <span class="var">line_dash</span>=<span class="str">"dash"</span>, <span class="var">line_color</span>=<span class="str">"gray"</span>)
+        <span class="var">fig_roi</span>.<span class="fn">update_layout</span>(<span class="var">height</span>=<span class="num">240</span>, <span class="var">xaxis_title</span>=<span class="str">"Year"</span>, <span class="var">yaxis_title</span>=<span class="str">"DT"</span>,
+                             <span class="var">margin</span>=<span class="var">dict</span>(<span class="var">l</span>=<span class="num">0</span>,<span class="var">r</span>=<span class="num">0</span>,<span class="var">t</span>=<span class="num">20</span>,<span class="var">b</span>=<span class="num">0</span>),
+                             <span class="var">plot_bgcolor</span>=<span class="str">"rgba(0,0,0,0)"</span>, <span class="var">paper_bgcolor</span>=<span class="str">"rgba(0,0,0,0)"</span>)
+        <span class="var">st</span>.<span class="fn">plotly_chart</span>(<span class="var">fig_roi</span>, <span class="var">use_container_width</span>=<span class="kw">True</span>)</pre></div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════
+     §6 — PRIORITIZATION DISPLAY
+═══════════════════════════════════════════════════ -->
+<div class="section" id="s6">
+  <div class="section-num">§6 · Prioritization Display</div>
+  <h2 class="section-title">Ranking Table <span>& Radar Chart</span></h2>
+
+  <div class="code-block">
+    <div class="code-header"><span class="code-lang">python</span><span class="code-file">whr/ui.py — priority section</span></div>
+    <div class="code-body"><pre>    <span class="var">st</span>.<span class="fn">divider</span>()
+    <span class="var">st</span>.<span class="fn">subheader</span>(<span class="str">"Source Prioritization"</span>)
+    <span class="var">pcol1</span>, <span class="var">pcol2</span> = <span class="var">st</span>.<span class="fn">columns</span>([<span class="num">1.2</span>, <span class="num">1</span>])
+
+    <span class="kw">with</span> <span class="var">pcol1</span>:
+        <span class="cm"># Build ranked DataFrame</span>
+        <span class="var">rows</span> = []
+        <span class="kw">for</span> <span class="var">src</span>, <span class="var">sc</span> <span class="kw">in</span> <span class="var">sorted</span>(<span class="var">res</span>.<span class="var">scores</span>.<span class="fn">items</span>(),
+                         <span class="var">key</span>=<span class="kw">lambda</span> <span class="var">x</span>: <span class="var">x</span>[<span class="num">1</span>][<span class="str">"total"</span>], <span class="var">reverse</span>=<span class="kw">True</span>):
+            <span class="var">rows</span>.<span class="fn">append</span>({
+                <span class="str">"Rank"</span>:         <span class="str">"🥇🥈🥉"</span>[<span class="var">len</span>(<span class="var">rows</span>)],
+                <span class="str">"Source"</span>:       <span class="var">src</span>,
+                <span class="str">"C1 Energy"</span>:   <span class="var">sc</span>[<span class="str">"C1"</span>],
+                <span class="str">"C2 CO₂"</span>:      <span class="var">sc</span>[<span class="str">"C2"</span>],
+                <span class="str">"C3 Feasib."</span>:  <span class="var">sc</span>[<span class="str">"C3"</span>],
+                <span class="str">"C4 CAPEX"</span>:    <span class="var">sc</span>[<span class="str">"C4"</span>],
+                <span class="str">"C5 ROI"</span>:      <span class="var">sc</span>[<span class="str">"C5"</span>],
+                <span class="str">"SCORE"</span>:        <span class="var">f</span><span class="str">"{sc['total']:.2f}"</span>,
+            })
+        <span class="var">df_rank</span> = <span class="var">pd</span>.<span class="cls">DataFrame</span>(<span class="var">rows</span>)
+
+        <span class="cm"># Highlight top row</span>
+        <span class="kw">def</span> <span class="fn">highlight_top</span>(<span class="var">s</span>):
+            <span class="kw">return</span> [<span class="str">"background-color: rgba(0,212,255,0.08)"</span>
+                    <span class="kw">if</span> <span class="var">i</span>==<span class="num">0</span> <span class="kw">else</span> <span class="str">""</span> <span class="kw">for</span> <span class="var">i</span> <span class="kw">in</span> <span class="var">range</span>(<span class="var">len</span>(<span class="var">s</span>))]
+
+        <span class="var">st</span>.<span class="fn">dataframe</span>(<span class="var">df_rank</span>.<span class="fn">style</span>.<span class="fn">apply</span>(<span class="var">highlight_top</span>, <span class="var">axis</span>=<span class="num">0</span>),
+                     <span class="var">use_container_width</span>=<span class="kw">True</span>, <span class="var">hide_index</span>=<span class="kw">True</span>)
+
+    <span class="kw">with</span> <span class="var">pcol2</span>:
+        <span class="cm"># Radar chart for top 3 sources</span>
+        <span class="var">categories</span> = [<span class="str">"Energy"</span>, <span class="str">"CO₂"</span>, <span class="str">"Feasibility"</span>, <span class="str">"CAPEX"</span>, <span class="str">"ROI"</span>]
+        <span class="var">fig_radar</span> = <span class="var">go</span>.<span class="cls">Figure</span>()
+        <span class="var">colors</span> = [<span class="str">"#00d4ff"</span>, <span class="str">"#10b981"</span>, <span class="str">"#f59e0b"</span>]
+        <span class="kw">for</span> <span class="var">i</span>, (<span class="var">src</span>, <span class="var">sc</span>) <span class="kw">in</span> <span class="fn">enumerate</span>(<span class="var">res</span>.<span class="var">scores</span>.<span class="fn">items</span>()):
+            <span class="var">vals</span> = [<span class="var">sc</span>[<span class="str">"C1"</span>], <span class="var">sc</span>[<span class="str">"C2"</span>], <span class="var">sc</span>[<span class="str">"C3"</span>], <span class="var">sc</span>[<span class="str">"C4"</span>], <span class="var">sc</span>[<span class="str">"C5"</span>]]
+            <span class="var">fig_radar</span>.<span class="fn">add_trace</span>(<span class="var">go</span>.<span class="cls">Scatterpolar</span>(
+                <span class="var">r</span>=<span class="var">vals</span>+[<span class="var">vals</span>[<span class="num">0</span>]], <span class="var">theta</span>=<span class="var">categories</span>+[<span class="var">categories</span>[<span class="num">0</span>]],
+                <span class="var">name</span>=<span class="var">src</span>, <span class="var">fill</span>=<span class="str">"toself"</span>, <span class="var">opacity</span>=<span class="num">0.4</span>,
+                <span class="var">line</span>=<span class="var">dict</span>(<span class="var">color</span>=<span class="var">colors</span>[<span class="var">i</span>], <span class="var">width</span>=<span class="num">2</span>)))
+        <span class="var">fig_radar</span>.<span class="fn">update_layout</span>(<span class="var">polar</span>=<span class="var">dict</span>(<span class="var">radialaxis</span>=<span class="var">dict</span>(<span class="var">range</span>=[<span class="num">0</span>,<span class="num">10</span>])),
+                                <span class="var">height</span>=<span class="num">280</span>, <span class="var">margin</span>=<span class="var">dict</span>(<span class="var">l</span>=<span class="num">20</span>,<span class="var">r</span>=<span class="num">20</span>,<span class="var">t</span>=<span class="num">20</span>,<span class="var">b</span>=<span class="num">20</span>),
+                                <span class="var">paper_bgcolor</span>=<span class="str">"rgba(0,0,0,0)"</span>)
+        <span class="var">st</span>.<span class="fn">plotly_chart</span>(<span class="var">fig_radar</span>, <span class="var">use_container_width</span>=<span class="kw">True</span>)</pre></div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════
+     §7 — REAL-TIME VS STATIC
+═══════════════════════════════════════════════════ -->
+<div class="section" id="s7">
+  <div class="section-num">§7 · Real-time vs Static Mode</div>
+  <h2 class="section-title">Dual Operating <span>Modes</span></h2>
+
+  <div class="tbl-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Aspect</th>
+          <th>Real-time mode</th>
+          <th>Static mode</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Trigger</strong></td>
+          <td>IoT sensors available, <code>is_realtime=True</code></td>
+          <td>No sensor connection, all <code>SensorData</code> fields are None</td>
+        </tr>
+        <tr>
+          <td><strong>Data source</strong></td>
+          <td>Live from <code>fetch_realtime_sensors()</code></td>
+          <td>Audit values from <code>EQUIPMENT</code> + <code>DEFAULTS</code> in config.py</td>
+        </tr>
+        <tr>
+          <td><strong>Refresh</strong></td>
+          <td><code>st.rerun()</code> every N seconds via <code>time.sleep</code> + fragment</td>
+          <td>Only on sidebar widget change (Streamlit reactive default)</td>
+        </tr>
+        <tr>
+          <td><strong>Banner</strong></td>
+          <td>🟢 REALTIME</td>
+          <td>🟡 STATIC — using audit defaults</td>
+        </tr>
+        <tr>
+          <td><strong>Accuracy</strong></td>
+          <td>Actual measured values — high confidence</td>
+          <td>Estimated — ±15% typical uncertainty</td>
+        </tr>
+        <tr>
+          <td><strong>KPI delta</strong></td>
+          <td>Shows delta vs previous reading</td>
+          <td>Shows delta vs 0 baseline</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="code-block">
+    <div class="code-header"><span class="code-lang">python</span><span class="code-file">whr/ui.py — auto-refresh logic (optional)</span></div>
+    <div class="code-body"><pre><span class="cm"># Add at top of render() for live refresh every 30s</span>
+<span class="dec">@st.fragment</span>(<span class="var">run_every</span>=<span class="num">30</span>)   <span class="cm"># Streamlit ≥1.33 — only re-runs this fragment</span>
+<span class="kw">def</span> <span class="fn">whr_live_kpis</span>():
+    <span class="var">sensors</span> = <span class="fn">fetch_realtime_sensors</span>()
+    <span class="var">params</span>  = <span class="var">st</span>.<span class="var">session_state</span>.<span class="fn">get</span>(<span class="str">"whr_params"</span>, <span class="cls">UserParams</span>())
+    <span class="var">res</span>     = <span class="cls">WHREngine</span>(<span class="var">sensors</span>, <span class="var">params</span>).<span class="fn">run</span>()
+    <span class="cm"># update only the KPI cards, not full page</span>
+    <span class="var">k1</span>, <span class="var">k2</span>, <span class="var">k3</span>, <span class="var">k4</span> = <span class="var">st</span>.<span class="fn">columns</span>(<span class="num">4</span>)
+    <span class="var">k1</span>.<span class="fn">metric</span>(<span class="str">"♻ Recoverable Energy"</span>, <span class="var">f</span><span class="str">"{res.E_total:.0f} MWh/yr"</span>)
+    <span class="cm"># ... rest of metrics</span></pre></div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════
+     §8 — ERROR HANDLING
+═══════════════════════════════════════════════════ -->
+<div class="section" id="s8">
+  <div class="section-num">§8 · Error Handling & Validation</div>
+  <h2 class="section-title">Validation <span>& Fault Tolerance</span></h2>
+
+  <div class="val-grid">
+    <div class="val-card">
+      <h4>Sensor out-of-range</h4>
+      <p>Checked in <code>_resolve()</code> against <code>VALID_RANGES</code>. Out-of-range value → replaced by default, warning added to <code>res.warnings</code>, shown in expandable banner. Engine always completes.</p>
+      <div class="code-block" style="margin-top:10px">
+        <div class="code-body" style="padding:12px"><pre><span class="cm"># Example: t_flue_in = 820°C → sensor fault</span>
+<span class="cm"># valid range (100, 350) → uses default 190°C</span>
+<span class="cm"># warning: "t_flue_in=820 out of range [100,350]"</span></pre></div>
+      </div>
+    </div>
+    <div class="val-card">
+      <h4>Missing sensor (None)</h4>
+      <p>All <code>SensorData</code> fields are <code>Optional</code>. If None, <code>_resolve()</code> falls back to config default silently in static mode, warns in realtime mode. No crash possible.</p>
+      <div class="code-block" style="margin-top:10px">
+        <div class="code-body" style="padding:12px"><pre><span class="cm"># If v_gn_flow is None:</span>
+<span class="cm"># → derives from P_boiler_nom × tau_boiler</span>
+<span class="cm"># → warns: "v_gn_flow: no sensor → using derived"</span></pre></div>
+      </div>
+    </div>
+    <div class="val-card">
+      <h4>Division by zero (ROI)</h4>
+      <p>Savings can be zero if energy price is zero. Protected with explicit check before division. Returns <code>float("inf")</code> → displayed as "N/A" in the UI.</p>
+      <div class="code-block" style="margin-top:10px">
+        <div class="code-body" style="padding:12px"><pre><span class="kw">roi</span> = (<span class="var">capex</span> / <span class="var">savings</span>
+       <span class="kw">if</span> <span class="var">savings</span> > <span class="num">0</span>
+       <span class="kw">else</span> <span class="var">float</span>(<span class="str">"inf"</span>))
+<span class="var">display</span> = (<span class="var">f</span><span class="str">"{roi:.1f} yrs"</span>
+           <span class="kw">if</span> <span class="var">roi</span> < <span class="num">99</span>
+           <span class="kw">else</span> <span class="str">"N/A"</span>)</pre></div>
+      </div>
+    </div>
+    <div class="val-card">
+      <h4>Physical constraint: acid dew point</h4>
+      <p>If user sets T_out &lt; 110°C, show a hard warning. Do not block calculation — engineer may have a reason — but flag clearly.</p>
+      <div class="code-block" style="margin-top:10px">
+        <div class="code-body" style="padding:12px"><pre><span class="kw">if</span> <span class="var">params</span>.<span class="var">t_flue_out_target</span> < <span class="num">110</span>:
+    <span class="var">st</span>.<span class="fn">error</span>(
+        <span class="str">"⚠ T_out below acid dew point (110°C)."</span>
+        <span class="str">" Risk of sulfuric condensation → corrosion."</span>
+    )</pre></div>
+      </div>
+    </div>
+    <div class="val-card">
+      <h4>Scoring weight sum ≠ 1.0</h4>
+      <p>C5 weight is auto-computed as <code>1.0 - w1 - w2 - w3 - w4</code>. If user somehow forces a negative C5, clamp to 0 and warn. Normalization always enforced.</p>
+      <div class="code-block" style="margin-top:10px">
+        <div class="code-body" style="padding:12px"><pre><span class="var">w5</span> = <span class="var">max</span>(<span class="num">0.0</span>, <span class="num">1.0</span> - <span class="var">w1</span> - <span class="var">w2</span> - <span class="var">w3</span> - <span class="var">w4</span>)
+<span class="cm"># always Σwi = 1.0</span></pre></div>
+      </div>
+    </div>
+    <div class="val-card">
+      <h4>Data bridge connection failure</h4>
+      <p><code>fetch_realtime_sensors()</code> is wrapped in try/except. Any exception → returns empty <code>SensorData()</code> (all None). Engine runs in static mode. User sees 🟡 STATIC banner. Never crashes the dashboard.</p>
+      <div class="code-block" style="margin-top:10px">
+        <div class="code-body" style="padding:12px"><pre><span class="kw">except</span> <span class="cls">Exception</span>:
+    <span class="kw">return</span> <span class="cls">SensorData</span>()
+<span class="cm"># → graceful degradation to static mode</span></pre></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="callout call-amber">
+    <p>Design principle: <strong>the engine never raises exceptions to the UI layer.</strong> All errors are caught, logged to <code>res.warnings</code>, and displayed as non-blocking banners. The dashboard always shows a result — even if all sensors are down.</p>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════
+     §9 — EXECUTION PLAN
+═══════════════════════════════════════════════════ -->
+<div class="section" id="s9">
+  <div class="section-num">§9 · Minimal Implementation Plan</div>
+  <h2 class="section-title">≤ 2 Hours <span>Execution Timeline</span></h2>
+
+  <div class="timeline">
+    <div class="tl-item">
+      <div class="tl-time">0:00 – 0:20</div>
+      <div class="tl-content">
+        <h4>Step 1 — Scaffold files + config</h4>
+        <p>Create <code>whr/</code> folder + 4 files. Copy <code>config.py</code> exactly as written in §3. Verify all constants match your equipment. Run: <code>python -c "from whr.config import CONST; print(CONST)"</code></p>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-time">0:20 – 0:45</div>
+      <div class="tl-content">
+        <h4>Step 2 — Implement engine.py</h4>
+        <p>Copy engine.py from §3. Run quick unit test: <code>from whr.engine import WHREngine, SensorData, UserParams; r = WHREngine(SensorData(), UserParams()).run(); print(r.E_total)</code> → should return ~881 MWh.</p>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-time">0:45 – 1:00</div>
+      <div class="tl-content">
+        <h4>Step 3 — Wire data_bridge.py</h4>
+        <p>Adapt to your actual data source (session_state / DB / REST). Test: <code>sensors = fetch_realtime_sensors(); print(sensors)</code>. Verify fields are populated or None (never throw).</p>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-time">1:00 – 1:20</div>
+      <div class="tl-content">
+        <h4>Step 4 — Add tab to app.py + sidebar</h4>
+        <p>Add <code>tab_whr</code> to existing tab list. Implement <code>render_sidebar()</code> → test all sliders respond. Verify <code>UserParams</code> object is correctly populated from widgets.</p>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-time">1:20 – 1:45</div>
+      <div class="tl-content">
+        <h4>Step 5 — KPI cards + charts</h4>
+        <p>Add 4 <code>st.metric()</code> cards. Add horizontal bar chart (energy by source). Add ROI cumulative lines chart. Test: change GN price → all values update live.</p>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-time">1:45 – 2:00</div>
+      <div class="tl-content">
+        <h4>Step 6 — Priority table + radar + demo prep</h4>
+        <p>Add ranking table with top-row highlight. Add radar chart. Test: change weight sliders → ranking reorders live. <strong>This is the jury demo moment</strong> — rehearse it once.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="callout call-green">
+    <p><strong>Demo script for jury:</strong> (1) Show live KPIs auto-computed from IoT data. (2) Change GN price → watch ROI shift. (3) Increase ROI weight → W2 jumps to #1. (4) Connect live thermocouple reading → Q_W1 updates instantly. Each gesture demonstrates a different layer of the system: data, calculation, economic model, decision model.</p>
+  </div>
+
+  <h3>Quick sanity checks before demo</h3>
+  <div class="code-block">
+    <div class="code-header"><span class="code-lang">python</span><span class="code-file">tests/test_whr_engine.py</span></div>
+    <div class="code-body"><pre><span class="kw">from</span> <span class="var">whr.engine</span> <span class="kw">import</span> <span class="cls">WHREngine</span>, <span class="cls">SensorData</span>, <span class="cls">UserParams</span>
+
+<span class="kw">def</span> <span class="fn">test_static_mode_totals</span>():
+    <span class="var">r</span> = <span class="cls">WHREngine</span>(<span class="cls">SensorData</span>(), <span class="cls">UserParams</span>()).<span class="fn">run</span>()
+    <span class="kw">assert</span> <span class="num">800</span> < <span class="var">r</span>.<span class="var">E_total</span> < <span class="num">950</span>,  <span class="str">f"E_total={r.E_total} unexpected"</span>
+    <span class="kw">assert</span> <span class="num">150</span> < <span class="var">r</span>.<span class="var">co2_total</span> < <span class="num">220</span>, <span class="str">f"CO2={r.co2_total} unexpected"</span>
+    <span class="kw">assert</span> <span class="num">1.5</span> < <span class="var">r</span>.<span class="var">roi_weighted</span> < <span class="num">3</span>, <span class="str">f"ROI={r.roi_weighted} unexpected"</span>
+    <span class="kw">assert</span> <span class="var">len</span>(<span class="var">r</span>.<span class="var">warnings</span>) > <span class="num">0</span>,      <span class="str">"Should warn about missing sensors"</span>
+
+<span class="kw">def</span> <span class="fn">test_sensor_override</span>():
+    <span class="cm"># Real T_in = 160°C → Q_W1 should drop ~30%</span>
+    <span class="var">r_default</span> = <span class="cls">WHREngine</span>(<span class="cls">SensorData</span>(), <span class="cls">UserParams</span>()).<span class="fn">run</span>()
+    <span class="var">r_sensor</span>  = <span class="cls">WHREngine</span>(<span class="cls">SensorData</span>(<span class="var">t_flue_in</span>=<span class="num">160</span>, <span class="var">is_realtime</span>=<span class="kw">True</span>),
+                          <span class="cls">UserParams</span>()).<span class="fn">run</span>()
+    <span class="kw">assert</span> <span class="var">r_sensor</span>.<span class="var">E_W1</span> < <span class="var">r_default</span>.<span class="var">E_W1</span>, <span class="str">"Sensor override did not reduce E_W1"</span>
+
+<span class="kw">def</span> <span class="fn">test_zero_savings_guard</span>():
+    <span class="cm"># price=0 should not crash</span>
+    <span class="var">p</span> = <span class="cls">UserParams</span>(<span class="var">p_gn</span>=<span class="num">0</span>, <span class="var">p_elec</span>=<span class="num">0</span>)
+    <span class="var">r</span> = <span class="cls">WHREngine</span>(<span class="cls">SensorData</span>(), <span class="var">p</span>).<span class="fn">run</span>()
+    <span class="kw">assert</span> <span class="var">r</span>.<span class="var">roi_weighted</span> == <span class="num">99</span>, <span class="str">"Should return sentinel 99 not crash"</span></pre></div>
+  </div>
+</div>
+
+</div><!-- /main -->
+
+<footer>
+  <span>WHR Integration Spec · Hackathon 2024–2025 · Track B · Part 3</span>
+  <span>Engine: whr/engine.py · UI: whr/ui.py · Config: whr/config.py · Bridge: whr/data_bridge.py</span>
+  <span>≤ 2h implementation · Streamlit compatible · No dashboard redesign</span>
+</footer>
+
+</body>
+</html>

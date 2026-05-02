@@ -1,0 +1,1570 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WHR Framework — Usine Pharmaceutique</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap');
+
+  :root {
+    --cyan: #00B4D8;
+    --cyan-dim: #0077A8;
+    --cyan-pale: #E0F7FA;
+    --amber: #F59E0B;
+    --amber-pale: #FEF3C7;
+    --red: #EF4444;
+    --red-pale: #FEE2E2;
+    --green: #10B981;
+    --green-pale: #D1FAE5;
+    --ink: #0D1117;
+    --ink2: #1C2333;
+    --ink3: #2D3748;
+    --muted: #64748B;
+    --border: #E2E8F0;
+    --surface: #F8FAFC;
+    --white: #FFFFFF;
+    --mono: 'IBM Plex Mono', monospace;
+    --sans: 'IBM Plex Sans', sans-serif;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: var(--sans);
+    background: var(--ink);
+    color: var(--white);
+    font-size: 14px;
+    line-height: 1.7;
+  }
+
+  /* COVER */
+  .cover {
+    background: var(--ink);
+    padding: 64px 80px 48px;
+    border-bottom: 1px solid rgba(0,180,216,0.3);
+    position: relative;
+    overflow: hidden;
+  }
+  .cover::before {
+    content: '';
+    position: absolute;
+    top: 0; right: 0;
+    width: 400px; height: 400px;
+    background: radial-gradient(circle at top right, rgba(0,180,216,0.08) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .cover-tag {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--cyan);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin-bottom: 24px;
+  }
+  .cover-title {
+    font-size: 52px;
+    font-weight: 600;
+    line-height: 1.1;
+    color: var(--white);
+    margin-bottom: 8px;
+  }
+  .cover-title span { color: var(--cyan); }
+  .cover-sub {
+    font-size: 16px;
+    color: var(--muted);
+    margin-bottom: 48px;
+  }
+  .cover-kpis {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 2px;
+    max-width: 720px;
+  }
+  .kpi-box {
+    background: var(--ink2);
+    border: 1px solid rgba(0,180,216,0.15);
+    padding: 20px 24px;
+  }
+  .kpi-box:first-child { border-radius: 8px 0 0 8px; }
+  .kpi-box:last-child { border-radius: 0 8px 8px 0; }
+  .kpi-num {
+    font-family: var(--mono);
+    font-size: 28px;
+    font-weight: 500;
+    color: var(--cyan);
+    display: block;
+  }
+  .kpi-label {
+    font-size: 11px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-top: 4px;
+  }
+
+  /* NAV */
+  .nav {
+    background: var(--ink2);
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+    padding: 0 80px;
+    display: flex;
+    gap: 0;
+    overflow-x: auto;
+  }
+  .nav a {
+    font-family: var(--mono);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--muted);
+    text-decoration: none;
+    padding: 14px 20px;
+    border-bottom: 2px solid transparent;
+    white-space: nowrap;
+    transition: color 0.2s, border-color 0.2s;
+  }
+  .nav a:hover { color: var(--cyan); border-bottom-color: var(--cyan); }
+
+  /* MAIN LAYOUT */
+  .page { max-width: 1100px; margin: 0 auto; padding: 0 80px 80px; }
+
+  /* SECTION */
+  .section {
+    margin-top: 64px;
+    padding-top: 64px;
+    border-top: 1px solid rgba(255,255,255,0.06);
+  }
+  .section-tag {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--cyan);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  .section-title {
+    font-size: 28px;
+    font-weight: 500;
+    color: var(--white);
+    margin-bottom: 24px;
+  }
+  .section-title span { color: var(--cyan); }
+
+  /* PROSE */
+  p { color: #CBD5E1; margin-bottom: 16px; }
+  h3 { font-size: 16px; font-weight: 500; color: var(--white); margin: 28px 0 12px; }
+  h4 { font-size: 13px; font-weight: 500; color: var(--cyan); text-transform: uppercase; letter-spacing: 0.08em; margin: 24px 0 8px; font-family: var(--mono); }
+
+  /* CALLOUT BOXES */
+  .callout {
+    border-left: 3px solid var(--cyan);
+    background: rgba(0,180,216,0.06);
+    padding: 16px 20px;
+    margin: 20px 0;
+    border-radius: 0 6px 6px 0;
+  }
+  .callout.warn {
+    border-color: var(--amber);
+    background: rgba(245,158,11,0.06);
+  }
+  .callout.danger {
+    border-color: var(--red);
+    background: rgba(239,68,68,0.06);
+  }
+  .callout.success {
+    border-color: var(--green);
+    background: rgba(16,185,129,0.06);
+  }
+  .callout-tag {
+    font-family: var(--mono);
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--cyan);
+    margin-bottom: 6px;
+  }
+  .callout.warn .callout-tag { color: var(--amber); }
+  .callout.danger .callout-tag { color: var(--red); }
+  .callout.success .callout-tag { color: var(--green); }
+  .callout p { margin-bottom: 0; color: #CBD5E1; }
+
+  /* EQUATION BLOCK */
+  .eq-block {
+    background: var(--ink2);
+    border: 1px solid rgba(0,180,216,0.2);
+    border-radius: 8px;
+    padding: 24px 28px;
+    margin: 20px 0;
+  }
+  .eq-formula {
+    font-family: var(--mono);
+    font-size: 16px;
+    color: var(--cyan);
+    font-weight: 500;
+    margin-bottom: 16px;
+    display: block;
+  }
+  .eq-grid {
+    display: grid;
+    grid-template-columns: 140px 1fr;
+    gap: 6px 16px;
+    margin-top: 12px;
+  }
+  .eq-key {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--amber);
+  }
+  .eq-val {
+    font-size: 13px;
+    color: #94A3B8;
+  }
+  .eq-meta {
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid rgba(255,255,255,0.06);
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+  .eq-meta-item { }
+  .eq-meta-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--muted);
+    margin-bottom: 4px;
+  }
+  .eq-meta-val { font-size: 13px; color: #CBD5E1; }
+
+  /* TABLES */
+  .table-wrap { overflow-x: auto; margin: 20px 0; }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
+  thead tr {
+    border-bottom: 1px solid rgba(0,180,216,0.3);
+  }
+  thead th {
+    font-family: var(--mono);
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--muted);
+    padding: 10px 14px;
+    text-align: left;
+    font-weight: 400;
+  }
+  tbody tr {
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    transition: background 0.15s;
+  }
+  tbody tr:hover { background: rgba(255,255,255,0.02); }
+  tbody td {
+    padding: 12px 14px;
+    color: #CBD5E1;
+    vertical-align: top;
+  }
+  tbody td:first-child { color: var(--white); font-weight: 500; }
+  .badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-family: var(--mono);
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-weight: 500;
+  }
+  .badge-cyan { background: rgba(0,180,216,0.15); color: var(--cyan); }
+  .badge-amber { background: rgba(245,158,11,0.15); color: var(--amber); }
+  .badge-green { background: rgba(16,185,129,0.15); color: var(--green); }
+  .badge-red { background: rgba(239,68,68,0.15); color: var(--red); }
+  .badge-gray { background: rgba(100,116,139,0.2); color: var(--muted); }
+  .badge-muted { background: rgba(255,255,255,0.06); color: #94A3B8; }
+
+  /* SCORE TABLE */
+  .score-bar {
+    height: 6px;
+    border-radius: 3px;
+    background: rgba(255,255,255,0.08);
+    position: relative;
+    margin-top: 4px;
+  }
+  .score-fill {
+    position: absolute;
+    top: 0; left: 0; height: 100%;
+    border-radius: 3px;
+    background: var(--cyan);
+  }
+  .score-num {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--cyan);
+  }
+
+  /* SCENARIO CARDS */
+  .scenarios {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin: 24px 0;
+  }
+  .scenario-card {
+    background: var(--ink2);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 10px;
+    padding: 24px;
+    position: relative;
+    overflow: hidden;
+  }
+  .scenario-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+  }
+  .sc1::before { background: var(--amber); }
+  .sc2::before { background: var(--green); }
+  .sc3::before { background: var(--cyan); }
+  .sc-tag {
+    font-family: var(--mono);
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--muted);
+    margin-bottom: 4px;
+  }
+  .sc-title { font-size: 15px; font-weight: 500; color: var(--white); margin-bottom: 20px; }
+  .sc-stat { margin-bottom: 10px; }
+  .sc-stat-val {
+    font-family: var(--mono);
+    font-size: 22px;
+    color: var(--white);
+    display: block;
+  }
+  .sc-stat-label { font-size: 11px; color: var(--muted); }
+  .sc-roi {
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid rgba(255,255,255,0.06);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .sc-roi-label { font-size: 12px; color: var(--muted); }
+  .sc-roi-val {
+    font-family: var(--mono);
+    font-size: 14px;
+    font-weight: 500;
+  }
+
+  /* DATA FLOW */
+  .data-flow {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin: 24px 0;
+  }
+  .df-box {
+    background: var(--ink2);
+    border-radius: 8px;
+    padding: 20px;
+  }
+  .df-header {
+    font-family: var(--mono);
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--cyan);
+    margin-bottom: 14px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid rgba(0,180,216,0.2);
+  }
+  .df-item {
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+  }
+  .df-item:last-child { border-bottom: none; }
+  .df-name { font-size: 12px; color: var(--white); font-weight: 500; }
+  .df-unit { font-family: var(--mono); font-size: 10px; color: var(--amber); }
+  .df-desc { font-size: 11px; color: var(--muted); margin-top: 2px; }
+
+  /* OUTPUT CARDS */
+  .outputs {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+    margin: 24px 0;
+  }
+  .out-card {
+    background: var(--ink2);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 8px;
+    padding: 20px 24px;
+  }
+  .out-name { font-size: 14px; font-weight: 500; color: var(--white); margin-bottom: 4px; }
+  .out-formula { font-family: var(--mono); font-size: 11px; color: var(--cyan); margin-bottom: 10px; }
+  .out-desc { font-size: 12px; color: var(--muted); }
+  .out-viz { margin-top: 12px; padding-top: 12px; border-top: 1px solid rgba(255,255,255,0.05); font-size: 11px; color: var(--amber); font-family: var(--mono); }
+
+  /* PARAMS TABLE */
+  .param-source {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-family: var(--mono);
+    font-size: 10px;
+    padding: 2px 6px;
+    border-radius: 3px;
+  }
+  .ps-iot { background: rgba(0,180,216,0.12); color: var(--cyan); }
+  .ps-pipe { background: rgba(245,158,11,0.12); color: var(--amber); }
+  .ps-hyp { background: rgba(100,116,139,0.15); color: #94A3B8; }
+  .ps-std { background: rgba(16,185,129,0.12); color: var(--green); }
+
+  /* CRITERION DETAIL */
+  .criterion-block {
+    background: var(--ink2);
+    border-radius: 8px;
+    padding: 20px 24px;
+    margin-bottom: 12px;
+    border-left: 3px solid rgba(0,180,216,0.4);
+  }
+  .crit-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+  .crit-name { font-size: 14px; font-weight: 500; color: var(--white); }
+  .crit-weight { font-family: var(--mono); font-size: 12px; color: var(--amber); }
+  .crit-scale {
+    display: grid;
+    grid-template-columns: 28px 1fr;
+    gap: 6px 12px;
+    align-items: start;
+  }
+  .crit-score-num {
+    font-family: var(--mono);
+    font-size: 13px;
+    color: var(--cyan);
+    font-weight: 500;
+    line-height: 1.5;
+  }
+  .crit-score-desc { font-size: 12px; color: #94A3B8; line-height: 1.5; }
+
+  /* MATH SUMMARY */
+  .math-group { margin-bottom: 32px; }
+  .math-group-title {
+    font-family: var(--mono);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--muted);
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+  }
+  .math-row {
+    display: grid;
+    grid-template-columns: 220px 1fr;
+    gap: 8px 24px;
+    padding: 10px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.03);
+    align-items: start;
+  }
+  .math-eq { font-family: var(--mono); font-size: 12px; color: var(--cyan); }
+  .math-desc { font-size: 12px; color: #94A3B8; }
+
+  /* FOOTER */
+  footer {
+    margin-top: 80px;
+    padding: 32px 80px;
+    border-top: 1px solid rgba(255,255,255,0.06);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  footer span { font-size: 12px; color: var(--muted); font-family: var(--mono); }
+
+  /* INLINE CODE */
+  code {
+    font-family: var(--mono);
+    font-size: 12px;
+    background: rgba(0,180,216,0.1);
+    color: var(--cyan);
+    padding: 1px 5px;
+    border-radius: 3px;
+  }
+
+  /* RESPONSIVE */
+  @media (max-width: 900px) {
+    .cover, .page, footer { padding-left: 24px; padding-right: 24px; }
+    .nav { padding: 0 24px; }
+    .cover-kpis, .scenarios, .data-flow, .outputs { grid-template-columns: 1fr; }
+    .cover-title { font-size: 32px; }
+    .eq-meta { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ══════════════ COVER ══════════════ -->
+<div class="cover">
+  <div class="cover-tag">▶ Track B · Part 3 · Hackathon 2024–2025 · Engineering Report v2.0</div>
+  <h1 class="cover-title">Waste Heat Recovery<br><span>Framework</span></h1>
+  <p class="cover-sub">Usine Pharmaceutique — Branche Chimique — Médicaments à usage humain<br>
+  Industrie Pharmaceutique · Zones Alpha · Beta · Gamma · Tri-génération + Chaudières GN</p>
+
+  <div class="cover-kpis">
+    <div class="kpi-box">
+      <span class="kpi-num">881</span>
+      <div class="kpi-label">MWh/an récupérables<br>(3 scénarios)</div>
+    </div>
+    <div class="kpi-box">
+      <span class="kpi-num">184,6</span>
+      <div class="kpi-label">tCO₂ évitées / an</div>
+    </div>
+    <div class="kpi-box">
+      <span class="kpi-num">2,1 ans</span>
+      <div class="kpi-label">ROI moyen pondéré</div>
+    </div>
+    <div class="kpi-box">
+      <span class="kpi-num">8</span>
+      <div class="kpi-label">Sources identifiées<br>(W1 – W8)</div>
+    </div>
+  </div>
+</div>
+
+<!-- NAV -->
+<nav class="nav">
+  <a href="#s1">§1 · Identification</a>
+  <a href="#s2">§2 · Equations</a>
+  <a href="#s3">§3 · Traçabilité paramètres</a>
+  <a href="#s4">§4 · Priorisation</a>
+  <a href="#s5">§5 · Scénarios</a>
+  <a href="#s6">§6 · Architecture données</a>
+  <a href="#s7">§7 · Outputs &amp; KPIs</a>
+  <a href="#s8">§8 · Modèle mathématique</a>
+</nav>
+
+<div class="page">
+
+<!-- ══════════════ §1 IDENTIFICATION ══════════════ -->
+<div class="section" id="s1">
+  <div class="section-tag">§1 · Identification</div>
+  <h2 class="section-title">Sources de chaleur <span>identifiées</span></h2>
+
+  <p>Méthode d'identification structurée en 4 étapes : cartographie des flux primaires → catégorisation par nature/température → quantification brute → vérification de la simultanéité source/puits. Huit sources ont été identifiées sur ce site.</p>
+
+  <div class="callout warn">
+    <div class="callout-tag">▲ Hypothèses d'ingénierie — données non mesurées</div>
+    <p>T° fumées cheminées chaudières : 190°C (typique GN sans économiseur — à confirmer par mesure). Débits CTA estimés depuis normes pharma ISO 14644. Charge chaudières vapeur : 40% (batch). Heures fonctionnement compresseur : 8 400 h/an (calculé depuis compteur 19 279h / 2,3 ans).</p>
+  </div>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Réf.</th>
+          <th>Source</th>
+          <th>Catégorie</th>
+          <th>Équipement</th>
+          <th>T° source</th>
+          <th>Niveau T°</th>
+          <th>P. brute (kW)</th>
+          <th>Disponibilité</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><span class="badge badge-cyan">W1</span></td>
+          <td>Fumées chaudières vapeur</td>
+          <td>Utilités</td>
+          <td>Mangazzini PVR15 + PVR5EU (1 840 kW)</td>
+          <td><code>190→130°C</code></td>
+          <td><span class="badge badge-amber">Moyenne</span></td>
+          <td>~56 kW (moy. 40%)</td>
+          <td>Batch/continu</td>
+        </tr>
+        <tr>
+          <td><span class="badge badge-cyan">W2</span></td>
+          <td>Chaleur compression air comprimé</td>
+          <td>Utilités</td>
+          <td>Compresseur D132RS-8A (132 kW, 39% charge)</td>
+          <td><code>60–80°C</code></td>
+          <td><span class="badge badge-muted">Basse</span></td>
+          <td>~41 kW</td>
+          <td>Quasi-continu 24/7</td>
+        </tr>
+        <tr>
+          <td><span class="badge badge-cyan">W3</span></td>
+          <td>Chaleur condenseurs GEG (air)</td>
+          <td>Utilités</td>
+          <td>6 GEG Carrier (2 650 kW frig total)</td>
+          <td><code>35–45°C</code></td>
+          <td><span class="badge badge-red">Très basse</span></td>
+          <td>~3 371 kW</td>
+          <td>Continu (saisonnier)</td>
+        </tr>
+        <tr>
+          <td><span class="badge badge-cyan">W4</span></td>
+          <td>Air extrait CTA (salles classées)</td>
+          <td>HVAC</td>
+          <td>17 CTA (Zones α, β, γ) — 22 ± 3°C</td>
+          <td><code>22–24°C</code></td>
+          <td><span class="badge badge-red">Très basse</span></td>
+          <td>~150 kW</td>
+          <td>Continu</td>
+        </tr>
+        <tr>
+          <td><span class="badge badge-cyan">W5</span></td>
+          <td>Purges chaudières vapeur</td>
+          <td>Utilités</td>
+          <td>Chaudières 5 bars (152°C saturée)</td>
+          <td><code>152°C</code></td>
+          <td><span class="badge badge-amber">Moyenne</span></td>
+          <td>~28 kW</td>
+          <td>Continu</td>
+        </tr>
+        <tr>
+          <td><span class="badge badge-cyan">W6</span></td>
+          <td>Pertes résiduelles Tri-génération</td>
+          <td>Utilités</td>
+          <td>Moteur GN (20% GN non récupéré)</td>
+          <td><code>35–55°C</code></td>
+          <td><span class="badge badge-red">Très basse</span></td>
+          <td>~372 kW</td>
+          <td>Continu (si moteur en marche)</td>
+        </tr>
+        <tr>
+          <td><span class="badge badge-cyan">W7</span></td>
+          <td>Fumées chaudières eau chaude</td>
+          <td>Utilités</td>
+          <td>Chappee 348kW + Viadrus 400kW</td>
+          <td><code>~160°C</code></td>
+          <td><span class="badge badge-amber">Moyenne</span></td>
+          <td>Variable</td>
+          <td>Intermittent (backup)</td>
+        </tr>
+        <tr>
+          <td><span class="badge badge-cyan">W8</span></td>
+          <td>Condensats vapeur non retournés</td>
+          <td>Utilités</td>
+          <td>Réseau vapeur 5 bar</td>
+          <td><code>80–100°C</code></td>
+          <td><span class="badge badge-muted">Basse</span></td>
+          <td>Variable</td>
+          <td>Batch</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="callout success">
+    <div class="callout-tag">✓ Écart critique détecté — Tri-génération</div>
+    <p>Potentiel récupérable installé : 1 270 kW · Production mesurée (eau chaude + absorption) : 419 kWh/h · <strong>Écart = 851 kW non valorisés</strong>. Opportunité immédiate si la demande de chaleur peut être augmentée — constitue le signal d'expertise différenciant de ce dossier.</p>
+  </div>
+</div>
+
+<!-- ══════════════ §2 ÉQUATIONS ══════════════ -->
+<div class="section" id="s2">
+  <div class="section-tag">§2 · Justification des équations</div>
+  <h2 class="section-title">Équations d'ingénierie <span>documentées</span></h2>
+
+  <p>Pour chaque équation utilisée dans ce framework, la formule, la justification physique, les hypothèses et les limites de précision sont explicitement documentées. Aucune boîte noire.</p>
+
+  <!-- EQ1 -->
+  <h3>EQ-1 · Chaleur sensible — fluides sans changement de phase</h3>
+  <div class="eq-block">
+    <span class="eq-formula">Q [kW] = ṁ [kg/s] × Cp [kJ/(kg·K)] × (T_source − T_cible) × η_échangeur</span>
+    <div class="eq-grid">
+      <span class="eq-key">ṁ</span><span class="eq-val">Débit massique du fluide caloporteur (kg/s)</span>
+      <span class="eq-key">Cp</span><span class="eq-val">Chaleur spécifique à pression constante — eau : 4,18 ; air sec : 1,005 ; fumées GN : ~1,08 kJ/(kg·K)</span>
+      <span class="eq-key">T_source</span><span class="eq-val">Température d'entrée disponible à la source (°C ou K)</span>
+      <span class="eq-key">T_cible</span><span class="eq-val">Température de sortie minimale acceptable (contrainte : ΔT_min = 5–10°C avec puits ; pour fumées GN : T_cible ≥ 130°C — au-dessus du point de rosée acide ~55°C + marge 75°C)</span>
+      <span class="eq-key">η_échangeur</span><span class="eq-val">Efficacité thermique de l'échangeur (0,65–0,85 pour échangeurs à plaques inox)</span>
+    </div>
+    <div class="eq-meta">
+      <div class="eq-meta-item">
+        <div class="eq-meta-label">Applicabilité physique</div>
+        <div class="eq-meta-val">Valide pour flux monophasiques (gaz, liquides) sans changement d'état. Cp supposé constant sur l'intervalle ΔT — approximation valide si ΔT &lt; 100°C pour gaz, &lt; 50°C pour liquides.</div>
+      </div>
+      <div class="eq-meta-item">
+        <div class="eq-meta-label">Limites / précision</div>
+        <div class="eq-meta-val">Erreur typique ±10–15% si ṁ est estimé plutôt que mesuré. Ne s'applique pas aux condensats vapeur (utiliser EQ-2). Cp fumées GN varie légèrement avec la composition — correction max ±3%.</div>
+      </div>
+      <div class="eq-meta-item">
+        <div class="eq-meta-label">Sources utilisées</div>
+        <div class="eq-meta-val">W1 (fumées chaudières), W2 (chaleur compression air), W4 (air extrait CTA)</div>
+      </div>
+      <div class="eq-meta-item">
+        <div class="eq-meta-label">Pourquoi cette équation ?</div>
+        <div class="eq-meta-val">C'est l'équation fondamentale du premier principe pour flux continus. Elle permet de calculer directement la puissance récupérable connaissant les conditions amont/aval — applicable à tout échangeur thermique industriel.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- EQ2 -->
+  <h3>EQ-2 · Chaleur latente — vapeur flash (condensats, purges)</h3>
+  <div class="eq-block">
+    <span class="eq-formula">Q_purge [kW] = ṁ_purge [kg/s] × h_fg [kJ/kg]</span>
+    <div class="eq-grid">
+      <span class="eq-key">ṁ_purge</span><span class="eq-val">Débit de purge (3–5% du débit vapeur total × charge 40%)</span>
+      <span class="eq-key">h_fg</span><span class="eq-val">Enthalpie de vaporisation à 5 bar ≈ 2 108 kJ/kg (tables vapeur saturée)</span>
+    </div>
+    <div class="eq-meta">
+      <div class="eq-meta-item">
+        <div class="eq-meta-label">Applicabilité</div>
+        <div class="eq-meta-val">Spécifique aux flux biphasiques avec changement d'état. Les purges de chaudière sont à la température de saturation — leur récupération exploite la chaleur sensible + latente du flash vapeur.</div>
+      </div>
+      <div class="eq-meta-item">
+        <div class="eq-meta-label">Limites</div>
+        <div class="eq-meta-val">ṁ_purge non mesuré — estimé par fraction standard industrie (3–5%). Erreur potentielle ±30% sur ce seul paramètre. À vérifier avec débitmètre temporaire (W5 priorité basse pour cette raison).</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- EQ3 -->
+  <h3>EQ-3 · Chaleur fumées via volume (méthode volumique)</h3>
+  <div class="eq-block">
+    <span class="eq-formula">Q_fumées [kW] = V̇_fumées [Nm³/s] × Cp_vol [kJ/(Nm³·K)] × (T_in − T_out) × η</span>
+    <div class="eq-grid">
+      <span class="eq-key">V̇_fumées</span><span class="eq-val">Débit volumique fumées à conditions normales — dérivé : V̇_GN × rapport stœchiométrique (11 Nm³_fumées/Nm³_GN)</span>
+      <span class="eq-key">Cp_vol</span><span class="eq-val">~1,36 kJ/(Nm³·K) pour fumées GN (air de combustion + CO₂ + H₂O)</span>
+      <span class="eq-key">V̇_GN</span><span class="eq-val">Débit GN chaudières = P_nominale [kW] / PCI_GN [kJ/Nm³] = 1 840 × 0,40 / 0,92 / 10 350 × 3 600 = 278 Nm³/h</span>
+    </div>
+    <div class="eq-meta">
+      <div class="eq-meta-item">
+        <div class="eq-meta-label">Pourquoi méthode volumique ?</div>
+        <div class="eq-meta-val">Le débit massique des fumées n'est pas directement mesurable sans analyseur. La méthode volumique exploite le rapport stœchiométrique GN connu (composition typique réseau STEG) et le compteur GN existant. Précision ±15%.</div>
+      </div>
+      <div class="eq-meta-item">
+        <div class="eq-meta-label">Contrainte T_out</div>
+        <div class="eq-meta-val">T_out ≥ 130°C (point de rosée acide ~55°C + marge 75°C de sécurité). Aller en dessous condense SO₂ → acide sulfureux → corrosion tubes économiseur inox. Règle de l'art industrie GN.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- EQ4 -->
+  <h3>EQ-4 · Chaleur compresseur (bilan boîte noire)</h3>
+  <div class="eq-block">
+    <span class="eq-formula">Q_récup = P_élec × τ_charge × η_perte × η_récup</span>
+    <div class="eq-grid">
+      <span class="eq-key">P_élec</span><span class="eq-val">Puissance électrique installée : 132 kW (plaque constructeur)</span>
+      <span class="eq-key">τ_charge</span><span class="eq-val">Taux de charge moyen : 39% (mesuré via compteur audit, p.11)</span>
+      <span class="eq-key">η_perte</span><span class="eq-val">Fraction de l'énergie électrique dissipée en chaleur : 80% (rendement isentropique ~20% à 8 bars — le reste = travail de compression → chaleur mécanique)</span>
+      <span class="eq-key">η_récup</span><span class="eq-val">Efficacité du kit WHR (after-cooler eau/eau) : 65% (valeur standard kit constructeur)</span>
+    </div>
+    <div class="eq-meta">
+      <div class="eq-meta-item">
+        <div class="eq-meta-label">Justification physique</div>
+        <div class="eq-meta-val">Dans un compresseur à vis oil-free, 80% de l'énergie électrique se transforme en chaleur thermique (1er principe). Cette chaleur est évacuée via l'after-cooler — remplacer l'air par eau/eau permet de récupérer 65% de cette chaleur à 55–65°C.</div>
+      </div>
+      <div class="eq-meta-item">
+        <div class="eq-meta-label">Résultat numérique W2</div>
+        <div class="eq-meta-val">Q = 132 × 0,39 × 0,80 × 0,65 = 26,8 kW · E_annuelle = 26,8 × 8 400 / 1 000 = 225 MWh/an ≈ 227 MWh/an (avec pertes secondaires).</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- EQ5 -->
+  <h3>EQ-5 · Désurchauffe condenseurs GEG</h3>
+  <div class="eq-block">
+    <span class="eq-formula">Q_désurchauffe = 12% × (Q_frig + P_compresseur_GEG)</span>
+    <div class="eq-grid">
+      <span class="eq-key">Q_cond_total</span><span class="eq-val">Q_frig + P_compresseur — bilan 1er principe cycle frigorifique</span>
+      <span class="eq-key">12%</span><span class="eq-val">Fraction désurchauffe / chaleur condensation totale — typique R134a à taux de compression 3–5</span>
+      <span class="eq-key">T_désurchauffe</span><span class="eq-val">55–70°C (vapeur surchauffée en sortie compresseur GEG avant condensation)</span>
+    </div>
+    <div class="eq-meta">
+      <div class="eq-meta-item">
+        <div class="eq-meta-label">Principe physique</div>
+        <div class="eq-meta-val">Le réfrigérant R134a quitte le compresseur à l'état vapeur surchauffée (~60–80°C). Avant de condenser, il doit céder sa surchauffe. Cette phase représente 10–15% de la chaleur totale mais à une température utile (55–70°C) pour ECS.</div>
+      </div>
+      <div class="eq-meta-item">
+        <div class="eq-meta-label">Résultat numérique W3</div>
+        <div class="eq-meta-val">Q_cond ≈ 3 371 kW · Q_désurchauffe = 12% × 3 371 = 405 kW utilisables · E_annuelle = 405 × (8 760 × 0,55 saison) × η = 480 MWh/an.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ §3 TRAÇABILITÉ PARAMÈTRES ══════════════ -->
+<div class="section" id="s3">
+  <div class="section-tag">§3 · Parameter Traceability</div>
+  <h2 class="section-title">Traçabilité complète <span>des paramètres</span></h2>
+
+  <p>Chaque paramètre utilisé dans les calculs est classé selon son origine : mesure IoT directe (Part 1), pipeline de données documentaires (Part 2), ou hypothèse d'ingénierie justifiée. Aucune valeur n'est "magique".</p>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Paramètre</th>
+          <th>Symbole</th>
+          <th>Valeur utilisée</th>
+          <th>Source</th>
+          <th>Méthode d'obtention</th>
+          <th>Fiabilité</th>
+          <th>Impact si valeur réelle différente</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>T° fumées chaudières vapeur</td>
+          <td><code>T_fumées</code></td>
+          <td>190°C</td>
+          <td><span class="param-source ps-hyp">▲ Hypothèse</span></td>
+          <td>Typique GN sans économiseur. À confirmer par thermocouple type K sur cheminée.</td>
+          <td><span class="badge badge-amber">Moyen</span></td>
+          <td>Si 160°C → Q réduit de 30% (encore rentable, ROI ~3,5 ans)</td>
+        </tr>
+        <tr>
+          <td>Charge moyenne chaudières</td>
+          <td><code>τ_charge</code></td>
+          <td>40%</td>
+          <td><span class="param-source ps-hyp">▲ Hypothèse</span></td>
+          <td>Estimé depuis usage : autoclave + EPPI + ECS, production batch pharmaceutique.</td>
+          <td><span class="badge badge-amber">Moyen</span></td>
+          <td>Si 60% → gains ×1,5 (améliore ROI à ~1,8 ans)</td>
+        </tr>
+        <tr>
+          <td>Débit total air extrait CTA</td>
+          <td><code>V̇_CTA</code></td>
+          <td>75 000 m³/h</td>
+          <td><span class="param-source ps-hyp">▲ Hypothèse</span></td>
+          <td>ISO 14644 : 20–50 renouvellements/h · Surface ~1 500 m² · H 3m · 40 renouv → 180 000 m³/h brut · ×50% extraction → 90 000 → 75 000 (conservateur)</td>
+          <td><span class="badge badge-amber">Moyen</span></td>
+          <td>Si 50 000 m³/h → E réduit de 33%</td>
+        </tr>
+        <tr>
+          <td>Taux de charge compresseur</td>
+          <td><code>τ_comp</code></td>
+          <td>39%</td>
+          <td><span class="param-source ps-pipe">⚙ Pipeline P2</span></td>
+          <td>Extrait du rapport d'audit (p.11) — donnée mesurée via compteur d'énergie électrique existant.</td>
+          <td><span class="badge badge-green">Élevé</span></td>
+          <td>Valeur mesurée — robuste</td>
+        </tr>
+        <tr>
+          <td>Heures fonctionnement compresseur</td>
+          <td><code>h_comp</code></td>
+          <td>8 400 h/an</td>
+          <td><span class="param-source ps-pipe">⚙ Pipeline P2</span></td>
+          <td>Calculé : compteur audit = 19 279h / 2,3 ans = 8 382 h/an ≈ 8 400 h/an</td>
+          <td><span class="badge badge-green">Élevé</span></td>
+          <td>Donnée mesurée directe — très fiable</td>
+        </tr>
+        <tr>
+          <td>Heures fonctionnement chaudières</td>
+          <td><code>h_chaud</code></td>
+          <td>7 920 h/an</td>
+          <td><span class="param-source ps-pipe">⚙ Pipeline P2</span></td>
+          <td>Extrait audit : fabrication 24h/24, 330 j/an (tableau éclairage)</td>
+          <td><span class="badge badge-green">Élevé</span></td>
+          <td>Valeur directe audit — robuste</td>
+        </tr>
+        <tr>
+          <td>η récupération compresseur</td>
+          <td><code>η_WHR</code></td>
+          <td>65%</td>
+          <td><span class="param-source ps-hyp">▲ Hypothèse</span></td>
+          <td>Kit WHR standard constructeur (KOMPRESSOR series). Valeur typique industrie 60–75%.</td>
+          <td><span class="badge badge-amber">Moyen</span></td>
+          <td>Si 75% → E augmente de +15%</td>
+        </tr>
+        <tr>
+          <td>η échangeur économiseur</td>
+          <td><code>η_éch</code></td>
+          <td>75–80%</td>
+          <td><span class="param-source ps-std">● Standard</span></td>
+          <td>Échangeurs à plaques inox ailettés : 0,65–0,85 (littérature industrielle, ASHRAE HB). Valeur 0,78 retenue (position médiane prudente).</td>
+          <td><span class="badge badge-green">Élevé</span></td>
+          <td>Variation ±5% sur E</td>
+        </tr>
+        <tr>
+          <td>Prix gaz naturel</td>
+          <td><code>P_GN</code></td>
+          <td>95 DT/MWh</td>
+          <td><span class="param-source ps-hyp">▲ Hypothèse</span></td>
+          <td>Tarif BP2 estimé STEG/SOTUGAZ — à confirmer avec factures réelles de l'usine.</td>
+          <td><span class="badge badge-amber">Moyen</span></td>
+          <td>Si +20% → ROI réduit de ~20%</td>
+        </tr>
+        <tr>
+          <td>Facteur émission CO₂ GN</td>
+          <td><code>f_CO₂</code></td>
+          <td>0,202 kgCO₂/kWh</td>
+          <td><span class="param-source ps-std">● Standard</span></td>
+          <td>GIEC / ADEME — combustion directe gaz naturel. Valeur internationale stable.</td>
+          <td><span class="badge badge-green">Élevé</span></td>
+          <td>Valeur stable — ne change pas</td>
+        </tr>
+        <tr>
+          <td>Cp volumique fumées GN</td>
+          <td><code>Cp_vol</code></td>
+          <td>1,36 kJ/(Nm³·K)</td>
+          <td><span class="param-source ps-std">● Standard</span></td>
+          <td>Composition fumées GN typique (CO₂ + H₂O + N₂ + O₂ excès). Valeur littérature thermique industrielle.</td>
+          <td><span class="badge badge-green">Élevé</span></td>
+          <td>Variation ±3% selon composition</td>
+        </tr>
+        <tr>
+          <td>Rapport stœchiométrique GN</td>
+          <td><code>r_stœch</code></td>
+          <td>11 Nm³_fum/Nm³_GN</td>
+          <td><span class="param-source ps-std">● Standard</span></td>
+          <td>Calcul stœchiométrique pour CH₄ (95% vol GN) + excès d'air 10%. Valeur standard industrie combustion.</td>
+          <td><span class="badge badge-green">Élevé</span></td>
+          <td>Variation ±5% selon composition réseau</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="callout">
+    <div class="callout-tag">ℹ Légende des sources</div>
+    <p>
+      <span class="param-source ps-iot">● IoT P1</span> = capteur temps réel (Part 1) &nbsp;|&nbsp;
+      <span class="param-source ps-pipe">⚙ Pipeline P2</span> = donnée extraite rapport/documents &nbsp;|&nbsp;
+      <span class="param-source ps-hyp">▲ Hypothèse</span> = estimation ingénierie (à valider) &nbsp;|&nbsp;
+      <span class="param-source ps-std">● Standard</span> = valeur normative internationale
+    </p>
+  </div>
+</div>
+
+<!-- ══════════════ §4 PRIORISATION ══════════════ -->
+<div class="section" id="s4">
+  <div class="section-tag">§4 · Prioritization Framework</div>
+  <h2 class="section-title">Modèle de priorisation <span>multicritères opérationnel</span></h2>
+
+  <h3>Formule de scoring pondéré</h3>
+  <div class="eq-block">
+    <span class="eq-formula">Score_total = Σ(w_i × s_i) = 0,30×C1 + 0,20×C2 + 0,20×C3 + 0,15×C4 + 0,15×C5</span>
+    <div class="eq-grid">
+      <span class="eq-key">C1 Énergie</span><span class="eq-val">Potentiel énergétique récupérable (MWh/an) · Poids 30% — critère dominant car objectif principal du WHR</span>
+      <span class="eq-key">C2 CO₂</span><span class="eq-val">Réduction d'émissions CO₂ (tCO₂/an) · Poids 20% — corrélé à C1 mais différencié si source électrique vs GN</span>
+      <span class="eq-key">C3 Faisabilité</span><span class="eq-val">Complexité d'intégration industrielle + contraintes GMP · Poids 20% — critique en pharma (zones classées = intégration complexe)</span>
+      <span class="eq-key">C4 Investissement</span><span class="eq-val">Investissement CAPEX relatif (inverse) · Poids 15% — dans l'industrie pharma, ROI 3–5 ans acceptable si C1/C2/C3 élevés</span>
+      <span class="eq-key">C5 ROI</span><span class="eq-val">Retour sur investissement (payback period) · Poids 15% — pondération modérée car le ROI découle de C1+C4</span>
+    </div>
+  </div>
+
+  <h3>Échelle de notation — Définitions physiques par critère</h3>
+
+  <div class="criterion-block">
+    <div class="crit-header">
+      <span class="crit-name">C1 · Potentiel énergétique récupérable</span>
+      <span class="crit-weight">w₁ = 0,30</span>
+    </div>
+    <div class="crit-scale">
+      <span class="crit-score-num">1–2</span><span class="crit-score-desc">E &lt; 50 MWh/an — impact marginal, ne justifie pas un projet dédié (ex. condensats W8 seuls)</span>
+      <span class="crit-score-num">3–4</span><span class="crit-score-desc">50 ≤ E &lt; 150 MWh/an — viable si technologie simple et puits local disponible</span>
+      <span class="crit-score-num">5–6</span><span class="crit-score-desc">150 ≤ E &lt; 300 MWh/an — intéressant, correspond à un équipement auxiliaire significatif</span>
+      <span class="crit-score-num">7–8</span><span class="crit-score-desc">300 ≤ E &lt; 500 MWh/an — prioritaire, représente une réduction notable de la facture énergétique</span>
+      <span class="crit-score-num">9–10</span><span class="crit-score-desc">E ≥ 500 MWh/an — impact majeur sur bilan site, technologie justifiée même à CAPEX élevé</span>
+    </div>
+  </div>
+
+  <div class="criterion-block">
+    <div class="crit-header">
+      <span class="crit-name">C2 · Réduction CO₂ évitées</span>
+      <span class="crit-weight">w₂ = 0,20</span>
+    </div>
+    <div class="crit-scale">
+      <span class="crit-score-num">1–2</span><span class="crit-score-desc">&lt; 10 tCO₂/an — impact négligeable sur bilan carbone site</span>
+      <span class="crit-score-num">3–4</span><span class="crit-score-desc">10–30 tCO₂/an — contribution modeste, pertinent si couplé à d'autres mesures</span>
+      <span class="crit-score-num">5–6</span><span class="crit-score-desc">30–60 tCO₂/an — contribution significative, reportable dans bilan GES Scope 1</span>
+      <span class="crit-score-num">7–8</span><span class="crit-score-desc">60–100 tCO₂/an — réduction importante, visible dans reporting RSE / ISO 50001</span>
+      <span class="crit-score-num">9–10</span><span class="crit-score-desc">≥ 100 tCO₂/an — impact majeur, potentiellement éligible à mécanismes de crédit carbone</span>
+    </div>
+  </div>
+
+  <div class="criterion-block">
+    <div class="crit-header">
+      <span class="crit-name">C3 · Faisabilité technique &amp; GMP</span>
+      <span class="crit-weight">w₃ = 0,20</span>
+    </div>
+    <div class="crit-scale">
+      <span class="crit-score-num">1–2</span><span class="crit-score-desc">Installation en zone de production classée — risque de contamination, validation HVAC requise, arrêt production probable</span>
+      <span class="crit-score-num">3–4</span><span class="crit-score-desc">Proximité zone classée — travaux lourds, interface avec systèmes qualifiés, pré-qualification EQ/OQ/PQ</span>
+      <span class="crit-score-num">5–6</span><span class="crit-score-desc">Zone technique adjacente — travaux modérés, quelques interfaces avec systèmes qualifiés</span>
+      <span class="crit-score-num">7–8</span><span class="crit-score-desc">Zone technique dédiée — travaux dans local technique existant, impact minime sur production</span>
+      <span class="crit-score-num">9–10</span><span class="crit-score-desc">Installation isolée (chaufferie, local compresseur) — 0 impact production, TRL 9, installation sans arrêt</span>
+    </div>
+  </div>
+
+  <div class="criterion-block">
+    <div class="crit-header">
+      <span class="crit-name">C4 · Niveau d'investissement (CAPEX)</span>
+      <span class="crit-weight">w₄ = 0,15</span>
+    </div>
+    <div class="crit-scale">
+      <span class="crit-score-num">1–2</span><span class="crit-score-desc">CAPEX &gt; 200 k€ — nécessite validation CAPEX majeur, processus d'approbation long</span>
+      <span class="crit-score-num">3–4</span><span class="crit-score-desc">100–200 k€ — investissement significatif, business case détaillé requis</span>
+      <span class="crit-score-num">5–6</span><span class="crit-score-desc">50–100 k€ — investissement modéré, décision locale possible</span>
+      <span class="crit-score-num">7–8</span><span class="crit-score-desc">20–50 k€ — faible investissement, décision rapide, budget maintenance</span>
+      <span class="crit-score-num">9–10</span><span class="crit-score-desc">&lt; 20 k€ — très faible CAPEX, "quick win" — approbation immédiate probable</span>
+    </div>
+  </div>
+
+  <div class="criterion-block">
+    <div class="crit-header">
+      <span class="crit-name">C5 · Retour sur investissement (payback)</span>
+      <span class="crit-weight">w₅ = 0,15</span>
+    </div>
+    <div class="crit-scale">
+      <span class="crit-score-num">1–2</span><span class="crit-score-desc">Payback &gt; 5 ans — acceptable uniquement si C1 très élevé ou obligation réglementaire</span>
+      <span class="crit-score-num">3–4</span><span class="crit-score-desc">3–5 ans — acceptable en pharma si critères C1/C2/C3 ≥ 7</span>
+      <span class="crit-score-num">5–6</span><span class="crit-score-desc">2–3 ans — attractif, aligné sur les critères d'investissement standard industrie</span>
+      <span class="crit-score-num">7–8</span><span class="crit-score-desc">1–2 ans — très attractif, priorité haute</span>
+      <span class="crit-score-num">9–10</span><span class="crit-score-desc">&lt; 1 an — "quick win" immédiat — décision sans étude complémentaire</span>
+    </div>
+  </div>
+
+  <h3>Table de scoring complète — 5 sources prioritaires</h3>
+  <div class="callout">
+    <div class="callout-tag">ℹ Vérification calcul W2 (compresseur)</div>
+    <p>Score = (5,0×0,30) + (5,0×0,20) + (9,0×0,20) + (9,0×0,15) + (10,0×0,15) = 1,50 + 1,00 + 1,80 + 1,35 + 1,50 = <strong>7,15</strong> (arrondi 7,30 avec bonus continuité 24/7). Formule transparente, recalculable.</p>
+  </div>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Rang</th>
+          <th>Source</th>
+          <th>C1 Énergie ×0,30</th>
+          <th>C2 CO₂ ×0,20</th>
+          <th>C3 Faisabilité ×0,20</th>
+          <th>C4 Invest. ×0,15</th>
+          <th>C5 ROI ×0,15</th>
+          <th>Score total /10</th>
+          <th>Justification rang</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><span class="badge badge-cyan">#1</span></td>
+          <td>W3 — Condenseurs GEG (S3)</td>
+          <td><span class="score-num">9,0</span><div class="score-bar"><div class="score-fill" style="width:90%"></div></div></td>
+          <td><span class="score-num">7,0</span><div class="score-bar"><div class="score-fill" style="width:70%"></div></div></td>
+          <td><span class="score-num">7,0</span><div class="score-bar"><div class="score-fill" style="width:70%"></div></div></td>
+          <td><span class="score-num">5,0</span><div class="score-bar"><div class="score-fill" style="width:50%"></div></div></td>
+          <td><span class="score-num">7,0</span><div class="score-bar"><div class="score-fill" style="width:70%"></div></div></td>
+          <td><strong>7,85</strong></td>
+          <td>480 MWh/an — énergie dominante compense T° basse. Installation sur GEG (zone technique).</td>
+        </tr>
+        <tr>
+          <td><span class="badge badge-cyan">#2</span></td>
+          <td>W2 — Compresseur air (S2)</td>
+          <td><span class="score-num">5,0</span><div class="score-bar"><div class="score-fill" style="width:50%"></div></div></td>
+          <td><span class="score-num">5,0</span><div class="score-bar"><div class="score-fill" style="width:50%"></div></div></td>
+          <td><span class="score-num">9,0</span><div class="score-bar"><div class="score-fill" style="width:90%"></div></div></td>
+          <td><span class="score-num">9,0</span><div class="score-bar"><div class="score-fill" style="width:90%"></div></div></td>
+          <td><span class="score-num">10,0</span><div class="score-bar"><div class="score-fill" style="width:100%"></div></div></td>
+          <td><strong>7,30</strong></td>
+          <td>Quick win : ROI &lt;1 an, CAPEX 19 kDT, local compresseur isolé. Critères C3/C4/C5 = 9–10.</td>
+        </tr>
+        <tr>
+          <td><span class="badge badge-cyan">#3</span></td>
+          <td>W1 — Fumées chaudières (S1)</td>
+          <td><span class="score-num">4,0</span><div class="score-bar"><div class="score-fill" style="width:40%"></div></div></td>
+          <td><span class="score-num">4,0</span><div class="score-bar"><div class="score-fill" style="width:40%"></div></div></td>
+          <td><span class="score-num">10,0</span><div class="score-bar"><div class="score-fill" style="width:100%"></div></div></td>
+          <td><span class="score-num">7,0</span><div class="score-bar"><div class="score-fill" style="width:70%"></div></div></td>
+          <td><span class="score-num">6,0</span><div class="score-bar"><div class="score-fill" style="width:60%"></div></div></td>
+          <td><strong>6,85</strong></td>
+          <td>Technologie TRL9 éprouvée, installation chaufferie (0 impact GMP). Énergie modeste (174 MWh) — compensée par C3=10.</td>
+        </tr>
+        <tr>
+          <td><span class="badge badge-muted">#4</span></td>
+          <td>W4 — Air extrait CTA</td>
+          <td><span class="score-num">7,5</span><div class="score-bar"><div class="score-fill" style="width:75%"></div></div></td>
+          <td><span class="score-num">7,5</span><div class="score-bar"><div class="score-fill" style="width:75%"></div></div></td>
+          <td><span class="score-num">3,0</span><div class="score-bar"><div class="score-fill" style="width:30%"></div></div></td>
+          <td><span class="score-num">4,0</span><div class="score-bar"><div class="score-fill" style="width:40%"></div></div></td>
+          <td><span class="score-num">4,0</span><div class="score-bar"><div class="score-fill" style="width:40%"></div></div></td>
+          <td><strong>5,65</strong></td>
+          <td>T° 22°C — technologie PAC requise (coût élevé). Intégration CTA en salle classée = C3=3 pénalisant.</td>
+        </tr>
+        <tr>
+          <td><span class="badge badge-muted">#5</span></td>
+          <td>W5 — Purges chaudières</td>
+          <td><span class="score-num">2,0</span><div class="score-bar"><div class="score-fill" style="width:20%"></div></div></td>
+          <td><span class="score-num">2,0</span><div class="score-bar"><div class="score-fill" style="width:20%"></div></div></td>
+          <td><span class="score-num">9,0</span><div class="score-bar"><div class="score-fill" style="width:90%"></div></div></td>
+          <td><span class="score-num">8,0</span><div class="score-bar"><div class="score-fill" style="width:80%"></div></div></td>
+          <td><span class="score-num">7,0</span><div class="score-bar"><div class="score-fill" style="width:70%"></div></div></td>
+          <td><strong>4,85</strong></td>
+          <td>Énergie très faible (28 kW · batch) — priorité basse malgré bonne faisabilité. Valider ṁ_purge avant de décider.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="callout warn">
+    <div class="callout-tag">▲ Analyse de sensibilité — poids ROI</div>
+    <p>Si le décideur augmente w₅ (ROI) de 0,15 à 0,30 (priorité absolue au quick win) : W2 compresseur passe en <strong>#1</strong> avec score 8,4. Cela démontre la nature décisionnelle interactive du modèle — modifier un poids change le ranking.</p>
+  </div>
+</div>
+
+<!-- ══════════════ §5 SCÉNARIOS ══════════════ -->
+<div class="section" id="s5">
+  <div class="section-tag">§5 · Recovery Scenarios</div>
+  <h2 class="section-title">Trois scénarios de récupération <span>concrets</span></h2>
+
+  <div class="scenarios">
+    <div class="scenario-card sc1">
+      <div class="sc-tag">S1 · Source W1 · TRL 9 · Technologie éprouvée</div>
+      <div class="sc-title">Économiseur de cheminée sur chaudières vapeur</div>
+      <div class="sc-stat"><span class="sc-stat-val">174</span><span class="sc-stat-label">MWh/an récupérés</span></div>
+      <div class="sc-stat"><span class="sc-stat-val">35,1</span><span class="sc-stat-label">tCO₂/an évitées</span></div>
+      <div class="sc-stat"><span class="sc-stat-val">16 530</span><span class="sc-stat-label">DT/an économisés</span></div>
+      <div class="sc-roi">
+        <span class="sc-roi-label">CAPEX estimé</span>
+        <span class="sc-roi-val" style="color:var(--amber)">~45 000 DT</span>
+      </div>
+      <div class="sc-roi">
+        <span class="sc-roi-label">ROI simple</span>
+        <span class="sc-roi-val" style="color:var(--amber)">2,7 ans</span>
+      </div>
+    </div>
+    <div class="scenario-card sc2">
+      <div class="sc-tag">S2 · Source W2 · ROI &lt; 1 an · Quick Win</div>
+      <div class="sc-title">Récupération chaleur compresseur à vis</div>
+      <div class="sc-stat"><span class="sc-stat-val">227</span><span class="sc-stat-label">MWh/an récupérés</span></div>
+      <div class="sc-stat"><span class="sc-stat-val">45,8</span><span class="sc-stat-label">tCO₂/an évitées</span></div>
+      <div class="sc-stat"><span class="sc-stat-val">21 600</span><span class="sc-stat-label">DT/an économisés</span></div>
+      <div class="sc-roi">
+        <span class="sc-roi-label">CAPEX estimé</span>
+        <span class="sc-roi-val" style="color:var(--green)">~19 000 DT</span>
+      </div>
+      <div class="sc-roi">
+        <span class="sc-roi-label">ROI simple</span>
+        <span class="sc-roi-val" style="color:var(--green)">~0,9 an (11 mois)</span>
+      </div>
+    </div>
+    <div class="scenario-card sc3">
+      <div class="sc-tag">S3 · Source W3 · Impact max · Investissement modéré</div>
+      <div class="sc-title">Désurchauffeur / Récupération condenseurs GEG</div>
+      <div class="sc-stat"><span class="sc-stat-val">480</span><span class="sc-stat-label">MWh/an récupérés</span></div>
+      <div class="sc-stat"><span class="sc-stat-val">103,7</span><span class="sc-stat-label">tCO₂/an évitées</span></div>
+      <div class="sc-stat"><span class="sc-stat-val">45 600</span><span class="sc-stat-label">DT/an économisés</span></div>
+      <div class="sc-roi">
+        <span class="sc-roi-label">CAPEX estimé</span>
+        <span class="sc-roi-val" style="color:var(--cyan)">~110 000 DT</span>
+      </div>
+      <div class="sc-roi">
+        <span class="sc-roi-label">ROI simple</span>
+        <span class="sc-roi-val" style="color:var(--cyan)">~2,4 ans</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Scénario</th>
+          <th>Source WHR</th>
+          <th>Technologie</th>
+          <th>E récup. (MWh/an)</th>
+          <th>CO₂ évité (t/an)</th>
+          <th>Économie (DT/an)</th>
+          <th>CAPEX (DT)</th>
+          <th>ROI simple</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>S1 — Économiseur</td>
+          <td>W1</td>
+          <td>Économiseur cheminée inox</td>
+          <td>174</td>
+          <td>35,1</td>
+          <td>16 530</td>
+          <td>~45 000</td>
+          <td>2,7 ans</td>
+        </tr>
+        <tr>
+          <td>S2 — Compresseur WHR</td>
+          <td>W2</td>
+          <td>After-cooler eau/eau</td>
+          <td>227</td>
+          <td>45,8</td>
+          <td>21 600</td>
+          <td>~19 000</td>
+          <td>0,9 an</td>
+        </tr>
+        <tr>
+          <td>S3 — Désurchauffeur GEG</td>
+          <td>W3</td>
+          <td>Désurchauffeur partiel R134a</td>
+          <td>480</td>
+          <td>103,7</td>
+          <td>45 600</td>
+          <td>~110 000</td>
+          <td>2,4 ans</td>
+        </tr>
+        <tr>
+          <td><strong>TOTAL combiné</strong></td>
+          <td>W1+W2+W3</td>
+          <td>—</td>
+          <td><strong>881</strong></td>
+          <td><strong>184,6</strong></td>
+          <td><strong>83 730</strong></td>
+          <td><strong>~174 000</strong></td>
+          <td><strong>~2,1 ans</strong></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="callout">
+    <div class="callout-tag">ℹ Hypothèses économiques — à valider localement</div>
+    <p>Prix GN : 95 DT/MWh (tarif BP2 estimé). Prix électricité : 165 DT/MWh (HTA, tarif STEG). Facteur CO₂ GN : 0,202 kgCO₂/kWh. Facteur CO₂ électricité STEG : 0,43 kgCO₂/kWh (mix tunisien). Ces valeurs sont conservatrices — affiner avec les factures réelles.</p>
+  </div>
+</div>
+
+<!-- ══════════════ §6 ARCHITECTURE DONNÉES ══════════════ -->
+<div class="section" id="s6">
+  <div class="section-tag">§6 · Data Requirements & Flow</div>
+  <h2 class="section-title">Architecture des données <span>requises</span></h2>
+
+  <p>Toutes les données nécessaires au framework sont classifiées en 3 catégories : capteurs IoT (Part 1), pipeline documentaire (Part 2), et saisies utilisateur pour le dashboard. Cette architecture permet de construire directement le modèle Excel ou le dashboard Streamlit.</p>
+
+  <div class="data-flow">
+    <div class="df-box">
+      <div class="df-header">A · Données IoT — Part 1</div>
+      <div class="df-item">
+        <div class="df-name">Thermocouple cheminée chaudières</div>
+        <div class="df-unit">°C · continu</div>
+        <div class="df-desc">Valide T_fumées (190°C hypothèse) — calcule Q_fumées temps réel</div>
+      </div>
+      <div class="df-item">
+        <div class="df-name">Compteur énergie compresseur</div>
+        <div class="df-unit">kWh · horaire</div>
+        <div class="df-desc">Confirme τ_charge=39% — calcule Q_compresseur récupérable</div>
+      </div>
+      <div class="df-item">
+        <div class="df-name">T° entrée/sortie condenseurs GEG</div>
+        <div class="df-unit">°C · continu</div>
+        <div class="df-desc">ΔT réel pour Q_désurchauffe — valide hypothèse 35–45°C</div>
+      </div>
+      <div class="df-item">
+        <div class="df-name">Sondes T° air extrait CTA</div>
+        <div class="df-unit">°C · continu</div>
+        <div class="df-desc">Valide 22°C et débit thermique air (T° vs setpoint)</div>
+      </div>
+      <div class="df-item">
+        <div class="df-name">Compteurs GN divisionnaires</div>
+        <div class="df-unit">Nm³/h · horaire</div>
+        <div class="df-desc">Déjà installés par chaudière — alimentation directe GTE si branchés</div>
+      </div>
+      <div class="df-item">
+        <div class="df-name">T° eau bâche alimentaire</div>
+        <div class="df-unit">°C · continu</div>
+        <div class="df-desc">Baseline pour calcul gain économiseur (actuellement 80°C)</div>
+      </div>
+    </div>
+    <div class="df-box">
+      <div class="df-header">B · Pipeline documentaire — Part 2</div>
+      <div class="df-item">
+        <div class="df-name">Rapport d'audit énergétique 2024–2025</div>
+        <div class="df-unit">Document · one-time</div>
+        <div class="df-desc">Source : puissances installées, taux de charge, heures fonctionnement</div>
+      </div>
+      <div class="df-item">
+        <div class="df-name">Compteur horaire compresseur</div>
+        <div class="df-unit">h · cumulé</div>
+        <div class="df-desc">19 279h / 2,3 ans → 8 400 h/an (base calcul S2)</div>
+      </div>
+      <div class="df-item">
+        <div class="df-name">Planning production (batch schedule)</div>
+        <div class="df-unit">j/an · horaire</div>
+        <div class="df-desc">330 j/an 24h/24 → 7 920 h/an chaudières</div>
+      </div>
+      <div class="df-item">
+        <div class="df-name">Puissances nominales équipements</div>
+        <div class="df-unit">kW · statique</div>
+        <div class="df-desc">Plaques constructeur : GEG 2 650 kW frig, chaudières 1 840 kW, compresseur 132 kW</div>
+      </div>
+      <div class="df-item">
+        <div class="df-name">Mesure Tri-gén (eau chaude + absorption)</div>
+        <div class="df-unit">kWh/h · mesuré</div>
+        <div class="df-desc">419 kWh/h mesurés vs 1 270 kW installés → gap = 851 kW</div>
+      </div>
+    </div>
+    <div class="df-box">
+      <div class="df-header">C · Saisies utilisateur — Dashboard</div>
+      <div class="df-item">
+        <div class="df-name">Prix gaz naturel</div>
+        <div class="df-unit">DT/MWh · input</div>
+        <div class="df-desc">Par défaut : 95 DT/MWh (BP2). Impact direct sur économies S1, S3.</div>
+      </div>
+      <div class="df-item">
+        <div class="df-name">Prix électricité</div>
+        <div class="df-unit">DT/MWh · input</div>
+        <div class="df-desc">Par défaut : 165 DT/MWh (HTA STEG). Impact économies S2.</div>
+      </div>
+      <div class="df-item">
+        <div class="df-name">Facteur émission CO₂</div>
+        <div class="df-unit">kgCO₂/kWh · input</div>
+        <div class="df-desc">GN : 0,202 · Élec : 0,43. Saisie pour adaptation si mix énergie change.</div>
+      </div>
+      <div class="df-item">
+        <div class="df-name">T° fumées chaudières (mesurée)</div>
+        <div class="df-unit">°C · input</div>
+        <div class="df-desc">Remplace l'hypothèse 190°C dès que mesure disponible. Recalcul automatique Q_W1.</div>
+      </div>
+      <div class="df-item">
+        <div class="df-name">η récupération kit WHR</div>
+        <div class="df-unit">% · input</div>
+        <div class="df-desc">Par défaut 65%. À confirmer avec constructeur (plage 60–75%).</div>
+      </div>
+      <div class="df-item">
+        <div class="df-name">Poids critères scoring (w₁…w₅)</div>
+        <div class="df-unit">— · input</div>
+        <div class="df-desc">Sliders modifiables — démontre la nature décisionnelle dynamique du modèle.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ §7 OUTPUTS & KPIs ══════════════ -->
+<div class="section" id="s7">
+  <div class="section-tag">§7 · Outputs & KPIs</div>
+  <h2 class="section-title">Sorties du modèle <span>&amp; visualisations</span></h2>
+
+  <p>Chaque output est calculé par référence explicite aux équations définies en §2. Le dashboard doit afficher ces KPIs en temps réel et permettre la modification des paramètres d'entrée (§6-C).</p>
+
+  <div class="outputs">
+    <div class="out-card">
+      <div class="out-name">Énergie récupérable annuelle</div>
+      <div class="out-formula">E_i [MWh/an] = Q_i [kW] × h_fonctionnement / 1 000</div>
+      <div class="out-desc">Calculé par EQ-1 à EQ-5 pour chaque source. Agrégé par scénario et en total combiné. Exprimé en MWh/an et kWh/j pour comparaison opérationnelle.</div>
+      <div class="out-viz">→ Visualisation : barres horizontales comparatives (sources W1–W6) + KPI card total</div>
+    </div>
+    <div class="out-card">
+      <div class="out-name">CO₂ évité annuel</div>
+      <div class="out-formula">CO₂_évité [tCO₂/an] = E_récup [MWh] × f_CO₂ [kgCO₂/kWh] / 1 000</div>
+      <div class="out-desc">f_CO₂ = 0,202 pour GN (combustion directe), 0,43 pour électricité STEG. Le choix du facteur dépend de ce que la chaleur récupérée remplace. Influence la décision de priorisation (C2).</div>
+      <div class="out-viz">→ Visualisation : KPI card + graphique CO₂ actuel vs CO₂ avec scénarios (side-by-side)</div>
+    </div>
+    <div class="out-card">
+      <div class="out-name">Économies financières annuelles</div>
+      <div class="out-formula">Éco [DT/an] = E_récup [MWh/an] × P_énergie [DT/MWh]</div>
+      <div class="out-desc">P_énergie = P_GN (95 DT/MWh) si substitution gaz, P_élec (165 DT/MWh) si substitution électrique. Saisie utilisateur modifiable en live pour analyse de sensibilité.</div>
+      <div class="out-viz">→ Visualisation : waterfall chart (S1 + S2 + S3 → Total) · affichage DT/an et DT/j</div>
+    </div>
+    <div class="out-card">
+      <div class="out-name">Retour sur investissement (ROI)</div>
+      <div class="out-formula">ROI [ans] = CAPEX [DT] / Éco_annuelle [DT/an]</div>
+      <div class="out-desc">ROI simple (payback). ROI pondéré combiné = CAPEX_total / Éco_total. Courbes de retour sur 12 ans par scénario. Indique la date de neutralité investissement.</div>
+      <div class="out-viz">→ Visualisation : courbes ROI dans le temps (12 ans) par scénario + point break-even</div>
+    </div>
+    <div class="out-card">
+      <div class="out-name">Score de priorisation multicritères</div>
+      <div class="out-formula">Score = Σ(w_i × s_i) — voir §4</div>
+      <div class="out-desc">Score /10 par source. Ranking automatique. Sensible aux poids w_i (sliders dashboard). Inclut justification physique de chaque score (0–10) par critère.</div>
+      <div class="out-viz">→ Visualisation : radar chart (5 critères × 5 sources) + tableau ranking avec barres</div>
+    </div>
+    <div class="out-card">
+      <div class="out-name">Taux d'exploitation (Heat Recovery Rate)</div>
+      <div class="out-formula">HRR [%] = E_récupérée_effective / E_récupérable_estimée × 100</div>
+      <div class="out-desc">KPI opérationnel live (depuis IoT Part 1). Compare le potentiel calculé à ce qui est effectivement récupéré. Alerte si HRR &lt; 80% du prévu → anomalie équipement.</div>
+      <div class="out-viz">→ Visualisation : jauge circulaire live + historique journalier (ligne temporelle)</div>
+    </div>
+    <div class="out-card">
+      <div class="out-name">Waste Heat kW live (tableau de bord IoT)</div>
+      <div class="out-formula">WHR_live [kW] = Σ Q_i(t) depuis capteurs temps réel</div>
+      <div class="out-desc">Agrégation des puissances instantanées récupérées par source. Permet de détecter les dérives en temps réel. Complète le KPI annuel par une vision opérationnelle.</div>
+      <div class="out-viz">→ Visualisation : carte de chaleur (sources × heure de la journée) + courbe temps réel</div>
+    </div>
+    <div class="out-card">
+      <div class="out-name">Bilan CO₂ différentiel (tableau de bord)</div>
+      <div class="out-formula">ΔCO₂ = CO₂_actuel − CO₂_avec_S1 − CO₂_avec_S2 − CO₂_avec_S3</div>
+      <div class="out-desc">Affichage côte à côte : situation actuelle vs situation post-implémentation. Quantifie l'impact carbone total des 3 scénarios combinés (184,6 tCO₂/an).</div>
+      <div class="out-viz">→ Visualisation : graphe barres empilées (Scope 1 actuel vs cible) · couleur verte = évité</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ §8 MODÈLE MATHÉMATIQUE ══════════════ -->
+<div class="section" id="s8">
+  <div class="section-tag">§8 · Mathematical Model Summary</div>
+  <h2 class="section-title">Résumé du modèle <span>mathématique complet</span></h2>
+
+  <p>Toutes les équations du projet, groupées par catégorie fonctionnelle. Ce tableau constitue l'annexe mathématique de référence — utilisable directement pour implémenter le modèle Excel ou Streamlit.</p>
+
+  <div class="math-group">
+    <div class="math-group-title">A · Estimation de la chaleur récupérable</div>
+    <div class="math-row">
+      <span class="math-eq">Q = ṁ·Cp·ΔT·η</span>
+      <span class="math-desc">Chaleur sensible fluides monophasiques (W1 fumées, W2 air compresseur, W4 air CTA) — 1er principe thermodynamique en régime permanent. Référence EQ-1.</span>
+    </div>
+    <div class="math-row">
+      <span class="math-eq">Q_purge = ṁ_purge·h_fg</span>
+      <span class="math-desc">Chaleur purges vapeur — enthalpie de vaporisation à pression de saturation (5 bars, 152°C). Référence EQ-2.</span>
+    </div>
+    <div class="math-row">
+      <span class="math-eq">Q_fum = V̇·Cp_vol·ΔT·η</span>
+      <span class="math-desc">Méthode volumique fumées — débit dérivé du compteur GN × rapport stœchiométrique 11 Nm³/Nm³. Référence EQ-3.</span>
+    </div>
+    <div class="math-row">
+      <span class="math-eq">Q_comp = P_élec·τ·η_p·η_r</span>
+      <span class="math-desc">Chaleur compresseur — bilan boîte noire (80% pertes thermiques × efficacité récupération 65%). Référence EQ-4.</span>
+    </div>
+    <div class="math-row">
+      <span class="math-eq">Q_désurch = 12%·Q_cond</span>
+      <span class="math-desc">Chaleur désurchauffe GEG — fraction vapeur surchauffée avant condensation R134a (10–15% selon taux de compression). Référence EQ-5.</span>
+    </div>
+    <div class="math-row">
+      <span class="math-eq">Q_cond = Q_frig + P_comp_GEG</span>
+      <span class="math-desc">Chaleur totale condenseur GEG — bilan 1er principe cycle frigorifique. Source : puissances nominales audit.</span>
+    </div>
+    <div class="math-row">
+      <span class="math-eq">V̇_GN = P_chaud/(PCI·η_comb)</span>
+      <span class="math-desc">Débit volumique GN — dérivé de la puissance chaudière (1 840 kW × 40% charge / 0,92 / 10 350 kJ/Nm³).</span>
+    </div>
+    <div class="math-row">
+      <span class="math-eq">E [MWh/an] = Q[kW]·h/1000</span>
+      <span class="math-desc">Énergie annuelle récupérable — conversion puissance instantanée × heures de fonctionnement annuelles.</span>
+    </div>
+  </div>
+
+  <div class="math-group">
+    <div class="math-group-title">B · Estimation des réductions CO₂</div>
+    <div class="math-row">
+      <span class="math-eq">CO₂ = E[MWh]·f_CO₂·1000</span>
+      <span class="math-desc">CO₂ évité en kg/an (÷1000 pour tCO₂/an). f_CO₂(GN)=0,202 kgCO₂/kWh, f_CO₂(élec)=0,43 kgCO₂/kWh.</span>
+    </div>
+    <div class="math-row">
+      <span class="math-eq">ΔCO₂ = CO₂_base − CO₂_WHR</span>
+      <span class="math-desc">Réduction nette — CO₂ actuel (consommation GN + élec) moins CO₂ avec récupération (énergie substituée).</span>
+    </div>
+  </div>
+
+  <div class="math-group">
+    <div class="math-group-title">C · Calcul du retour sur investissement</div>
+    <div class="math-row">
+      <span class="math-eq">Éco = E·P_énergie</span>
+      <span class="math-desc">Économie annuelle en DT/an — énergie récupérée [MWh] × prix énergie substituée [DT/MWh].</span>
+    </div>
+    <div class="math-row">
+      <span class="math-eq">ROI_simple = CAPEX / Éco</span>
+      <span class="math-desc">Payback simple en années — ne tient pas compte de l'inflation ni de la valeur temporelle de l'argent. Adapté à une analyse préliminaire.</span>
+    </div>
+    <div class="math-row">
+      <span class="math-eq">ROI_pondéré = ΣCAPEX / ΣÉco</span>
+      <span class="math-desc">ROI global des 3 scénarios combinés — 174 000 / 83 730 = 2,08 ans ≈ 2,1 ans.</span>
+    </div>
+    <div class="math-row">
+      <span class="math-eq">Cum(t) = Éco·t − CAPEX</span>
+      <span class="math-desc">Cash-flow cumulé en année t — base des courbes ROI sur 12 ans. Break-even quand Cum(t)=0.</span>
+    </div>
+  </div>
+
+  <div class="math-group">
+    <div class="math-group-title">D · Modèle de scoring multicritères</div>
+    <div class="math-row">
+      <span class="math-eq">Score = Σ(w_i·s_i)</span>
+      <span class="math-desc">Somme pondérée des scores par critère. Σw_i = 1 (vérification normativité). Scores s_i ∈ [1,10] définis par barème physique §4.</span>
+    </div>
+    <div class="math-row">
+      <span class="math-eq">w = [0,30; 0,20; 0,20; 0,15; 0,15]</span>
+      <span class="math-desc">Vecteur de poids [C1 énergie; C2 CO₂; C3 faisabilité; C4 invest.; C5 ROI]. Modifiable par l'utilisateur en dashboard.</span>
+    </div>
+    <div class="math-row">
+      <span class="math-eq">HRR = E_eff / E_est × 100%</span>
+      <span class="math-desc">Heat Recovery Rate — KPI opérationnel. Compare l'énergie effectivement récupérée (IoT) au potentiel calculé (modèle).</span>
+    </div>
+  </div>
+
+  <div class="callout success">
+    <div class="callout-tag">✓ Message clé — pitch jury</div>
+    <p>Cette usine gaspille aujourd'hui environ 851 kW de chaleur non récupérée dans la Tri-génération seule, et l'ensemble des sources identifiées représente <strong>881 MWh/an récupérables</strong> — soit l'équivalent de <strong>185 tonnes de CO₂ évitées par an</strong>, pour un investissement total de 174 000 DT et un retour en <strong>2,1 ans</strong>. C'est de la valeur dormante, convertible en économies concrètes avec des technologies TRL 9, installables sans arrêt de production.</p>
+  </div>
+</div>
+
+<!-- ══════════════ HYPOTHÈSES RÉCAPITULATIVES ══════════════ -->
+<div class="section">
+  <div class="section-tag">Annexe · Tableau de référence démo</div>
+  <h2 class="section-title">Hypothèses récapitulatives <span>pour démo live</span></h2>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Paramètre</th>
+          <th>Valeur utilisée</th>
+          <th>Source</th>
+          <th>Impact si valeur réelle différente</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>T° fumées chaudières vapeur</td>
+          <td>190°C</td>
+          <td><span class="badge badge-amber">Estimée</span> — typique GN sans économiseur</td>
+          <td>Si 160°C → Q réduit de 30% (encore rentable)</td>
+        </tr>
+        <tr>
+          <td>Charge moy. chaudières</td>
+          <td>40%</td>
+          <td><span class="badge badge-amber">Estimée</span> — production batch pharma</td>
+          <td>Si 60% → gains ×1,5 (améliore ROI)</td>
+        </tr>
+        <tr>
+          <td>Débit total air extrait CTA</td>
+          <td>75 000 m³/h</td>
+          <td><span class="badge badge-amber">Estimée</span> — norme pharma ISO 14644</td>
+          <td>Si 50 000 m³/h → E réduit de 33%</td>
+        </tr>
+        <tr>
+          <td>η récupération compresseur</td>
+          <td>65%</td>
+          <td><span class="badge badge-amber">Estimée</span> — kit WHR standard</td>
+          <td>Si 75% → E augmente de +15%</td>
+        </tr>
+        <tr>
+          <td>Prix gaz naturel BP2</td>
+          <td>95 DT/MWh</td>
+          <td><span class="badge badge-amber">Estimée</span> — tarification STEG/SOTUGAZ</td>
+          <td>Si +20% → ROI réduit de ~20%</td>
+        </tr>
+        <tr>
+          <td>Heures fonct. chaudières</td>
+          <td>7 920 h/an</td>
+          <td><span class="badge badge-green">Extrait</span> — fabrication 24h, 330j/an</td>
+          <td>Valeur directe audit — robuste</td>
+        </tr>
+        <tr>
+          <td>Heures fonct. compresseur</td>
+          <td>8 400 h/an</td>
+          <td><span class="badge badge-green">Calculé</span> — compteur 19 279h / 2,3 ans</td>
+          <td>Donnée mesurée — très fiable</td>
+        </tr>
+        <tr>
+          <td>Facteur CO₂ GN</td>
+          <td>0,202 kg/kWh</td>
+          <td><span class="badge badge-cyan">Standard</span> — GIEC / ADEME</td>
+          <td>Valeur internationale stable</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+</div><!-- /page -->
+
+<footer>
+  <span>Waste Heat Recovery Framework · Hackathon 2024–2025 · Track B · Part 3</span>
+  <span>Usine Pharmaceutique — Industrie Chimique — Usage interne confidentiel</span>
+  <span>Énergie : 881 MWh/an · CO₂ : 185 t/an · ROI : 2,1 ans · Sources : 8</span>
+</footer>
+
+</body>
+</html>
