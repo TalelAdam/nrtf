@@ -2,11 +2,32 @@
   "name": "@nrtf/ai-agents",
   "version": "0.1.0",
   "private": true,
-  "description": "Python LangGraph multi-agent + MCP servers (managed via pnpm workspaces for unified dev scripts)",
+  "description": "LangGraph.js multi-agent orchestration + MCP servers for NRTF (TypeScript)",
   "scripts": {
-    "dev": "uvicorn src.api.server:app --host 0.0.0.0 --port 8001 --reload",
-    "test": "pytest",
-    "lint": "ruff check src tests",
-    "format": "ruff format src tests"
+    "dev": "ts-node -r tsconfig-paths/register src/server.ts",
+    "build": "tsc",
+    "start": "node dist/server.js",
+    "test": "jest",
+    "lint": "eslint \"src/**/*.ts\"",
+    "format": "prettier --write \"src/**/*.ts\""
+  },
+  "dependencies": {
+    "@langchain/anthropic": "^0.3.0",
+    "@langchain/core": "^0.3.0",
+    "@langchain/langgraph": "^0.2.0",
+    "@langchain/community": "^0.3.0",
+    "@modelcontextprotocol/sdk": "^1.0.0",
+    "zod": "^3.23.8",
+    "fastify": "^4.28.0",
+    "dotenv": "^16.4.5"
+  },
+  "devDependencies": {
+    "@types/node": "^22.7.4",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.5.4",
+    "tsconfig-paths": "^4.2.0",
+    "prettier": "^3.3.3",
+    "jest": "^29.7.0",
+    "ts-jest": "^29.2.5"
   }
 }
