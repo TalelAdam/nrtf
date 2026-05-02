@@ -3,6 +3,7 @@ import {
   FastifyAdapter,
   NestFastifyApplication,
 } from '@nestjs/platform-fastify';
+import { IoAdapter } from '@nestjs/platform-socket.io';
 import { ValidationPipe, Logger } from '@nestjs/common';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import multipart from '@fastify/multipart';
@@ -15,6 +16,9 @@ async function bootstrap() {
     AppModule,
     new FastifyAdapter({ logger: false }),
   );
+
+  // Explicitly bind Socket.IO to Fastify's HTTP server
+  app.useWebSocketAdapter(new IoAdapter(app));
 
   // Register Fastify multipart for file uploads (≤ 50 MB)
   await app.register(multipart, {
@@ -31,8 +35,8 @@ async function bootstrap() {
     }),
   );
 
-  // CORS for the frontend (Next.js on :3001)
-  app.enableCors({ origin: process.env.FRONTEND_URL ?? 'http://localhost:3001' });
+  // CORS — allow all origins in dev
+  app.enableCors({ origin: true });
 
   // Swagger docs
   const config = new DocumentBuilder()
