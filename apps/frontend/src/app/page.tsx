@@ -1,6 +1,7 @@
 import { readdir } from "node:fs/promises";
 import path from "node:path";
-import { DashboardShell } from "@/components/dashboard/dashboard-shell";
+import { ThreeViewer } from "@/components/dashboard/three-viewer";
+import { SensorPanel } from "@/components/dashboard/sensor-panel";
 
 const GLB_PUBLIC_DIR = "/assets/fdp";
 
@@ -19,5 +20,14 @@ async function getModelPath() {
 export default async function Home() {
   const modelPath = await getModelPath();
 
-  return <DashboardShell modelPath={modelPath} />;
+  return (
+    <div className="home-layout">
+      {/* Left — interactive 3-D model */}
+      <div className="viewer-col">
+        <ThreeViewer modelPath={modelPath} />
+      </div>
+      {/* Right — live ESP32 sensor panel */}
+      <SensorPanel />
+    </div>
+  );
 }

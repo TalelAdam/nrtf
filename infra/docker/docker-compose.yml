@@ -1,27 +1,26 @@
 name: nrtf
 
 services:
-  # PostgreSQL with TimescaleDB extension (time-series)
+  # ─── Infrastructure ───────────────────────────────────────────
+
   postgres:
     image: timescale/timescaledb:latest-pg16
     container_name: nrtf-postgres
     restart: unless-stopped
+    ports:
+      - "5432:5432"
     environment:
       POSTGRES_USER: nrtf
       POSTGRES_PASSWORD: nrtf
       POSTGRES_DB: nrtf
-    ports:
-      - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
-      - ./postgres/init:/docker-entrypoint-initdb.d
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U nrtf"]
       interval: 5s
       timeout: 5s
-      retries: 5
+      retries: 10
 
-  # Redis for cache + BullMQ
   redis:
     image: redis:7-alpine
     container_name: nrtf-redis
@@ -36,49 +35,65 @@ services:
       timeout: 3s
       retries: 5
 
-  # Eclipse Mosquitto MQTT broker for IoT devices
   mosquitto:
     image: eclipse-mosquitto:2
     container_name: nrtf-mosquitto
     restart: unless-stopped
     ports:
-      - "1883:1883"     # MQTT
-      - "9001:9001"     # MQTT over WebSocket (browser clients)
+      - "1883:1883"
+      - "9001:9001"
     volumes:
       - ./mosquitto/mosquitto.conf:/mosquitto/config/mosquitto.conf
       - mosquitto_data:/mosquitto/data
       - mosquitto_log:/mosquitto/log
 
-  # MLflow tracking server (optional for hackathon, useful for serious training)
-  mlflow:
-    image: ghcr.io/mlflow/mlflow:latest
-    container_name: nrtf-mlflow
-    restart: unless-stopped
-    ports:
-      - "5000:5000"
-    command: >
-      mlflow server
-      --backend-store-uri sqlite:////mlflow/mlruns.db
-      --default-artifact-root /mlflow/artifacts
-      --host 0.0.0.0
-    volumes:
-      - mlflow_data:/mlflow
+  # ─── Application ──────────────────────────────────────────────
 
-  # Local Ollama (for sovereign AI angle, e.g., STEG Whisperer)
-  # Comment out if you don't have GPU/RAM headroom
-  ollama:
-    image: ollama/ollama:latest
-    container_name: nrtf-ollama
+  backend:
+    build:
+      context: ../..
+      dockerfile: apps/backend/Dockerfile
+    container_name: nrtf-backend
     restart: unless-stopped
     ports:
-      - "11434:11434"
-    volumes:
-      - ollama_data:/root/.ollama
+      - "3000:3000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      mosquitto:
+        condition: service_started
+    env_file:
+      - ../../.env.docker
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      MQTT_BROKER_URL: mqtt://mosquitto:1883
+      MQTT_TOPIC: nrtf/sensors/+/telemetry
+
+  frontend:
+    build:
+      context: ../..
+      dockerfile: apps/frontend/Dockerfile
+      args:
+        NEXT_PUBLIC_API_URL: http://backend:3000
+        NEXT_PUBLIC_BACKEND_WS_URL: http://localhost:3000
+    container_name: nrtf-frontend
+    restart: unless-stopped
+    ports:
+      - "3001:3001"
+    depends_on:
+      - backend
+    env_file:
+      - ../../.env.docker
+    environment:
+      NODE_ENV: production
+      BACKEND_URL: http://backend:3000
+      NEXT_PUBLIC_BACKEND_WS_URL: http://localhost:3000
 
 volumes:
   postgres_data:
   redis_data:
   mosquitto_data:
   mosquitto_log:
-  mlflow_data:
-  ollama_data:

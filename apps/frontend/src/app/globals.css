@@ -795,3 +795,174 @@ button {
     padding: 18px;
   }
 }
+
+/* ═══════════════════════════════════════════════════════════════
+   HOME SPLIT LAYOUT (3-D viewer + live sensor panel)
+   ═══════════════════════════════════════════════════════════════ */
+
+.home-layout {
+  display: grid;
+  grid-template-columns: 1fr 380px;
+  height: calc(100vh - 36px);
+  overflow: hidden;
+}
+
+/* Left column — Three.js 3-D viewer */
+.viewer-col {
+  position: relative;
+  overflow: hidden;
+  border-right: 1px solid rgba(0, 229, 255, 0.18);
+}
+
+/* Right column — ESP32 sensor panel */
+.sensor-panel {
+  display: flex;
+  flex-direction: column;
+  background: #0a0f1e;
+  overflow-y: auto;
+}
+
+.sensor-panel::-webkit-scrollbar { width: 4px; }
+.sensor-panel::-webkit-scrollbar-thumb {
+  background: rgba(0, 229, 255, 0.28);
+  border-radius: 2px;
+}
+
+/* ─── Sensor KPIs ─────────────────────────────────────────────── */
+.sensor-kpis-wrapper {
+  padding: 14px 14px 10px;
+  border-bottom: 1px solid rgba(0, 229, 255, 0.1);
+}
+
+.sensor-kpis-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.sensor-kpis-title {
+  font-size: 0.64rem;
+  text-transform: uppercase;
+  color: #00e5ff;
+  letter-spacing: 0.06em;
+}
+
+/* ─── Connection status dot ──────────────────────────────────── */
+.conn-dot {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.62rem;
+  text-transform: uppercase;
+  color: #6a7e8c;
+}
+
+.conn-dot-indicator {
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.conn-dot.connected { color: #4ade80; }
+.conn-dot.connecting {
+  color: #fbbf24;
+  animation: pulse-dot 1.2s ease-in-out infinite;
+}
+.conn-dot.disconnected { color: #f87171; }
+
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.35; }
+}
+
+/* ─── KPI grid ─────────────────────────────────────────────────── */
+.sensor-kpis-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.sensor-kpi {
+  background: rgba(15, 23, 42, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-top: 2px solid;     /* colour set inline per card */
+  border-radius: 3px;
+  padding: 10px 12px;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.sensor-kpi-icon {
+  font-size: 1.3rem;
+  flex-shrink: 0;
+  line-height: 1;
+  margin-top: 2px;
+}
+
+.sensor-kpi-body {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.sensor-kpi-label {
+  font-size: 0.62rem;
+  text-transform: uppercase;
+  color: #7f93a3;
+}
+
+.sensor-kpi-value {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+  font-family: var(--font-mono), monospace;
+  font-size: 1.32rem;
+  font-weight: 600;
+  line-height: 1;
+}
+
+.sensor-kpi-unit {
+  font-size: 0.64rem;
+  color: #8da4b3;
+}
+
+/* ─── Accelerometer Chart ─────────────────────────────────────── */
+.accel-chart-card {
+  flex: 1;
+  min-height: 260px;
+  padding: 6px;
+}
+
+.accel-chart-empty {
+  display: grid;
+  place-items: center;
+  color: #4a5a65;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  border: 1px dashed rgba(0, 229, 255, 0.12);
+  margin: 6px;
+}
+
+/* ─── Responsive: stack vertically on small screens ─────────── */
+@media (max-width: 900px) {
+  .home-layout {
+    grid-template-columns: 1fr;
+    grid-template-rows: 55vh auto;
+    height: auto;
+  }
+
+  .viewer-col {
+    border-right: none;
+    border-bottom: 1px solid rgba(0, 229, 255, 0.18);
+  }
+
+  .sensor-panel {
+    max-height: 440px;
+    overflow-y: auto;
+  }
+}
