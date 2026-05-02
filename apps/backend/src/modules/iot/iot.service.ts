@@ -61,6 +61,7 @@ export class IoTService implements OnModuleInit, OnModuleDestroy {
   }
 
   private handleMessage(payload: Buffer) {
+    this.logger.log(`MQTT message received: ${payload.toString()}`);
     let raw: Record<string, unknown>;
     try {
       raw = JSON.parse(payload.toString()) as Record<string, unknown>;

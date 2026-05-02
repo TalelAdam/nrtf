@@ -1,0 +1,23 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(//c/Users/talel/Documents/Claude/Projects/NRTF/infra/docker//**)",
+      "Read(//c/Users/talel/Documents/Claude/Projects/NRTF/infra/docker/**)",
+      "Bash(pnpm run:*)",
+      "Bash(netstat -ano)",
+      "Bash(findstr \":3000\")",
+      "Bash(findstr \"LISTENING\")",
+      "Bash(taskkill:*)",
+      "Bash(cmd:*)",
+      "Bash(echo \"exit:$?\")",
+      "Bash(powershell:*)",
+      "Read(//c/Users/talel/Documents/Claude/Projects/NRTF/**)",
+      "Bash(docker compose:*)",
+      "Bash(python -c \"import sys,json; d=json.load\\(sys.stdin\\); print\\('\\\\n'.join\\(d.get\\('dependencies',{}\\).keys\\(\\)\\)\\)\")",
+      "Bash(ls /c/Users/talel/Documents/Claude/Projects/NRTF/apps/frontend/.env*)",
+      "Bash(docker exec nrtf-mosquitto:*)",
+      "Bash(node -e ':*)",
+      "Bash(node:*)"
+    ]
+  }
+}

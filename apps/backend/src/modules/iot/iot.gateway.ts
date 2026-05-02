@@ -25,6 +25,7 @@ export class IoTGateway implements OnGatewayInit {
 
   @OnEvent('iot.reading')
   handleReading(reading: Esp32Reading) {
+    this.logger.log(`Emitting sensor:update → ${JSON.stringify(reading)}`);
     this.server.emit('sensor:update', reading);
   }
 }
