@@ -51,10 +51,53 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('docs', app, document);
 
-  const port = parseInt(process.env.PORT ?? '3000', 10);
+  const preferredPort = parseInt(process.env.PORT ?? '3000', 10);
+  const port = await findFreePort(preferredPort);
+  if (port !== preferredPort) {
+    logger.warn(`Port ${preferredPort} in use — using ${port} instead`);
+  }
   await app.listen(port, '0.0.0.0');
   logger.log(`Backend running on http://localhost:${port}`);
   logger.log(`Swagger docs at http://localhost:${port}/docs`);
+
+  // Keep frontend proxy in sync: write resolved port into apps/frontend/.env.local
+  try {
+    const fs = require('fs') as typeof import('fs');
+    const path = require('path') as typeof import('path');
+    const envLocal = path.resolve(__dirname, '../../../../apps/frontend/.env.local');
+    const content =
+      `BACKEND_URL=http://localhost:${port}\n` +
+      `NEXT_PUBLIC_API_URL=http://localhost:${port}/api\n` +
+      `NEXT_PUBLIC_WS_URL=ws://localhost:${port}/ws\n`;
+    fs.writeFileSync(envLocal, content, 'utf8');
+    logger.log(`Updated frontend .env.local → BACKEND_URL=http://localhost:${port}`);
+  } catch (_) {
+    // non-fatal — next.config.mjs auto-detects anyway
+  }
+}
+
+/** Try ports sequentially until one succeeds (max 10 attempts). */
+function findFreePort(start: number): Promise<number> {
+  return new Promise((resolve, reject) => {
+    const net = require('net') as typeof import('net');
+    let attempt = start;
+    const tryPort = () => {
+      const srv = net.createServer();
+      srv.once('error', (err: NodeJS.ErrnoException) => {
+        if (err.code === 'EADDRINUSE' && attempt < start + 10) {
+          attempt++;
+          tryPort();
+        } else {
+          reject(err);
+        }
+      });
+      srv.once('listening', () => {
+        srv.close(() => resolve(attempt));
+      });
+      srv.listen(attempt, '0.0.0.0');
+    };
+    tryPort();
+  });
 }
 
 bootstrap().catch((err) => {

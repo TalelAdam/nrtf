@@ -10,10 +10,27 @@ import { ValidationPanel } from './validation-panel';
 import { SubmissionButton } from './submission-button';
 import type { ExtractionResult } from '@/hooks/use-extraction';
 import type { ExtractionMode } from '@/hooks/use-extraction';
+import type { PipelineStage } from './extraction-progress';
 
 export function DocumentPipeline() {
-  const [result, setResult] = useState<ExtractionResult | null>(null);
-  const [mode, setMode] = useState<ExtractionMode>('ocr');
+  const [result, setResult]         = useState<ExtractionResult | null>(null);
+  const [mode, setMode]             = useState<ExtractionMode>('ocr');
+  const [liveStages, setLiveStages] = useState<PipelineStage[]>([]);
+
+  function handleResult(r: ExtractionResult) {
+    // Freeze the stages to their final "all-done" state derived from the result
+    setLiveStages(buildStagesFromResult(r.status, r.qualityScore));
+    setResult(r);
+  }
+
+  function handleModeSwitch(next: ExtractionMode) {
+    // Reset everything when switching modes
+    setMode(next);
+    setResult(null);
+    setLiveStages([]);
+  }
+
+  const showProgress = liveStages.length > 0;
 
   return (
     <div className="doc-pipeline">
@@ -27,7 +44,7 @@ export function DocumentPipeline() {
         <div className="mode-toggle">
           <button
             className={`mode-toggle__btn${mode === 'ocr' ? ' mode-toggle__btn--active' : ''}`}
-            onClick={() => setMode('ocr')}
+            onClick={() => handleModeSwitch('ocr')}
           >
             <ScanSearch size={18} />
             <div>
@@ -37,7 +54,7 @@ export function DocumentPipeline() {
           </button>
           <button
             className={`mode-toggle__btn${mode === 'llm' ? ' mode-toggle__btn--active' : ''}`}
-            onClick={() => setMode('llm')}
+            onClick={() => handleModeSwitch('llm')}
           >
             <BrainCircuit size={18} />
             <div>
@@ -47,14 +64,21 @@ export function DocumentPipeline() {
           </button>
         </div>
 
-        <DocUploadZone onResult={setResult} mode={mode} />
+        <DocUploadZone
+          onResult={handleResult}
+          onStageUpdate={setLiveStages}
+          mode={mode}
+        />
       </div>
 
+      {/* Live pipeline stages — visible as soon as extraction starts */}
+      {showProgress && (
+        <ExtractionProgress stages={liveStages} />
+      )}
+
+      {/* Results panels — visible only after extraction completes */}
       {result && (
         <>
-          <ExtractionProgress
-            stages={buildStagesFromResult(result.status, result.qualityScore)}
-          />
           <ExtractionResults result={result} />
           <UnitNormPanel records={result.records ?? []} forceDemo />
           <ValidationPanel result={result} />
