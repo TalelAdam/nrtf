@@ -2795,6 +2795,330 @@ button {
   transition: border-color 150ms ease, background 150ms ease;
 }
 
+/* ═══════════════════════════════════════════════════════
+   WHR Equipment Panel
+   ═══════════════════════════════════════════════════════ */
+
+.eq-panel {
+  margin: 24px 0;
+}
+
+.eq-panel-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #e2e8f0;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  margin: 0 0 2px 0;
+}
+
+.eq-panel-subtitle {
+  font-size: 0.72rem;
+  color: #64748b;
+  margin: 0 0 16px 0;
+}
+
+.eq-panel-loading,
+.eq-panel-error {
+  padding: 20px;
+  color: #64748b;
+  font-size: 0.8rem;
+  text-align: center;
+}
+
+/* ── Selector strip ────────────────────────────────────── */
+.eq-selector {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.eq-selector-btn {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 18px;
+  background: rgba(15, 23, 42, 0.6);
+  border: 2px solid transparent;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: border-color 150ms ease, background 150ms ease;
+  min-width: 240px;
+}
+
+.eq-selector-btn:hover {
+  background: rgba(30, 41, 59, 0.8);
+}
+
+.eq-selector-btn--active {
+  background: rgba(30, 41, 59, 0.9);
+}
+
+.eq-selector-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 6px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #0f172a;
+  flex-shrink: 0;
+}
+
+.eq-selector-meta {
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+}
+
+.eq-selector-name {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #e2e8f0;
+}
+
+.eq-selector-model {
+  font-size: 0.65rem;
+  color: #64748b;
+}
+
+.eq-selector-kw {
+  margin-left: auto;
+  font-size: 0.72rem;
+  color: #94a3b8;
+  white-space: nowrap;
+}
+
+/* ── Detail grid ──────────────────────────────────────── */
+.eq-detail-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.eq-card {
+  background: rgba(15, 23, 42, 0.6);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-top: 3px solid transparent;
+  border-radius: 8px;
+  padding: 16px;
+}
+
+.eq-card-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.eq-card-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 5px;
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: #0f172a;
+  flex-shrink: 0;
+}
+
+.eq-card-title {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #e2e8f0;
+  margin: 0;
+}
+
+.eq-card-subtitle {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #cbd5e1;
+  margin: 0 0 10px 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.eq-card-note {
+  font-size: 0.65rem;
+  color: #64748b;
+  margin: -6px 0 8px 0;
+}
+
+/* ── Identity table ───────────────────────────────────── */
+.eq-identity-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.72rem;
+}
+
+.eq-identity-table td {
+  padding: 4px 6px;
+  vertical-align: top;
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+}
+
+.eq-identity-table td:first-child {
+  color: #64748b;
+  width: 38%;
+  white-space: nowrap;
+}
+
+.eq-identity-table td:last-child {
+  color: #cbd5e1;
+}
+
+.eq-identity-table code {
+  font-family: var(--font-mono), monospace;
+  font-size: 0.65rem;
+  color: #94a3b8;
+  word-break: break-all;
+}
+
+/* ── Energy balance KPI row ───────────────────────────── */
+.eq-energy-kpi-row {
+  display: flex;
+  gap: 16px;
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid rgba(255,255,255,0.05);
+}
+
+.eq-energy-kpi {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.eq-energy-kpi span {
+  font-size: 0.65rem;
+  color: #64748b;
+}
+
+.eq-energy-kpi strong {
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+/* ── CO₂ card ─────────────────────────────────────────── */
+.eq-co2-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.eq-co2-stats {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex: 1;
+}
+
+.eq-co2-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.eq-co2-stat span:first-child {
+  font-size: 0.62rem;
+  color: #64748b;
+}
+
+.eq-co2-stat strong {
+  font-size: 0.78rem;
+}
+
+.eq-co2-stat--avoidable strong {
+  font-weight: 700;
+}
+
+.eq-co2-stat--source span:last-child {
+  font-size: 0.62rem;
+  color: #94a3b8;
+}
+
+/* ── Economics card ───────────────────────────────────── */
+.eq-card--econ-full {
+  grid-column: 1 / -1;
+}
+
+.eq-econ-kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-bottom: 4px;
+}
+
+.eq-econ-kpi {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.eq-econ-kpi span,
+.eq-econ-kpi code {
+  font-size: 0.65rem;
+  color: #64748b;
+}
+
+.eq-econ-kpi strong {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #e2e8f0;
+}
+
+/* ── MCDA score card ──────────────────────────────────── */
+.eq-score-total {
+  font-size: 1rem;
+  font-weight: 700;
+  margin-left: auto;
+}
+
+.eq-score-bars {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.eq-score-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.68rem;
+}
+
+.eq-score-label {
+  width: 120px;
+  flex-shrink: 0;
+  color: #94a3b8;
+}
+
+.eq-score-bar-wrap {
+  flex: 1;
+  height: 6px;
+  background: #1e293b;
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.eq-score-bar-fill {
+  height: 100%;
+  border-radius: 3px;
+  transition: width 400ms ease;
+}
+
+.eq-score-val {
+  width: 28px;
+  text-align: right;
+  color: #cbd5e1;
+  font-weight: 600;
+}
+
 .chat-suggestion:hover {
   border-color: rgba(187, 171, 140, 0.5);
   background: rgba(187, 171, 140, 0.08);

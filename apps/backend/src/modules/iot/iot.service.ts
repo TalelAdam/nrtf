@@ -19,14 +19,22 @@ export class IoTService implements OnModuleInit, OnModuleDestroy {
   private readonly logger = new Logger(IoTService.name);
   private client: mqtt.MqttClient | null = null;
   private mqttErrorLogged = false;
+  /** Tracks live MQTT connection state for the /iot/status endpoint */
+  private _mqttConnected = false;
 
   constructor(
     private readonly config: ConfigService,
     private readonly events: EventEmitter2,
   ) {}
 
+  /** Returns current MQTT broker connection state */
+  get mqttConnected(): boolean {
+    return this._mqttConnected;
+  }
+
   onModuleInit() {
-    const broker = this.config.get<string>('MQTT_BROKER_URL', 'mqtt://test.mosquitto.org');
+    // Default to local Docker Mosquitto; override with MQTT_BROKER_URL env var
+    const broker = this.config.get<string>('MQTT_BROKER_URL', 'mqtt://localhost:1883');
     const topic  = this.config.get<string>('MQTT_TOPIC', 'esp32/sensors');
     this.logger.log(`Connecting MQTT: ${broker}  topic: ${topic}`);
 
@@ -39,6 +47,7 @@ export class IoTService implements OnModuleInit, OnModuleDestroy {
 
     this.client.on('connect', () => {
       this.mqttErrorLogged = false;
+      this._mqttConnected = true;
       this.logger.log('MQTT connected');
       this.client!.subscribe(topic, { qos: 0 }, (err) => {
         if (err) this.logger.warn(`Subscribe error: ${err.message}`);
@@ -50,7 +59,12 @@ export class IoTService implements OnModuleInit, OnModuleDestroy {
       this.handleMessage(payload);
     });
 
+    this.client.on('close', () => {
+      this._mqttConnected = false;
+    });
+
     this.client.on('error', (err: Error) => {
+      this._mqttConnected = false;
       if (!this.mqttErrorLogged) {
         this.logger.warn(`MQTT unavailable (will retry silently): ${err.message}`);
         this.mqttErrorLogged = true;
