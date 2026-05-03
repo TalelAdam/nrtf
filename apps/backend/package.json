@@ -7,6 +7,7 @@
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start",
+    "predev": "node -e \"const {execSync}=require('child_process');try{const r=execSync('netstat -ano | findstr :3000',{encoding:'utf8'});const m=r.match(/LISTENING\\s+(\\d+)/);if(m)execSync('taskkill /F /PID '+m[1])}catch(_){}\"",
     "dev": "nest start --watch",
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/main",
