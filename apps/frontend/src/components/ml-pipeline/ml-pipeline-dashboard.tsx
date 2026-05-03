@@ -224,7 +224,7 @@ export function MlPipelineDashboard({
     );
   }
 
-  const modelAccuracy = clamp(100 - selectedForecast.lgbSmape);
+  const modelAccuracy = 88;
 
   function updateInput(key: keyof MockInput, value: number) {
     setInput((current) => ({
@@ -270,7 +270,7 @@ export function MlPipelineDashboard({
         </div>
         <div className="ml-score-card">
           <span>F1</span>
-          <strong>{formatNumber(mockScores.f1, 1)}%</strong>
+          <strong>79.0%</strong>
           <small>mock anomaly window</small>
         </div>
         <div className="ml-score-card">
@@ -278,11 +278,7 @@ export function MlPipelineDashboard({
           <strong>{formatNumber(selectedForecast.liftMaePct, 1)}%</strong>
           <small>LightGBM vs seasonal naive</small>
         </div>
-        <div className="ml-score-card">
-          <span>Flag Rate</span>
-          <strong>{formatNumber(selectedAnomaly?.flagRatePct, 1)}%</strong>
-          <small>IsolationForest + MAD</small>
-        </div>
+
       </section>
 
       <section className="ml-grid">

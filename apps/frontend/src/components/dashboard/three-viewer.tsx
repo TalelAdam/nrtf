@@ -1,6 +1,6 @@
 "use client";
 
-import { Activity, Cpu, Eye, EyeOff, Flag, Gauge, X } from "lucide-react";
+import { Activity, Cpu, Crosshair, Eye, EyeOff, Gauge, X } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { useIoTStore } from "@/store/iot-store";
 import * as THREE from "three";
@@ -23,28 +23,9 @@ type TargetRecord = {
   object: THREE.Object3D;
   info: SectionInfo;
   sphere: THREE.Sphere;
-  helper: THREE.Box3Helper;
+  marker: THREE.Sprite;
   hitbox: THREE.Mesh;
 };
-
-type SavedCameraView = {
-  position: [number, number, number];
-  target: [number, number, number];
-  minDistance: number;
-  maxDistance: number;
-};
-
-type SavedFlag = {
-  id: string;
-  name: string;
-  objectKey: string;
-  objectName: string;
-  coordinate: [number, number, number];
-  camera: SavedCameraView;
-};
-
-const CAMERA_VIEW_STORAGE_KEY = "reteqfusion:viewer-camera-views:v1";
-const FLAG_STORAGE_KEY = "reteqfusion:viewer-flags:v1";
 
 const sectionProfiles = [
   {
@@ -103,98 +84,34 @@ function buildSectionInfo(object: THREE.Object3D, index: number): SectionInfo {
   };
 }
 
-function readSavedCameraViews(): Record<string, SavedCameraView> {
-  if (typeof window === "undefined") {
-    return {};
-  }
-
-  try {
-    const raw = window.localStorage.getItem(CAMERA_VIEW_STORAGE_KEY);
-
-    if (!raw) {
-      return {};
-    }
-
-    return JSON.parse(raw) as Record<string, SavedCameraView>;
-  } catch {
-    return {};
-  }
-}
-
-function writeSavedCameraViews(views: Record<string, SavedCameraView>) {
-  window.localStorage.setItem(CAMERA_VIEW_STORAGE_KEY, JSON.stringify(views));
-}
-
-function readSavedFlags(): SavedFlag[] {
-  if (typeof window === "undefined") {
-    return [];
-  }
-
-  try {
-    const raw = window.localStorage.getItem(FLAG_STORAGE_KEY);
-
-    if (!raw) {
-      return [];
-    }
-
-    const parsed = JSON.parse(raw);
-
-    return Array.isArray(parsed) ? (parsed as SavedFlag[]) : [];
-  } catch {
-    return [];
-  }
-}
-
-function writeSavedFlags(flags: SavedFlag[]) {
-  window.localStorage.setItem(FLAG_STORAGE_KEY, JSON.stringify(flags));
-}
-
-function vectorToTuple(vector: THREE.Vector3): [number, number, number] {
-  return [vector.x, vector.y, vector.z];
-}
-
-function tupleToVector(tuple: [number, number, number]) {
-  return new THREE.Vector3(tuple[0], tuple[1], tuple[2]);
-}
-
-function createFlagSprite(name: string) {
+function createDotSprite() {
   const canvas = document.createElement("canvas");
   const context = canvas.getContext("2d");
-  const pixelRatio = Math.min(window.devicePixelRatio || 1, 2);
-  const width = 260;
-  const height = 104;
+  const size = 64;
+  const radius = 18;
 
-  canvas.width = width * pixelRatio;
-  canvas.height = height * pixelRatio;
+  canvas.width = size;
+  canvas.height = size;
 
   if (context) {
-    context.scale(pixelRatio, pixelRatio);
-    context.clearRect(0, 0, width, height);
-    context.fillStyle = "rgba(7, 12, 18, 0.88)";
-    context.strokeStyle = "#37d576";
-    context.lineWidth = 2;
+    context.clearRect(0, 0, size, size);
+
+    const gradient = context.createRadialGradient(
+      size / 2,
+      size / 2,
+      0,
+      size / 2,
+      size / 2,
+      radius
+    );
+    gradient.addColorStop(0, "rgba(55, 213, 118, 1)");
+    gradient.addColorStop(0.6, "rgba(55, 213, 118, 0.8)");
+    gradient.addColorStop(1, "rgba(55, 213, 118, 0)");
+
+    context.fillStyle = gradient;
     context.beginPath();
-    context.roundRect(38, 10, 206, 42, 6);
+    context.arc(size / 2, size / 2, radius, 0, Math.PI * 2);
     context.fill();
-    context.stroke();
-    context.fillStyle = "#37d576";
-    context.beginPath();
-    context.moveTo(20, 12);
-    context.lineTo(74, 12);
-    context.lineTo(64, 36);
-    context.lineTo(20, 36);
-    context.closePath();
-    context.fill();
-    context.strokeStyle = "#f4fbff";
-    context.lineWidth = 3;
-    context.beginPath();
-    context.moveTo(20, 10);
-    context.lineTo(20, 84);
-    context.stroke();
-    context.fillStyle = "#f4fbff";
-    context.font = "600 15px sans-serif";
-    context.textBaseline = "middle";
-    context.fillText(name.slice(0, 24), 50, 31, 178);
   }
 
   const texture = new THREE.CanvasTexture(canvas);
@@ -206,25 +123,17 @@ function createFlagSprite(name: string) {
     transparent: true,
   });
   const sprite = new THREE.Sprite(material);
-  sprite.scale.set(0.78, 0.31, 1);
-  sprite.renderOrder = 999;
+  sprite.scale.set(0.06, 0.06, 1);
+  sprite.renderOrder = 998;
 
   return sprite;
 }
 
 export function ThreeViewer({ modelPath }: { modelPath: string }) {
   const mountRef = useRef<HTMLDivElement | null>(null);
-  const saveCurrentViewRef = useRef<() => void>(() => undefined);
-  const createFlagRef = useRef<() => void>(() => undefined);
-  const focusFlagRef = useRef<(flagId: string) => void>(() => undefined);
   const [selectedSection, setSelectedSection] = useState<SectionInfo | null>(
     null,
   );
-  const [selectedTargetKey, setSelectedTargetKey] = useState<string | null>(
-    null,
-  );
-  const [flags, setFlags] = useState<SavedFlag[]>([]);
-  const [saveNotice, setSaveNotice] = useState<string | null>(null);
   const [controlsVisible, setControlsVisible] = useState(true);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -242,17 +151,15 @@ export function ThreeViewer({ modelPath }: { modelPath: string }) {
     let pointerStart: { x: number; y: number } | null = null;
     const clickableTargets: THREE.Object3D[] = [];
     const targetByUuid = new Map<string, TargetRecord>();
-    const targetByKey = new Map<string, TargetRecord>();
     const targetRecords: TargetRecord[] = [];
     const disposableGeometries: THREE.BufferGeometry[] = [];
     const disposableMaterials: THREE.Material[] = [];
-    const flagSprites = new Map<string, THREE.Sprite>();
     const raycaster = new THREE.Raycaster();
     const pointer = new THREE.Vector2();
-    const savedCameraViews = readSavedCameraViews();
-    let savedFlags = readSavedFlags();
     let selectedRecord: TargetRecord | null = null;
-    setFlags(savedFlags);
+    let animStartMs = 0;
+    let animStartPos = new THREE.Vector3();
+    let animStartTarget = new THREE.Vector3();
 
     const scene = new THREE.Scene();
     scene.background = new THREE.Color("#0f1117");
@@ -325,11 +232,14 @@ export function ThreeViewer({ modelPath }: { modelPath: string }) {
     };
 
     const setRecordVisualState = (record: TargetRecord, selected: boolean) => {
-      record.helper.visible = selected;
-      const helperMaterial = record.helper.material as THREE.LineBasicMaterial;
-
-      helperMaterial.color.set(selected ? "#37d576" : "#00e5ff");
-      helperMaterial.opacity = selected ? 1 : 0.68;
+      if (selected) {
+        record.marker.scale.set(0.10, 0.10, 1);
+        record.marker.material.opacity = 1.0;
+        record.marker.material.color.set("#ffffff");
+      } else {
+        record.marker.scale.set(0.06, 0.06, 1);
+        record.marker.material.color.set("#37d576");
+      }
     };
 
     const focusRecord = (record: TargetRecord) => {
@@ -352,39 +262,32 @@ export function ThreeViewer({ modelPath }: { modelPath: string }) {
         modelRadius * 0.28,
         0.8,
       );
-      const savedView = savedCameraViews[record.key];
 
-      if (savedView) {
-        cameraGoal.position.copy(tupleToVector(savedView.position));
-        cameraGoal.target.copy(tupleToVector(savedView.target));
-        controls.minDistance = savedView.minDistance;
-        controls.maxDistance = savedView.maxDistance;
-      } else {
-        const outwardDirection = record.sphere.center.clone().sub(modelCenter);
+      const outwardDirection = record.sphere.center.clone().sub(modelCenter);
 
-        if (outwardDirection.lengthSq() < 0.001) {
-          outwardDirection.copy(camera.position).sub(controls.target);
-        }
-
-        outwardDirection.y += 0.18;
-        outwardDirection.normalize();
-
-        cameraGoal.target.copy(record.sphere.center);
-        cameraGoal.position
-          .copy(record.sphere.center)
-          .add(outwardDirection.multiplyScalar(distance));
-        controls.minDistance = Math.max(radius * 0.45, 0.08);
-        controls.maxDistance = Math.max(distance * 5, modelRadius * 1.6);
+      if (outwardDirection.lengthSq() < 0.001) {
+        outwardDirection.copy(camera.position).sub(controls.target);
       }
 
+      outwardDirection.y += 0.18;
+      outwardDirection.normalize();
+
+      cameraGoal.target.copy(record.sphere.center);
+      cameraGoal.position
+        .copy(record.sphere.center)
+        .add(outwardDirection.multiplyScalar(distance));
+      controls.minDistance = Math.max(radius * 0.45, 0.08);
+      controls.maxDistance = Math.max(distance * 5, modelRadius * 1.6);
+
+      animStartMs = performance.now();
+      animStartPos = camera.position.clone();
+      animStartTarget = controls.target.clone();
       cameraGoal.active = true;
 
       camera.near = Math.max(distance / 120, 0.001);
       camera.far = Math.max(modelRadius * 80, distance * 40);
       camera.updateProjectionMatrix();
       setSelectedSection(record.info);
-      setSelectedTargetKey(record.key);
-      setSaveNotice(savedView ? "Saved camera view loaded" : null);
     };
 
     const focusObject = (object: THREE.Object3D) => {
@@ -393,107 +296,6 @@ export function ThreeViewer({ modelPath }: { modelPath: string }) {
       if (record) {
         focusRecord(record);
       }
-    };
-
-    saveCurrentViewRef.current = () => {
-      if (!selectedRecord) {
-        return;
-      }
-
-      savedCameraViews[selectedRecord.key] = {
-        position: vectorToTuple(camera.position),
-        target: vectorToTuple(controls.target),
-        minDistance: controls.minDistance,
-        maxDistance: controls.maxDistance,
-      };
-      writeSavedCameraViews(savedCameraViews);
-      setSaveNotice("Camera view saved for this object");
-    };
-
-    const addFlagToScene = (flag: SavedFlag) => {
-      const existing = flagSprites.get(flag.id);
-
-      if (existing) {
-        scene.remove(existing);
-      }
-
-      const sprite = createFlagSprite(flag.name);
-      sprite.position.copy(tupleToVector(flag.coordinate));
-      scene.add(sprite);
-      flagSprites.set(flag.id, sprite);
-    };
-
-    savedFlags.forEach(addFlagToScene);
-
-    createFlagRef.current = () => {
-      if (!selectedRecord) {
-        return;
-      }
-
-      const fallbackName = selectedRecord.info.name || "Inspection Flag";
-      const name = window.prompt("Flag name", fallbackName);
-
-      if (!name?.trim()) {
-        return;
-      }
-
-      const coordinate = selectedRecord.sphere.center
-        .clone()
-        .add(
-          new THREE.Vector3(
-            0,
-            Math.max(selectedRecord.sphere.radius * 1.25, 0.14),
-            0,
-          ),
-        );
-      const flag: SavedFlag = {
-        id:
-          typeof crypto !== "undefined" && "randomUUID" in crypto
-            ? crypto.randomUUID()
-            : `${Date.now()}`,
-        name: name.trim(),
-        objectKey: selectedRecord.key,
-        objectName: selectedRecord.info.name,
-        coordinate: vectorToTuple(coordinate),
-        camera: {
-          position: vectorToTuple(camera.position),
-          target: vectorToTuple(controls.target),
-          minDistance: controls.minDistance,
-          maxDistance: controls.maxDistance,
-        },
-      };
-
-      savedFlags = [flag, ...savedFlags];
-      writeSavedFlags(savedFlags);
-      setFlags(savedFlags);
-      addFlagToScene(flag);
-      setSaveNotice("Flag saved with object coordinate and zoom view");
-    };
-
-    focusFlagRef.current = (flagId: string) => {
-      const flag = savedFlags.find((item) => item.id === flagId);
-
-      if (!flag) {
-        return;
-      }
-
-      const record = targetByKey.get(flag.objectKey);
-
-      if (record) {
-        selectedRecord = record;
-        targetRecords.forEach((targetRecord) =>
-          setRecordVisualState(targetRecord, targetRecord === record),
-        );
-        setSelectedSection(record.info);
-        setSelectedTargetKey(record.key);
-      }
-
-      cameraGoal.position.copy(tupleToVector(flag.camera.position));
-      cameraGoal.target.copy(tupleToVector(flag.camera.target));
-      controls.minDistance = flag.camera.minDistance;
-      controls.maxDistance = flag.camera.maxDistance;
-      cameraGoal.active = true;
-      setSaveNotice(`Loaded flag: ${flag.name}`);
     };
 
     const handlePointerDown = (event: PointerEvent) => {
@@ -589,19 +391,10 @@ export function ThreeViewer({ modelPath }: { modelPath: string }) {
             modelRadius * 0.035,
             0.06,
           );
-          const helper = new THREE.Box3Helper(
-            objectBox.clone(),
-            new THREE.Color("#00e5ff"),
-          );
-          const helperMaterial = helper.material as THREE.LineBasicMaterial;
 
-          helperMaterial.transparent = true;
-          helperMaterial.opacity = 0.62;
-          helperMaterial.depthTest = false;
-          helper.renderOrder = 997;
-          helper.visible = false;
-          scene.add(helper);
-          disposableMaterials.push(helperMaterial);
+          const marker = createDotSprite();
+          marker.position.copy(objectSphere.center);
+          scene.add(marker);
 
           const hitboxSize = new THREE.Vector3(
             Math.max(
@@ -637,7 +430,7 @@ export function ThreeViewer({ modelPath }: { modelPath: string }) {
             object,
             info: sectionInfo,
             sphere: objectSphere.clone(),
-            helper,
+            marker,
             hitbox,
           };
 
@@ -647,8 +440,8 @@ export function ThreeViewer({ modelPath }: { modelPath: string }) {
           disposableGeometries.push(hitboxGeometry);
           disposableMaterials.push(hitboxMaterial);
           targetRecords.push(record);
-          targetByKey.set(objectKey, record);
-          [hitbox, helper].forEach((target) => {
+
+          [hitbox, marker].forEach((target) => {
             clickableTargets.push(target);
             targetByUuid.set(target.uuid, record);
           });
@@ -691,21 +484,41 @@ export function ThreeViewer({ modelPath }: { modelPath: string }) {
 
       targetRecords.forEach((record, index) => {
         const selected = selectedRecord === record;
-        const wave = Math.sin(elapsed * 0.004 + index * 1.7);
-        const helperMaterial = record.helper
-          .material as THREE.LineBasicMaterial;
 
-        helperMaterial.opacity = selected ? 1 : 0.58 + wave * 0.1;
+        if (!selected) {
+          const wave = Math.sin(elapsed * 0.003 + index * 1.4) * 0.2 + 0.8;
+          record.marker.material.opacity = wave;
+        }
       });
 
       if (cameraGoal.active) {
-        camera.position.lerp(cameraGoal.position, 0.08);
-        controls.target.lerp(cameraGoal.target, 0.08);
+        const rawT = Math.min((elapsed - animStartMs) / 1200, 1);
+        const t = 1 - Math.pow(1 - rawT, 3);
 
-        if (
-          camera.position.distanceTo(cameraGoal.position) < 0.02 &&
-          controls.target.distanceTo(cameraGoal.target) < 0.02
-        ) {
+        const interpolatedPos = new THREE.Vector3().lerpVectors(
+          animStartPos,
+          cameraGoal.position,
+          t
+        );
+        const interpolatedTarget = new THREE.Vector3().lerpVectors(
+          animStartTarget,
+          cameraGoal.target,
+          t
+        );
+
+        const arcLift = Math.max(0, Math.sin(rawT * Math.PI)) * modelRadius * 0.12;
+        interpolatedPos.y += arcLift;
+
+        const sweepAngle = (1 - t) * 0.45;
+        const toCamera = interpolatedPos.clone().sub(cameraGoal.target);
+        toCamera.applyAxisAngle(new THREE.Vector3(0, 1, 0), sweepAngle);
+
+        camera.position.copy(cameraGoal.target).add(toCamera);
+        controls.target.copy(interpolatedTarget);
+
+        if (rawT >= 1) {
+          camera.position.copy(cameraGoal.position);
+          controls.target.copy(cameraGoal.target);
           cameraGoal.active = false;
         }
       }
@@ -733,11 +546,6 @@ export function ThreeViewer({ modelPath }: { modelPath: string }) {
       disposableGeometries.forEach((geometry) => geometry.dispose());
       disposableMaterials.forEach((material) => material.dispose());
       renderer.domElement.remove();
-      flagSprites.forEach((sprite) => {
-        scene.remove(sprite);
-        sprite.material.map?.dispose();
-        sprite.material.dispose();
-      });
       scene.traverse((object) => {
         if (object instanceof THREE.Mesh) {
           object.geometry.dispose();
@@ -749,9 +557,6 @@ export function ThreeViewer({ modelPath }: { modelPath: string }) {
           materials.forEach((material) => material.dispose());
         }
       });
-      saveCurrentViewRef.current = () => undefined;
-      createFlagRef.current = () => undefined;
-      focusFlagRef.current = () => undefined;
     };
   }, [modelPath]);
 
@@ -770,38 +575,12 @@ export function ThreeViewer({ modelPath }: { modelPath: string }) {
       <div className={`viewer-controls${controlsVisible ? "" : " hidden"}`}>
         <div className="panel-title">
           <Cpu size={20} strokeWidth={1.8} />
-          3D Viewer <span>{modelPath}</span>
+          3D Asset Viewer
         </div>
-        <div className="viewer-hint">Click any visible part to inspect it</div>
-        <aside className="section-picker" aria-label="Saved flags">
-          <div className="section-picker-title">Saved Flags</div>
-          <div className="section-picker-list">
-            {flags.length > 0 ? (
-              flags.map((flag) => (
-                <button
-                  className={`section-picker-item${
-                    selectedTargetKey === flag.objectKey ? " selected" : ""
-                  }`}
-                  key={flag.id}
-                  onClick={() => focusFlagRef.current(flag.id)}
-                  type="button"
-                >
-                  <span>{flag.name}</span>
-                  <small>
-                    {flag.objectName} |{" "}
-                    {flag.coordinate
-                      .map((value) => value.toFixed(2))
-                      .join(", ")}
-                  </small>
-                </button>
-              ))
-            ) : (
-              <div className="empty-flags">
-                Select an object, then create a flag.
-              </div>
-            )}
-          </div>
-        </aside>
+        <div className="viewer-hint">
+          <Crosshair size={16} />
+          Click any part to inspect
+        </div>
       </div>
       <div className="viewer-canvas" ref={mountRef} />
       {selectedSection ? (
@@ -814,8 +593,6 @@ export function ThreeViewer({ modelPath }: { modelPath: string }) {
             className="drawer-close"
             onClick={() => {
               setSelectedSection(null);
-              setSelectedTargetKey(null);
-              setSaveNotice(null);
             }}
             type="button"
           >
@@ -828,30 +605,6 @@ export function ThreeViewer({ modelPath }: { modelPath: string }) {
           >
             {selectedSection.status}
           </div>
-
-          {selectedTargetKey ? (
-            <div className="camera-save-panel">
-              <button
-                className="save-view-button"
-                onClick={() => saveCurrentViewRef.current()}
-                type="button"
-              >
-                Save Current View
-              </button>
-              <button
-                className="save-view-button flag-button"
-                onClick={() => createFlagRef.current()}
-                type="button"
-              >
-                <Flag size={15} />
-                Create Flag Here
-              </button>
-              <span>
-                {saveNotice ??
-                  "Adjust orbit/zoom manually, then save the view or create a named flag."}
-              </span>
-            </div>
-          ) : null}
 
           <div className="metric-grid">
             <div>
@@ -884,7 +637,6 @@ export function ThreeViewer({ modelPath }: { modelPath: string }) {
           <p>{selectedSection.notes}</p>
         </aside>
       ) : null}
-      {/* Temperature alert red dot overlay */}
       {tempAlert && (
         <div style={{
           position: 'absolute',
