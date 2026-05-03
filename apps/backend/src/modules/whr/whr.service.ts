@@ -72,6 +72,157 @@ export class WhrService {
   }
 
   // ─────────────────────────────────────────────────────────────────
+  // GET /whr/equipment   — per-equipment analysis
+  // Returns a list of 2 equipment items.  Each item carries:
+  //   • identity       — name, type, location, rating
+  //   • energy_balance — annual input/output/loss/recoverable (MWh/yr)
+  //   • co2            — annual emissions + avoidable share (tCO₂/yr)
+  //   • economics      — savings, CAPEX, simple ROI, payback (months)
+  //   • score          — MCDA breakdown (C1–C5) from the live engine
+  //   • operating      — annual hours, load factor, efficiency
+  //   • scenario       — mapped WHR scenario ID
+  // All numeric results are recalculated from dto params so sliders
+  // affect the equipment view in real time.
+  // ─────────────────────────────────────────────────────────────────
+  equipment(dto: WhrParamsDto = {}) {
+    const result = this.calculate(dto);
+
+    const p_gn   = dto.p_gn   ?? DEFAULTS.p_gn;     // DT/MWh — gas tariff
+    const p_elec = dto.p_elec ?? DEFAULTS.p_elec;   // DT/MWh — electricity tariff
+    const capex_s1 = dto.capex_s1 ?? DEFAULTS.capex_s1;
+    const capex_s2 = dto.capex_s2 ?? DEFAULTS.capex_s2;
+
+    // ── EQ1: Boiler (Mangazzini PVR15 + PVR5EU) ──────────────────
+    // Annual gas consumption (MWh/yr) derived from engine formula
+    const gas_input_mwh   = (EQUIPMENT.P_boiler_nom * EQUIPMENT.tau_boiler / EQUIPMENT.eta_boiler * EQUIPMENT.h_boiler) / 1000;
+    // Useful steam output (MWh/yr)
+    const steam_useful_mwh = (EQUIPMENT.P_boiler_nom * EQUIPMENT.tau_boiler * EQUIPMENT.h_boiler) / 1000;
+    // Flue gas heat loss (MWh/yr) — (1 - η_comb) fraction of input
+    const boiler_loss_mwh  = gas_input_mwh * (1 - EQUIPMENT.eta_boiler);
+    // Current CO₂ from gas combustion (tCO₂/yr)
+    const boiler_co2_t     = gas_input_mwh * CONST.f_CO2_GN;
+    // WHR recovery potential from this equipment
+    const savings_boiler   = result.savings_s1;
+    const roi_boiler       = result.roi_s1;
+
+    // ── EQ2: Air Compressor (D132RS-8A 132 kW) ───────────────────
+    // Total electrical input consumed by the compressor (MWh/yr)
+    const comp_input_mwh   = (EQUIPMENT.P_comp_nom * EQUIPMENT.tau_comp * EQUIPMENT.h_comp) / 1000;
+    // Useful compressed-air output (~85% of electrical input after losses)
+    const comp_useful_mwh  = comp_input_mwh * 0.85;
+    // Heat rejected to atmosphere (after-cooler) — ~15% losses + recoverable portion
+    const comp_heat_mwh    = comp_input_mwh - comp_useful_mwh;
+    // Current CO₂ from STEG electricity (tCO₂/yr)
+    const comp_co2_t       = comp_input_mwh * CONST.f_CO2_elec;
+    // WHR recovery potential (from engine W2)
+    const savings_comp     = result.savings_s2;
+    const roi_comp         = result.roi_s2;
+
+    return [
+      {
+        id: 'EQ1',
+        scenario: 'S1',
+        name: 'Chaudières vapeur',
+        short_name: 'Boiler',
+        type: 'Steam Boiler',
+        manufacturer: 'Mangazzini',
+        model: 'PVR15 + PVR5EU',
+        location: 'Salle chaudières — Zone Utilités',
+        // Nameplate & operating params
+        rated_power_kw: EQUIPMENT.P_boiler_nom,
+        annual_hours: EQUIPMENT.h_boiler,
+        load_factor: EQUIPMENT.tau_boiler,
+        efficiency_pct: Math.round(EQUIPMENT.eta_boiler * 100),
+        flue_temp_in_c: dto.t_flue_in ?? DEFAULTS.t_flue_in,
+        flue_temp_out_c: dto.t_flue_out_target ?? DEFAULTS.t_flue_out_target,
+        // Energy balance (MWh/yr)
+        energy_balance: {
+          input_mwh: Math.round(gas_input_mwh),
+          useful_output_mwh: Math.round(steam_useful_mwh),
+          loss_mwh: Math.round(boiler_loss_mwh),
+          recoverable_mwh: Math.round(result.E_W1),
+          recoverable_kw: Math.round(result.Q_W1),
+          energy_source: 'Natural gas (GN)',
+          unit_note: 'Gas input = P_nom × τ / η_comb × h_yr',
+        },
+        // CO₂ profile
+        co2: {
+          annual_t: Math.round(boiler_co2_t),
+          avoidable_t: Math.round(result.co2_W1),
+          avoidable_pct: Math.round((result.co2_W1 / boiler_co2_t) * 100),
+          factor_kg_kwh: CONST.f_CO2_GN,
+          factor_source: 'IPCC (scope 1 — direct combustion GN)',
+          scope: 'Scope 1',
+        },
+        // Economics
+        economics: {
+          annual_savings_dt: Math.round(savings_boiler),
+          capex_dt: capex_s1,
+          roi_yr: Math.round(roi_boiler * 10) / 10,
+          payback_months: Math.round((capex_s1 / savings_boiler) * 12),
+          tariff_dt_mwh: p_gn,
+          equation: 'Savings = E_W1 × p_gn',
+        },
+        // MCDA score from live engine
+        score: result.scores.W1,
+        // WHR method
+        whr_method: 'Plate heat exchanger on flue gas duct (EQ-1 + EQ-3)',
+        equation: 'Q = V̇_fumées × Cp_vol × (T_in − T_out) × η_HX',
+      },
+
+      {
+        id: 'EQ2',
+        scenario: 'S2',
+        name: 'Compresseur air comprimé',
+        short_name: 'Compressor',
+        type: 'Screw Air Compressor',
+        manufacturer: 'Atlas Copco',
+        model: 'D132RS-8A',
+        location: 'Local compresseurs — Zone Utilités',
+        // Nameplate & operating params
+        rated_power_kw: EQUIPMENT.P_comp_nom,
+        annual_hours: EQUIPMENT.h_comp,
+        load_factor: EQUIPMENT.tau_comp,
+        efficiency_pct: Math.round(DEFAULTS.eta_r_comp * 100),
+        heat_rejection_temp_c: '60–80°C (after-cooler outlet)',
+        // Energy balance (MWh/yr)
+        energy_balance: {
+          input_mwh: Math.round(comp_input_mwh),
+          useful_output_mwh: Math.round(comp_useful_mwh),
+          loss_mwh: Math.round(comp_heat_mwh),
+          recoverable_mwh: Math.round(result.E_W2),
+          recoverable_kw: Math.round(result.Q_W2),
+          energy_source: 'STEG electricity',
+          unit_note: 'Input = P_nom × τ_charge × h_yr',
+        },
+        // CO₂ profile
+        co2: {
+          annual_t: Math.round(comp_co2_t),
+          avoidable_t: Math.round(result.co2_W2),
+          avoidable_pct: Math.round((result.co2_W2 / comp_co2_t) * 100),
+          factor_kg_kwh: CONST.f_CO2_elec,
+          factor_source: 'STEG Tunisian grid mix (scope 2)',
+          scope: 'Scope 2',
+        },
+        // Economics
+        economics: {
+          annual_savings_dt: Math.round(savings_comp),
+          capex_dt: capex_s2,
+          roi_yr: Math.round(roi_comp * 10) / 10,
+          payback_months: Math.round((capex_s2 / savings_comp) * 12),
+          tariff_dt_mwh: p_elec,
+          equation: 'Savings = E_W2 × p_elec',
+        },
+        // MCDA score from live engine
+        score: result.scores.W2,
+        // WHR method
+        whr_method: 'After-cooler heat recovery kit — hot water loop (EQ-4)',
+        equation: 'Q = P_élec × τ_charge × η_pertes × η_récup',
+      },
+    ];
+  }
+
+  // ─────────────────────────────────────────────────────────────────
   // GET /whr/analytics — full framework payload (§1–§8)
   // Integrates every section of the Waste Heat Recovery Engineering
   // Report v2.0 (NRTF Hackathon 2024–2025, Track B Part 3).

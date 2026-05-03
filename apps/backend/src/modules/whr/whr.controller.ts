@@ -58,4 +58,27 @@ export class WhrController {
   analytics(@Query() dto: WhrParamsDto) {
     return this.whrService.analytics(dto);
   }
+
+  /**
+   * GET /whr/equipment
+   * Per-equipment WHR analysis for the two priority heat sources:
+   *   EQ1 — Boilers (Mangazzini PVR15+PVR5EU, 1840 kW)
+   *   EQ2 — Air Compressor (D132RS-8A, 132 kW)
+   *
+   * Each item includes:
+   *   • identity       — name, type, location, rating
+   *   • energy_balance — annual input / useful output / losses / recoverable (MWh/yr)
+   *   • co2            — annual emissions + avoidable share (tCO₂/yr) with factor source
+   *   • economics      — savings, CAPEX, ROI (yr), payback (months)
+   *   • score          — live MCDA breakdown (C1–C5) from the WHR engine
+   *   • whr_method     — equation reference (EQ-1 … EQ-4)
+   *
+   * All numeric results are recalculated from the same query params as
+   * /whr/calculate — sidebar sliders affect this view in real time.
+   */
+  @Get('equipment')
+  @UsePipes(new ValidationPipe({ transform: true, whitelist: true }))
+  equipment(@Query() dto: WhrParamsDto) {
+    return this.whrService.equipment(dto);
+  }
 }

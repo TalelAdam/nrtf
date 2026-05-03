@@ -8,4 +8,5 @@ import { IoTController } from './iot.controller';
   providers: [IoTService, IoTGateway],
   exports: [IoTService],
 })
+// IoTController receives IoTService via module DI — no extra wiring needed.
 export class IoTModule {}

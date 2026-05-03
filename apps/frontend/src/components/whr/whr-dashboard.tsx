@@ -8,6 +8,7 @@ import { WhrSankey } from './whr-sankey';
 import { WhrScoringTable } from './whr-scoring-table';
 import { WhrEquationsPanel } from './whr-equations-panel';
 import { WhrRoiChart } from './whr-roi-chart';
+import { WhrEquipmentPanel } from './whr-equipment-panel';
 
 export function WhrDashboard() {
   return (
@@ -15,6 +16,9 @@ export function WhrDashboard() {
       <WhrParamsSidebar />
       <div className="whr-main">
         <WhrKpiStrip />
+
+        {/* ── Per-equipment analysis (energy balance, CO₂, economics, MCDA) */}
+        <WhrEquipmentPanel />
 
         <div className="whr-charts-row">
           <div className="whr-chart-cell">
